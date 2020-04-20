@@ -38,3 +38,9 @@ clean:
 	rm -f *.o
 	rm -f systemd
 	rm -rf $(DIR)
+
+.PHONY: doc
+doc:
+	rm -rf doc/html doc/latex
+# 	doxygen doc/.conf
+	doxygen doc/Doxyfile

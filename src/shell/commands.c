@@ -1,55 +1,53 @@
 
 #include "commands.h"
 
-Command *commands = NULL; // hashtable of all avaliables commands
-
-int execute(char ** argv, int argc) {
-	Command *c;
-		//find command if its exists
-	HASH_FIND_STR( commands, argv[0], c);
-	if (c){
-
-		#ifdef LOG_SHELL
-		printf("exectuting command #%d\n", c->id);
-		#endif
-
-		return c->function(++argv);
+int execute(int argc, char ** argv) {
+	
+	if(strcmp(argv[0], "exit") == 0){
+		return -1;
 	}
-	else {
-		printf("unknown command\n");
-		return 1;
+
+	pid_t pid = -1;
+	int status = 0;
+	char * path = NULL;
+
+	path = getexecpath(path, "./src/bin/", argv[0]);
+
+	if (DEBUG)
+		printf("Executing : %s\n", path);
+
+
+	pid = fork();
+
+	if (pid == 0) {
+		// Execute binary form /root/src/bin
+		if (execvp( path, argv) == -1) {
+			printf(" ✗ - sdsh : %s: command not found\n", argv[0]);
+			perror("Err");
+		}
+		exit(0);
+	} else if (pid < 0) {
+		// Error forking
+		perror("sdsh fork err");
+	} else {
+		// Parent process
+		do {
+			waitpid(pid, &status, WUNTRACED);
+		} while (!WIFEXITED(status) && !WIFSIGNALED(status));
 	}
+
+	free(path);
+
+	return status;
 }
 
-int prim_quit(char ** param) {
-		// free the commands hashmap
-	Command *c, *tmp;
-	HASH_ITER(hh, commands, c, tmp) {
-		HASH_DEL(commands, c);
-		free(c);
-	}
-
-	return -1;
-}
-
-int prim_ls(char ** param) {
-	printf("Want to list ?\n");
-	return 0;
-}
 
 
-	// fuctions hashmap
-void initCommandsHashmap() {
+char * getexecpath (char * path, char * root, char * name) {
+	path = malloc(sizeof(char) * (strlen(root)+strlen(name)));
 
-	Command *c;
-	char *coreCommands[] = { "quit", "exit", "ls", NULL };
-	int *corePrimitives[] = { &prim_quit, &prim_quit, &prim_ls, NULL };
+	strcat(path, root);
+	strcat(&path[strlen(root)], name);
 
-	for (int i = 0; coreCommands[i]; ++i) {
-		c = (Command *)malloc(sizeof *c);
-		c->name = coreCommands[i];
-		c->id = i;
-		c->function = corePrimitives[i];
-		HASH_ADD_KEYPTR( hh, commands, c->name, strlen(c->name), c );
-	}
+	return path;
 }

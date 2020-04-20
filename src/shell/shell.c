@@ -48,11 +48,17 @@ char ** parseInput( char * line, int * argc ) {
 		ptr = strtok(NULL, " ");
 	}
 
+	//argv must end on NULL ptr
+	argv = realloc(argv, (*argc+1) * sizeof(char *));
+	argv[*argc] = NULL;
+
 	return argv;
 }
 
+
 void clear() {
-	system("clear");
+	if (!DEBUG)
+		cls();
 
 	printf("\033[1;36m");
 	FILE* fp;

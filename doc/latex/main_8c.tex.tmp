@@ -1,0 +1,104 @@
+\hypertarget{main_8c}{}\section{Référence du fichier src/main.c}
+\label{main_8c}\index{src/main.\+c@{src/main.\+c}}
+
+
+SystemD main.  
+
+
+{\ttfamily \#include \char`\"{}main.\+h\char`\"{}}\newline
+Graphe des dépendances par inclusion de main.\+c\+:
+% FIG 0
+\subsection*{Fonctions}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{main_8c_abf9e6b7e6f15df4b525a2e7705ba3089}{main} (int argc, char const $\ast$argv\mbox{[}$\,$\mbox{]})
+\begin{DoxyCompactList}\small\item\em Fonction main, Entrée du programme. \end{DoxyCompactList}\item 
+void \hyperlink{main_8c_a2473af238e75d8070e6e1e8cdc185788}{handle\+Args} (int argc, char const $\ast$options\mbox{[}$\,$\mbox{]})
+\begin{DoxyCompactList}\small\item\em Example showing how to document a function with Doxygen. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{main_8c_a48f76a8c0dc23567f303ed6aa221e078}\label{main_8c_a48f76a8c0dc23567f303ed6aa221e078}} 
+int {\bfseries D\+E\+B\+UG} = 0
+\end{DoxyCompactItemize}
+
+
+\subsection{Description détaillée}
+SystemD main. 
+
+\begin{DoxyAuthor}{Auteur}
+H.\+H\+E\+N\+R\+O\+T\+TE, M.\+V\+I\+N\+C\+E\+NT, D.\+D\+A\+NG, P.\+R\+E\+P\+A\+IN, O.\+B\+E\+N\+A\+B\+EN 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+1.\+0.\+0 
+\end{DoxyVersion}
+\begin{DoxyDate}{Date}
+17 Ma$\ast$ i 2020 Implémentation d\textquotesingle{}un système de fichiers en C (Projet scolaire) 
+\end{DoxyDate}
+
+
+\subsection{Documentation des fonctions}
+\mbox{\Hypertarget{main_8c_a2473af238e75d8070e6e1e8cdc185788}\label{main_8c_a2473af238e75d8070e6e1e8cdc185788}} 
+\index{main.\+c@{main.\+c}!handle\+Args@{handle\+Args}}
+\index{handle\+Args@{handle\+Args}!main.\+c@{main.\+c}}
+\subsubsection{\texorpdfstring{handle\+Args()}{handleArgs()}}
+{\footnotesize\ttfamily void handle\+Args (\begin{DoxyParamCaption}\item[{int}]{argc,  }\item[{char const $\ast$}]{options\mbox{[}$\,$\mbox{]} }\end{DoxyParamCaption})}
+
+
+
+Example showing how to document a function with Doxygen. 
+
+Description of what the function does. This part may refer to the parameters of the function, like {\ttfamily param1} or {\ttfamily param2}. A word of code can also be inserted like {\ttfamily this} which is equivalent to {\ttfamily this} and can be useful to say that the function returns a {\ttfamily void} or an {\ttfamily int}. If you want to have more than one word in typewriter font, then just use $<$tt$>$. We can also include text verbatim, \begin{DoxyVerb}like this\end{DoxyVerb}
+ Sometimes it is also convenient to include an example of usage\+: 
+\begin{DoxyCode}
+BoxStruct *out = Box\_The\_Function\_Name(param1, param2);
+printf(\textcolor{stringliteral}{"something...\(\backslash\)n"});
+\end{DoxyCode}
+ Or, 
+\begin{DoxyCode}
+pyval = python\_func(arg1, arg2)
+\textcolor{keywordflow}{print} pyval
+\end{DoxyCode}
+ when the language is not the one used in the current source file (but {\bfseries be careful} as this may be supported only by recent versions of Doxygen). By the way, {\bfseries this is how you write bold text} or, if it is just one word, then you can just do {\bfseries this}. 
+\begin{DoxyParams}{Paramètres}
+{\em param1} & Description of the first parameter of the function. \\
+\hline
+{\em param2} & The second one, which follows {\ttfamily param1}. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Renvoie}
+Describe what the function returns. 
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{Voir également}
+Box\+\_\+\+The\+\_\+\+Second\+\_\+\+Function 
+
+Box\+\_\+\+The\+\_\+\+Last\+\_\+\+One 
+
+\href{http://website/}{\tt http\+://website/} 
+\end{DoxySeeAlso}
+\begin{DoxyNote}{Note}
+Something to note. 
+\end{DoxyNote}
+\begin{DoxyWarning}{Avertissement}
+Warning. 
+\end{DoxyWarning}
+\mbox{\Hypertarget{main_8c_abf9e6b7e6f15df4b525a2e7705ba3089}\label{main_8c_abf9e6b7e6f15df4b525a2e7705ba3089}} 
+\index{main.\+c@{main.\+c}!main@{main}}
+\index{main@{main}!main.\+c@{main.\+c}}
+\subsubsection{\texorpdfstring{main()}{main()}}
+{\footnotesize\ttfamily int main (\begin{DoxyParamCaption}\item[{int}]{argc,  }\item[{char const $\ast$}]{argv\mbox{[}$\,$\mbox{]} }\end{DoxyParamCaption})}
+
+
+
+Fonction main, Entrée du programme. 
+
+
+\begin{DoxyParams}{Paramètres}
+{\em argc} & int \+: nombre d\textquotesingle{}arguments \\
+\hline
+{\em argv} & char $\ast$ \+: liste des arguments \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Renvoie}
+0 
+\end{DoxyReturn}
