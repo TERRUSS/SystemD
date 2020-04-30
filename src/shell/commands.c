@@ -23,7 +23,9 @@ int execute(int argc, char ** argv) {
 		// Execute binary form /root/src/bin
 		if (execvp( path, argv) == -1) {
 			printf(" ✗ - sdsh : %s: command not found\n", argv[0]);
-			perror("Err");
+			if (DEBUG){
+				perror("Err");
+			}
 		}
 		exit(0);
 	} else if (pid < 0) {
