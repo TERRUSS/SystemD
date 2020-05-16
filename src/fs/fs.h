@@ -15,6 +15,7 @@
 #define DISK "rsc/disk"
 
 #define BLOC_SIZE 1024
+#define FILENAME_COUNT 15
 #define USERNAME_COUNT 15
 #define GROUPNAME_COUNT 15
 #define BLOC_IDS_COUNT 10
@@ -54,18 +55,20 @@ struct inode {
 
 struct bloc {
 	unsigned int id;
-	char filename[15];
-	char content[1024];
+	char filename[FILENAME_COUNT];
+	char content[BLOC_SIZE];
 };
 
 /* Prototypes */
 
+int contains(struct inode *i, unsigned int bloc_id);
 int print_disk();
 int write_bloc(struct bloc *b);
 int write_inode(struct inode *i);
 struct bloc create_bloc(const char *filename, const char *content);
 struct inode create_inode(filetype type, mode_t perms, const char *user, const char *group);
 struct inode create_regularfile(char *filename, const char *mode);
+unsigned int get_bloc_id(char *filename);
 void print_bloc(struct bloc *b);
 void print_inode(struct inode *i);
 

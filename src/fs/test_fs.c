@@ -72,15 +72,37 @@ int test_create_regularfile() {
 	return 0;
 }
 
+int test_get_bloc_id() {
+	struct inode i;
+
+	if (get_bloc_id("toto") == -1) {
+		printf("Test failure\n");
+	} else {
+		printf("Test success\n");
+	}
+
+	if (get_bloc_id("gqrgqratag") != -1) {
+		printf("Test failure\n");
+	} else {
+		printf("Test success\n");
+	}
+
+	return 0;
+}
+
 int main() {
 
+	/*
 	test_create_inode();
 	test_print_inode();
 	test_write_inode();
 	test_create_bloc();
 	test_write_bloc();
+	*/
+
 
 	test_create_regularfile();
+	test_get_bloc_id();
 	test_print_disk();
 
 	return 0;

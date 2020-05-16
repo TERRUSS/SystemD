@@ -59,6 +59,23 @@ void add_bloc(struct inode *i, struct bloc *b) {
 	}
 }
 
+/**
+ * Checks if a bloc id is in the bloc ids of an inode
+ *
+ * success : 1
+ * failure : 0
+ */
+int contains(struct inode *i, unsigned int bloc_id) {
+	int j;
+
+	for (j = 0; j != i->bloc_count; j++) {
+		if (i->bloc_ids[j] == bloc_id)
+			return 1;
+	}
+
+	return 0;
+}
+
 void print_bloc(struct bloc *b) {
 	printf("bloc id:%d", b->id);
 	printf(" filename:%s", b->filename);
@@ -222,4 +239,92 @@ struct inode create_regularfile(char *filename, const char *mode) {
 
 	return i;
 }
+
+/**
+ * TODO TO TEST
+ * TODO To avoid conflict named it iopen
+ * TODO open a file under a directory (here, opens any kind of file)
+ * Returns an inode of a file
+ *
+ * success : returns the inode
+ * failure : returns empty node TODO is_empty(inode)
+ */
+struct inode iopen(char *filename, const char *mode) {
+	FILE *f;
+	int size;
+	int flag;
+	struct inode i;
+	unsigned int bloc_id;
+	int match;
+
+	bloc_id = get_bloc_id(filename);
+	if (bloc_id == -1) return i;
+
+	match = 0;
+	size = 0;
+	f = fopen(DISK, "rb");
+
+	do {
+		/*
+		 * We determine if it's a bloc or an inode by the flag
+		 */
+		size = fread(&flag, sizeof(const int), 1, f);
+
+		if (size == 0) continue;
+
+		if (flag == INODE_FLAG) {
+			fread(&i, sizeof(struct inode), 1, f);
+			if (contains(&i, bloc_id))
+				match = !match;
+		}
+
+	} while (size != 0 && !match);
+
+	return i;
+}
+
+/**
+ * Returns the bloc id for a filename
+ *
+ * Parses the disk and check each blocs filename
+ * if the file is found, returns the bloc id
+ * else returns -1
+ */
+unsigned int get_bloc_id(char *filename) {
+	FILE *f;
+	int size;
+	int flag;
+	struct bloc b;
+	int match = 0;
+
+	size = 0;
+	f = fopen(DISK, "rb");
+
+	do {
+		/*
+		 * We determine if it's a bloc or an inode by the flag
+		 */
+		size = fread(&flag, sizeof(const int), 1, f);
+
+		if (size == 0) continue;
+
+		if (flag == BLOC_FLAG) {
+			fread(&b, sizeof(struct bloc), 1, f);
+			if (strcmp(b.filename, filename) == 0) {
+				printf("Found the file %s\n", filename);
+				match = !match;
+			}
+
+		}
+
+	} while (size != 0 && !match);
+
+	if (match) {
+		return b.id;
+	} else {
+		return -1;
+	}
+}
+
+
 
