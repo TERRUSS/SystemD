@@ -52,5 +52,5 @@ doc:
 
 .PHONY: fs_test
 fs_test:
-	gcc -Wall -Isrc src/fs/fs.c src/fs/test_fs.c 
+	gcc -Wall -pedantic -ansi -Isrc src/fs/fs.c src/fs/test_fs.c 
 
