@@ -1,5 +1,14 @@
 #include "fs/fs.h"
 
+/**
+ * Returns an inode
+ *
+ * user mut not be NULL
+ * group can be NULL
+ *
+ * on success : returns inode
+ * on failure : returns NULL
+ */
 struct inode create_inode(filetype type, mode_t perms, unsigned char *user, unsigned char *group) {
 
 	struct inode i;
@@ -23,6 +32,9 @@ struct inode create_inode(filetype type, mode_t perms, unsigned char *user, unsi
 	return i;
 }
 
+/**
+ * Prints an inode in the terminal
+ */
 void print_inode(struct inode *i) {
 	char s[64];
 	char s2[64];
@@ -50,6 +62,8 @@ void print_inode(struct inode *i) {
 
 /**
  * Writes an inode to the disk (by append)
+ *
+ * Returns fclose return value
  */
 int write_inode(struct inode *i) {
 	FILE *f;
