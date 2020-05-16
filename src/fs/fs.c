@@ -96,6 +96,29 @@ int write_inode(struct inode *i) {
 	return fclose(f);
 }
 
+/**
+ * Returns a bloc
+ *
+ * filename must not be NULL
+ * content can be NULL
+ */
+struct bloc create_bloc(const char *filename, const char *content) {
+	struct bloc b;
+
+	srand(getpid()+time(NULL));
+	b.id = rand();
+
+	// TODO strncpy for safer copy
+	strcpy(b.filename, filename);
+
+	if (content == NULL) {
+		strcpy(b.content, "");
+	} else {
+		strcpy(b.content, content);
+	}
+
+	return b;
+}
 
 /**
  * Writes a bloc to the disk (by append)

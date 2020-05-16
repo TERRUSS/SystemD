@@ -52,8 +52,8 @@ struct inode {
 
 struct bloc {
 	unsigned int id;
-	unsigned char filename[15];
-	unsigned char content[1024];
+	char filename[15];
+	char content[1024];
 };
 
 /* Prototypes */
@@ -61,6 +61,9 @@ struct bloc {
 struct inode create_inode(filetype type, mode_t perms, const char *user, const char *group);
 void print_inode(struct inode *i);
 int write_inode(struct inode *i);
+struct bloc create_bloc(const char *filename, const char *content);
+void print_bloc(struct bloc *b);
+int write_bloc(struct bloc *b);
 int print_disk();
 
 #endif
