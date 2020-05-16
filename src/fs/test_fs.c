@@ -64,12 +64,23 @@ int test_print_disk() {
 	return 0;
 }
 
+int test_create_regularfile() {
+	struct inode i;
+
+	i = create_regularfile("toto", "");
+
+	return 0;
+}
+
 int main() {
+
 	test_create_inode();
 	test_print_inode();
 	test_write_inode();
 	test_create_bloc();
 	test_write_bloc();
+
+	test_create_regularfile();
 	test_print_disk();
 
 	return 0;

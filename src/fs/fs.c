@@ -2,6 +2,8 @@
 
 const int INODE_FLAG = 1;
 const int BLOC_FLAG = 2;
+const mode_t DEFAULT_PERMISSIONS = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
+const char USERNAME[USERNAME_COUNT] = "macron";
 
 /**
  * Returns an inode
@@ -17,7 +19,6 @@ struct inode create_inode(filetype type, mode_t perms, const char *user, const c
 
 	struct inode i;
 	time_t t;
-	const char default_string[15] = "default";
 
 	srand(getpid()+time(NULL));
 	i.id = rand();
@@ -33,7 +34,7 @@ struct inode create_inode(filetype type, mode_t perms, const char *user, const c
 	if (group != NULL)
 		strcpy(i.group_name, group);
 	else
-		strcpy(i.group_name, default_string);
+		strcpy(i.group_name, user);
 
 
 	time(NULL);
@@ -41,8 +42,21 @@ struct inode create_inode(filetype type, mode_t perms, const char *user, const c
 	i.updated_at = localtime(&t);
 
 	/*i.bloc_ids = NULL;*/
+	i.bloc_count = 0;
 
 	return i;
+}
+
+/**
+ * Adds a bloc id to an inode
+ */
+void add_bloc(struct inode *i, struct bloc *b) {
+	if (i->bloc_count == BLOC_IDS_COUNT) {
+		perror("Can't add anymore blocs to the inode !\n");
+	} else {
+		i->bloc_ids[i->bloc_count] = b->id;
+		i->bloc_count++;
+	}
 }
 
 void print_bloc(struct bloc *b) {
@@ -58,6 +72,8 @@ void print_bloc(struct bloc *b) {
 void print_inode(struct inode *i) {
 	char s[64];
 	char s2[64];
+	int j;
+
 	printf("inode id:%d", i->id);
 	printf(" filetype:%d", i->type);
 	printf(" permissions:%d", i->permissions);
@@ -67,6 +83,11 @@ void print_inode(struct inode *i) {
 	assert(strftime(s2, sizeof(s2), "%c", i->updated_at));
 	printf(" created at:%s", s);
 	printf(" updated at:%s", s2);
+
+	for (j = 0; j != i->bloc_count; j++) {
+		printf(" bloc_id:%d", i->bloc_ids[j]);
+	}
+
 	puts("");
 	/*
 	printf(" created at: %d-%02d-%02d %02d:%02d:%02d",
@@ -176,5 +197,29 @@ int print_disk() {
 	} while (size != 0);
 
 	return fclose(f);
+}
+
+/**
+ * Created a regular file in the filesystem
+ * and returns the inode created
+ *
+ * filename must not be NULL
+ * TODO what's the mode for ? how do you use it,
+ * since you only return an inode
+ */
+struct inode create_regularfile(char *filename, const char *mode) {
+	struct bloc b;
+	struct inode i;
+
+	b = create_bloc(filename, "");
+	i = create_inode(REGULAR_FILE, DEFAULT_PERMISSIONS, USERNAME, USERNAME);
+
+	// we link the bloc to the inode
+	add_bloc(&i, &b);
+
+	write_inode(&i);
+	write_bloc(&b);
+
+	return i;
 }
 

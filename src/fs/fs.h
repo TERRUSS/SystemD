@@ -23,6 +23,7 @@
 
 extern const int INODE_FLAG;
 extern const int BLOC_FLAG;
+extern const mode_t DEFAULT_PERMISSIONS;
 
 /* Enumerations */
 
@@ -48,6 +49,7 @@ struct inode {
 	struct tm *updated_at;
 
 	unsigned int bloc_ids[BLOC_IDS_COUNT];
+	int bloc_count;
 };
 
 struct bloc {
@@ -58,13 +60,14 @@ struct bloc {
 
 /* Prototypes */
 
-struct inode create_inode(filetype type, mode_t perms, const char *user, const char *group);
-void print_inode(struct inode *i);
+int print_disk();
+int write_bloc(struct bloc *b);
 int write_inode(struct inode *i);
 struct bloc create_bloc(const char *filename, const char *content);
+struct inode create_inode(filetype type, mode_t perms, const char *user, const char *group);
+struct inode create_regularfile(char *filename, const char *mode);
 void print_bloc(struct bloc *b);
-int write_bloc(struct bloc *b);
-int print_disk();
+void print_inode(struct inode *i);
 
 #endif
 
