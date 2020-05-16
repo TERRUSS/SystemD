@@ -48,3 +48,17 @@ void print_inode(struct inode *i) {
 	*/
 }
 
+/**
+ * Writes an inode to the disk (by append)
+ */
+int write_inode(struct inode *i) {
+	FILE *f;
+
+	f = fopen(DISK, "ab");
+
+	/* TODO put flag to indicate it's an inode */
+	fwrite(i, sizeof(struct inode), 1, f);
+
+	return fclose(f);
+}
+

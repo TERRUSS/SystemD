@@ -10,6 +10,7 @@
 #include <assert.h>
 
 
+#define DISK "rsc/disk"
 #define BLOC_SIZE 1024
 #define INODE_FIELD_SIZE 32
 
@@ -36,6 +37,7 @@ struct inode {
 
 struct inode create_inode(filetype type, mode_t perms, unsigned char *user, unsigned char *group);
 void print_inode(struct inode *i);
+int write_inode(struct inode *i);
 
 #endif
 
