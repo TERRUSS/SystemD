@@ -113,6 +113,11 @@ int write_bloc(struct bloc *b) {
 	return fclose(f);
 }
 
+/**
+ * Prints the disk in the terminal, inodes and blocs alike
+ *
+ * Returns fclose return value
+ */
 int print_disk() {
 	FILE *f;
 	int size;
@@ -123,9 +128,10 @@ int print_disk() {
 	size = 0;
 	f = fopen(DISK, "rb");
 
-
-
 	do {
+		/*
+		 * We determine if it's a bloc or an inode by the flag
+		 */
 		size = fread(&flag, sizeof(const int), 1, f);
 
 		if (size == 0) continue;

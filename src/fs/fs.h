@@ -10,6 +10,7 @@
 #include <assert.h>
 #include <string.h>
 
+/* Macros */
 
 #define DISK "rsc/disk"
 
@@ -18,16 +19,23 @@
 #define GROUPNAME_COUNT 15
 #define BLOC_IDS_COUNT 10
 
+/* Globals */
+
 extern const int INODE_FLAG;
 extern const int BLOC_FLAG;
 
+/* Enumerations */
 
 typedef enum filetype {
 	REGULAR_FILE, DIRECTORY, SYMBOLIC_LINK, FIFO, SOCKET, DEVICE
 } filetype;
 
-struct inode {
+/* Structures */
 
+/**
+ * Stores metadata of blocs
+ */
+struct inode {
 	unsigned char id;
 
 	filetype type;
@@ -47,6 +55,8 @@ struct bloc {
 	unsigned char filename[15];
 	unsigned char content[1024];
 };
+
+/* Prototypes */
 
 struct inode create_inode(filetype type, mode_t perms, const char *user, const char *group);
 void print_inode(struct inode *i);
