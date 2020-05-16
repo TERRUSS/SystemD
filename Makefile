@@ -52,5 +52,10 @@ doc:
 
 .PHONY: fs_test
 fs_test:
-	gcc -Wall -pedantic -ansi -Isrc src/fs/fs.c src/fs/test_fs.c 
+	gcc -Wall -pedantic -ansi -g -Isrc src/fs/fs.c src/fs/test_fs.c 
+
+.PHONY: clean_disk
+clean_disk:
+	rm rsc/disk
+
 

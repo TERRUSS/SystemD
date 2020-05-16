@@ -11,8 +11,11 @@
 
 
 #define DISK "rsc/disk"
+
 #define BLOC_SIZE 1024
-#define INODE_FIELD_SIZE 32
+
+extern const int INODE_FLAG;
+extern const int BLOC_FLAG;
 
 
 typedef enum filetype {
@@ -35,9 +38,16 @@ struct inode {
 	unsigned int *bloc_ids;
 };
 
+struct bloc {
+	unsigned int id;
+	unsigned char *filename;
+	unsigned char content[1024];
+};
+
 struct inode create_inode(filetype type, mode_t perms, unsigned char *user, unsigned char *group);
 void print_inode(struct inode *i);
 int write_inode(struct inode *i);
+int print_disk();
 
 #endif
 

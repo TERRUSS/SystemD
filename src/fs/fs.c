@@ -1,5 +1,8 @@
 #include "fs/fs.h"
 
+const int INODE_FLAG = 1;
+const int BLOC_FLAG = 2;
+
 /**
  * Returns an inode
  *
@@ -70,8 +73,60 @@ int write_inode(struct inode *i) {
 
 	f = fopen(DISK, "ab");
 
-	/* TODO put flag to indicate it's an inode */
+	fwrite(&INODE_FLAG, sizeof(const int), 1, f);
 	fwrite(i, sizeof(struct inode), 1, f);
+
+	return fclose(f);
+}
+
+
+/**
+ * Writes a bloc to the disk (by append)
+ *
+ * Returns fclose return value
+ */
+int write_bloc(struct bloc *b) {
+	FILE *f;
+
+	f = fopen(DISK, "ab");
+
+	fwrite(&BLOC_FLAG, sizeof(const int), 1, f);
+	fwrite(b, sizeof(struct bloc), 1, f);
+
+	return fclose(f);
+}
+
+int print_disk() {
+	FILE *f;
+	int size;
+	int flag;
+	struct bloc b;
+	struct inode i;
+
+	size = 0;
+	f = fopen(DISK, "rb");
+
+
+
+	do {
+		size = fread(&flag, sizeof(const int), 1, f);
+
+		if (size == 0) continue;
+
+		if (flag == BLOC_FLAG) {
+			printf("Bloc\n");
+			fread(&b, sizeof(struct bloc), 1, f);
+
+		} else if (flag == INODE_FLAG) {
+			printf("Inode\n");
+			fread(&i, sizeof(struct inode), 1, f);
+			print_inode(&i);
+
+		} else {
+			printf("What's this ?\n");
+		}
+
+	} while (size != 0);
 
 	return fclose(f);
 }

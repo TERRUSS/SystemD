@@ -38,10 +38,17 @@ int test_write_inode() {
 	return 0;
 }
 
+int test_print_disk() {
+	print_disk();
+
+	return 0;
+}
+
 int main() {
 	test_create_inode();
 	test_print_inode();
 	test_write_inode();
+	test_print_disk();
 
 	return 0;
 }
