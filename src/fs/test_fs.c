@@ -3,7 +3,7 @@
 int test_create_inode() {
 	filetype t = REGULAR_FILE;
 	mode_t m = S_IRWXU;
-	unsigned char user[10] = "Paul";
+	char user[10] = "Paul";
 
 
 	struct inode i = create_inode(t, m, user, NULL);
@@ -14,7 +14,7 @@ int test_create_inode() {
 int test_print_inode() {
 	filetype t = REGULAR_FILE;
 	mode_t m = S_IRWXU;
-	unsigned char user[10] = "Paul";
+	char user[10] = "Paul";
 
 
 	struct inode i = create_inode(t, m, user, NULL);
@@ -26,7 +26,7 @@ int test_print_inode() {
 int test_write_inode() {
 	filetype t = REGULAR_FILE;
 	mode_t m = S_IRWXU;
-	unsigned char user[10] = "Paul";
+	char user[10] = "Paul";
 
 
 	struct inode i = create_inode(t, m, user, NULL);

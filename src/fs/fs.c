@@ -12,10 +12,12 @@ const int BLOC_FLAG = 2;
  * on success : returns inode
  * on failure : returns NULL
  */
-struct inode create_inode(filetype type, mode_t perms, unsigned char *user, unsigned char *group) {
+/*struct inode create_inode(filetype type, mode_t perms, unsigned char *user, unsigned char *group) {*/
+struct inode create_inode(filetype type, mode_t perms, const char *user, const char *group) {
 
 	struct inode i;
 	time_t t;
+	const char default_string[15] = "default";
 
 	srand(getpid()+time(NULL));
 	i.id = rand();
@@ -23,16 +25,31 @@ struct inode create_inode(filetype type, mode_t perms, unsigned char *user, unsi
 	i.type = type;
 	i.permissions = perms;
 
+	/*
 	i.user_name = user;
 	i.group_name = group;
+	*/
+	strcpy(i.user_name, user);
+	if (group != NULL)
+		strcpy(i.group_name, group);
+	else
+		strcpy(i.group_name, default_string);
+
 
 	time(NULL);
 	i.created_at = localtime(&t);
 	i.updated_at = localtime(&t);
 
-	i.bloc_ids = NULL;
+	/*i.bloc_ids = NULL;*/
 
 	return i;
+}
+
+void print_bloc(struct bloc *b) {
+	printf("bloc id:%d", b->id);
+	printf(" filename:%s", b->filename);
+	printf(" content:%s", b->content);
+	puts("");
 }
 
 /**
@@ -116,6 +133,7 @@ int print_disk() {
 		if (flag == BLOC_FLAG) {
 			printf("Bloc\n");
 			fread(&b, sizeof(struct bloc), 1, f);
+			print_bloc(&b);
 
 		} else if (flag == INODE_FLAG) {
 			printf("Inode\n");

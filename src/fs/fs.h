@@ -8,6 +8,7 @@
 #include <time.h>
 #include <stdio.h>
 #include <assert.h>
+#include <string.h>
 
 
 #define DISK "rsc/disk"
@@ -29,22 +30,22 @@ struct inode {
 	filetype type;
 	mode_t permissions;
 
-	unsigned char *user_name;
-	unsigned char *group_name;
+	char user_name[15];
+	char group_name[15];
 
 	struct tm *created_at;
 	struct tm *updated_at;
 
-	unsigned int *bloc_ids;
+	unsigned int bloc_ids[10];
 };
 
 struct bloc {
 	unsigned int id;
-	unsigned char *filename;
+	unsigned char filename[15];
 	unsigned char content[1024];
 };
 
-struct inode create_inode(filetype type, mode_t perms, unsigned char *user, unsigned char *group);
+struct inode create_inode(filetype type, mode_t perms, const char *user, const char *group);
 void print_inode(struct inode *i);
 int write_inode(struct inode *i);
 int print_disk();
