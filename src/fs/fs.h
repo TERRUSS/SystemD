@@ -14,6 +14,9 @@
 #define DISK "rsc/disk"
 
 #define BLOC_SIZE 1024
+#define USERNAME_COUNT 15
+#define GROUPNAME_COUNT 15
+#define BLOC_IDS_COUNT 10
 
 extern const int INODE_FLAG;
 extern const int BLOC_FLAG;
@@ -30,13 +33,13 @@ struct inode {
 	filetype type;
 	mode_t permissions;
 
-	char user_name[15];
-	char group_name[15];
+	char user_name[USERNAME_COUNT];
+	char group_name[GROUPNAME_COUNT];
 
 	struct tm *created_at;
 	struct tm *updated_at;
 
-	unsigned int bloc_ids[10];
+	unsigned int bloc_ids[BLOC_IDS_COUNT];
 };
 
 struct bloc {
