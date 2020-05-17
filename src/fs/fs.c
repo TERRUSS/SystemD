@@ -18,6 +18,8 @@ struct file g_filetree;
 /* Generates id */
 unsigned int g_increment_id = 1;
 
+/* Functions */
+
 /* Inode */
 
 /**

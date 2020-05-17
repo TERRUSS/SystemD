@@ -79,22 +79,22 @@ struct file {
 
 /* Prototypes */
 
+int clean_disk();
 int contains(struct inode *i, unsigned int bloc_id);
 int print_disk();
+int update_inode(struct inode *new_inode);
 int write_bloc(struct bloc *b);
 int write_inode(struct inode *i);
 struct bloc create_bloc(const char *filename, const char *content);
 struct bloc get_bloc_by_id(unsigned int bloc_id);
-struct inode create_inode(filetype type, mode_t perms, const char *user, const char *group);
 struct inode create_file(char *filename, filetype type, const char *mode);
+struct inode create_inode(filetype type, mode_t perms, const char *user, const char *group);
 struct inode create_root();
 unsigned int get_bloc_id(char *filename);
 void add_bloc(struct inode *i, struct bloc *b);
+void create_disk();
 void print_bloc(struct bloc *b);
 void print_inode(struct inode *i);
-int update_inode(struct inode *new_inode);
-void create_disk();
-int clean_disk();
 
 #endif
 
