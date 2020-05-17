@@ -68,6 +68,11 @@ struct bloc {
 	unsigned int id;
 	char filename[FILENAME_COUNT];
 	char content[BLOC_SIZE];
+	/* A file's content can be scattered among multiple blocs
+	 * 0 indicates this is NOT the last bloc
+	 * 1 indicates this IS the last bloc
+	 */
+	unsigned int last_bloc;
 };
 
 struct file {

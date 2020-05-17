@@ -259,6 +259,46 @@ int update_inode(struct inode *new_inode) {
 	return fclose(f);
 }
 
+
+/**
+ * Updates a bloc in the disk file
+ * Before calling the function, check the content is < 1024
+ * if not, create a new for the inode
+ */
+int update_bloc(struct bloc *new_bloc) {
+	FILE *f;
+	int size;
+	int flag;
+	int pos;
+	struct inode b;
+
+	size = 0;
+	f = fopen(DISK, "r+b");
+
+	do {
+		/*
+		 * We determine if it's a bloc or an inode by the flag
+		 */
+		size = fread(&flag, sizeof(const int), 1, f);
+		pos = ftell(f);
+
+		if (size == 0) continue;
+
+		if (flag == BLOC_FLAG) {
+			fread(&b, sizeof(struct bloc), 1, f);
+
+			if (new_bloc->id == b.id) {
+				fseek(f, pos, SEEK_SET);
+				fwrite(new_bloc, sizeof(struct bloc), 1, f);
+			}
+
+		}
+
+	} while (size != 0);
+
+	return fclose(f);
+}
+
 /**
  * Prints the disk in the terminal, inodes and blocs alike
  *
