@@ -4,6 +4,9 @@ const int INODE_FLAG = 1;
 const int BLOC_FLAG = 2;
 const mode_t DEFAULT_PERMISSIONS = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
 const char USERNAME[USERNAME_COUNT] = "macron";
+struct inode g_current_node;
+struct file g_filetree;
+unsigned int g_increment_id = 1;
 
 /**
  * Returns an inode
@@ -19,8 +22,8 @@ struct inode create_inode(filetype type, mode_t perms, const char *user, const c
 	struct inode i;
 	time_t t;
 
-	srand(getpid()+time(NULL));
-	i.id = rand();
+	//i.id = rand();
+	i.id = g_increment_id++;
 
 	i.type = type;
 	i.permissions = perms;
@@ -52,7 +55,7 @@ struct inode create_root() {
 
 	i = create_inode(DIRECTORY, root_permissions, "root", "root");
 	b = create_bloc("", "");
-	b.id = 1;
+	b.id = g_increment_id++;
 
 	add_bloc(&i, &b);
 
@@ -148,8 +151,8 @@ int write_inode(struct inode *i) {
 struct bloc create_bloc(const char *filename, const char *content) {
 	struct bloc b;
 
-	srand(getpid()+time(NULL));
-	b.id = rand();
+	//b.id = rand();
+	b.id = g_increment_id++;
 
 	// TODO strncpy for safer copy
 	strcpy(b.filename, filename);
@@ -203,17 +206,15 @@ int print_disk() {
 		if (size == 0) continue;
 
 		if (flag == BLOC_FLAG) {
-			printf("Bloc\n");
 			fread(&b, sizeof(struct bloc), 1, f);
 			print_bloc(&b);
 
 		} else if (flag == INODE_FLAG) {
-			printf("Inode\n");
 			fread(&i, sizeof(struct inode), 1, f);
 			print_inode(&i);
 
 		} else {
-			printf("What's this ?\n");
+			printf("?\n");
 		}
 
 	} while (size != 0);
@@ -328,6 +329,56 @@ void disk_free(unsigned int *blocs_available, unsigned int *inodes_available, si
 }
 
 
+/**
+ * Creates the root inode and write to a file
+ * Call only once
+ */
+void create_disk() {
+    create_root();
+}
 
+/**
+ * Reads the disk file, and fill the filetree with disk datas
+ */
+void get_filetree() {
+}
+
+int update_inode(struct inode *new_inode) {
+	FILE *f;
+	int size;
+	int flag;
+	int pos;
+	struct inode i;
+
+	size = 0;
+	f = fopen(DISK, "r+b");
+
+	do {
+		/*
+		 * We determine if it's a bloc or an inode by the flag
+		 */
+		size = fread(&flag, sizeof(const int), 1, f);
+		pos = ftell(f);
+
+		if (size == 0) continue;
+
+		if (flag == INODE_FLAG) {
+			fread(&i, sizeof(struct inode), 1, f);
+
+			if (new_inode->id == i.id) {
+				fseek(f, pos, SEEK_SET);
+				fwrite(new_inode, sizeof(struct inode), 1, f);
+			}
+
+		}
+
+	} while (size != 0);
+
+	return fclose(f);
+}
+
+int clean_disk() {
+	return remove(DISK);
+}
 
 

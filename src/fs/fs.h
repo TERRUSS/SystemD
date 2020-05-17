@@ -25,6 +25,9 @@
 extern const int INODE_FLAG;
 extern const int BLOC_FLAG;
 extern const mode_t DEFAULT_PERMISSIONS;
+extern struct inode g_current_node;
+extern struct file g_filetree;
+extern unsigned int g_increment_id;
 
 /* Enumerations */
 
@@ -81,6 +84,9 @@ unsigned int get_bloc_id(char *filename);
 void add_bloc(struct inode *i, struct bloc *b);
 void print_bloc(struct bloc *b);
 void print_inode(struct inode *i);
+int update_inode(struct inode *new_inode);
+void create_disk();
+int clean_disk();
 
 #endif
 
