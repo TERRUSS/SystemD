@@ -1,28 +1,39 @@
 #include "fs/fs.h"
 
+/* Constants */
+
 const int INODE_FLAG = 1;
 const int BLOC_FLAG = 2;
 const mode_t DEFAULT_PERMISSIONS = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
 const char USERNAME[USERNAME_COUNT] = "macron";
+const char ROOT[USERNAME_COUNT] = "root";
+const mode_t ROOT_PERMISSIONS = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
+
+/* Globals */
+
+/* Current working directory */
 struct inode g_current_node;
+/* Contains the filetree TODO will be used ? */
 struct file g_filetree;
+/* Generates id */
 unsigned int g_increment_id = 1;
+
+/* Inode */
 
 /**
  * Returns an inode
  *
- * user mut not be NULL
+ * user must not be NULL
  * group can be NULL
  *
  * on success : returns inode
- * on failure : returns NULL
+ * on failure : TODO
  */
 struct inode create_inode(filetype type, mode_t perms, const char *user, const char *group) {
 
 	struct inode i;
 	time_t t;
 
-	//i.id = rand();
 	i.id = g_increment_id++;
 
 	i.type = type;
@@ -35,7 +46,7 @@ struct inode create_inode(filetype type, mode_t perms, const char *user, const c
 		strcpy(i.group_name, user);
 
 
-	time(NULL);
+	t = time(NULL);
 	i.created_at = localtime(&t);
 	i.updated_at = localtime(&t);
 
@@ -47,13 +58,14 @@ struct inode create_inode(filetype type, mode_t perms, const char *user, const c
 /**
  * The root has an id == 1, and an empty filename
  * Written on the disk
+ *
+ * Returns the inode created
  */
 struct inode create_root() {
 	struct inode i;
 	struct bloc b;
-	mode_t root_permissions = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
 
-	i = create_inode(DIRECTORY, root_permissions, "root", "root");
+	i = create_inode(DIRECTORY, ROOT_PERMISSIONS, ROOT, ROOT);
 	b = create_bloc("", "");
 	b.id = g_increment_id++;
 
@@ -70,7 +82,7 @@ struct inode create_root() {
  */
 void add_bloc(struct inode *i, struct bloc *b) {
 	if (i->bloc_count == BLOC_IDS_COUNT) {
-		perror("Can't add anymore blocs to the inode !\n");
+		perror("Can't add anymore blocs to the inode !");
 	} else {
 		i->bloc_ids[i->bloc_count] = b->id;
 		i->bloc_count++;
@@ -94,13 +106,6 @@ int contains(struct inode *i, unsigned int bloc_id) {
 	return 0;
 }
 
-void print_bloc(struct bloc *b) {
-	printf("bloc id:%d", b->id);
-	printf(" filename:%s", b->filename);
-	printf(" content:%s", b->content);
-	puts("");
-}
-
 /**
  * Prints an inode in the terminal
  */
@@ -109,7 +114,7 @@ void print_inode(struct inode *i) {
 	char s2[64];
 	int j;
 
-	printf("inode id:%d", i->id);
+	printf("<INODE> id:%d", i->id);
 	printf(" filetype:%d", i->type);
 	printf(" permissions:%d", i->permissions);
 	printf(" user:%s", i->user_name);
@@ -142,10 +147,13 @@ int write_inode(struct inode *i) {
 	return fclose(f);
 }
 
+
+/* Bloc */
+
 /**
  * Returns a bloc
  *
- * filename must not be NULL
+ * filename must not be NULL (except for root)
  * content can be NULL
  */
 struct bloc create_bloc(const char *filename, const char *content) {
@@ -167,17 +175,84 @@ struct bloc create_bloc(const char *filename, const char *content) {
 }
 
 /**
- * Writes a bloc to the disk (by append)
- *
- * Returns fclose return value
+ * Prints a bloc to the terminal
  */
-int write_bloc(struct bloc *b) {
+void print_bloc(struct bloc *b) {
+	printf("<BLOC> id:%d", b->id);
+	printf(" filename:%s", b->filename);
+	printf(" content:%s", b->content);
+	puts("");
+}
+
+
+/* Disk */
+
+/**
+ * Creates the root inode and write to a file
+ * Call only once
+ */
+void create_disk() {
+	create_root();
+}
+
+/**
+ * Removes the disk file
+ */
+int clean_disk() {
+	return remove(DISK);
+}
+
+/**
+ * TODO
+ * Get some info about the disk :
+ * available blocs
+ * available inodes
+ * available memory (in bytes)
+ */
+void disk_free(unsigned int *blocs_available, unsigned int *inodes_available, size_t bytes_available) {
+}
+
+
+/**
+ * TODO will be used?
+ * Reads the disk file, and fill the filetree with disk datas
+ */
+void get_filetree() {
+}
+
+/**
+ * Updates an inode in the disk file
+ */
+int update_inode(struct inode *new_inode) {
 	FILE *f;
+	int size;
+	int flag;
+	int pos;
+	struct inode i;
 
-	f = fopen(DISK, "ab");
+	size = 0;
+	f = fopen(DISK, "r+b");
 
-	fwrite(&BLOC_FLAG, sizeof(const int), 1, f);
-	fwrite(b, sizeof(struct bloc), 1, f);
+	do {
+		/*
+		 * We determine if it's a bloc or an inode by the flag
+		 */
+		size = fread(&flag, sizeof(const int), 1, f);
+		pos = ftell(f);
+
+		if (size == 0) continue;
+
+		if (flag == INODE_FLAG) {
+			fread(&i, sizeof(struct inode), 1, f);
+
+			if (new_inode->id == i.id) {
+				fseek(f, pos, SEEK_SET);
+				fwrite(new_inode, sizeof(struct inode), 1, f);
+			}
+
+		}
+
+	} while (size != 0);
 
 	return fclose(f);
 }
@@ -196,6 +271,8 @@ int print_disk() {
 
 	size = 0;
 	f = fopen(DISK, "rb");
+
+	printf("<<<<<<<<<< DISK >>>>>>>>>>\n");
 
 	do {
 		/*
@@ -218,6 +295,8 @@ int print_disk() {
 		}
 
 	} while (size != 0);
+
+	printf("<<<<<<<<<<      >>>>>>>>>>\n");
 
 	return fclose(f);
 }
@@ -246,6 +325,23 @@ struct inode create_file(char *filename, filetype type, const char *mode) {
 	return i;
 }
 
+
+/**
+ * Writes a bloc to the disk (by append)
+ *
+ * Returns fclose return value
+ */
+int write_bloc(struct bloc *b) {
+	FILE *f;
+
+	f = fopen(DISK, "ab");
+
+	fwrite(&BLOC_FLAG, sizeof(const int), 1, f);
+	fwrite(b, sizeof(struct bloc), 1, f);
+
+	return fclose(f);
+}
+
 /**
  * TODO TO TEST
  * TODO To avoid conflict named it iopen
@@ -253,7 +349,7 @@ struct inode create_file(char *filename, filetype type, const char *mode) {
  * Returns an inode of a file
  *
  * success : returns the inode
- * failure : returns empty node TODO is_empty(inode)
+ * failure : TODO
  */
 struct inode iopen(char *filename, const char *mode) {
 	struct inode i;
@@ -324,80 +420,4 @@ struct bloc get_bloc_by_id(unsigned int bloc_id) {
 	return b;
 }
 
-
-/* Inode */
-
-/* Bloc */
-
-/* Disk */
-
-/**
- * Creates the root inode and write to a file
- * Call only once
- */
-void create_disk() {
-	create_root();
-}
-
-/**
- * Removes the disk file
- */
-int clean_disk() {
-	return remove(DISK);
-}
-
-
-// TODO
-/**
- * Get some info about the disk :
- * available blocs
- * available inodes
- * available memory (in bytes)
- */
-void disk_free(unsigned int *blocs_available, unsigned int *inodes_available, size_t bytes_available) {
-}
-
-
-/**
- * Reads the disk file, and fill the filetree with disk datas
- */
-void get_filetree() {
-}
-
-/**
- * Updates an inode in the disk file
- */
-int update_inode(struct inode *new_inode) {
-	FILE *f;
-	int size;
-	int flag;
-	int pos;
-	struct inode i;
-
-	size = 0;
-	f = fopen(DISK, "r+b");
-
-	do {
-		/*
-		 * We determine if it's a bloc or an inode by the flag
-		 */
-		size = fread(&flag, sizeof(const int), 1, f);
-		pos = ftell(f);
-
-		if (size == 0) continue;
-
-		if (flag == INODE_FLAG) {
-			fread(&i, sizeof(struct inode), 1, f);
-
-			if (new_inode->id == i.id) {
-				fseek(f, pos, SEEK_SET);
-				fwrite(new_inode, sizeof(struct inode), 1, f);
-			}
-
-		}
-
-	} while (size != 0);
-
-	return fclose(f);
-}
 

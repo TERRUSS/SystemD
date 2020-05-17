@@ -20,17 +20,21 @@
 #define GROUPNAME_COUNT 15
 #define BLOC_IDS_COUNT 10
 
-/* Globals */
+/* Constants */
 
 extern const int INODE_FLAG;
 extern const int BLOC_FLAG;
 extern const mode_t DEFAULT_PERMISSIONS;
+
+/* Globals */
+
 extern struct inode g_current_node;
 extern struct file g_filetree;
 extern unsigned int g_increment_id;
 
 /* Enumerations */
 
+// TODO discard typedef, see Torvald's recommandations
 typedef enum filetype {
 	REGULAR_FILE, DIRECTORY, SYMBOLIC_LINK, FIFO, SOCKET, DEVICE
 } filetype;
@@ -41,14 +45,17 @@ typedef enum filetype {
  * Stores metadata of blocs
  */
 struct inode {
+	/* const */
 	unsigned char id;
 
+	/* const */
 	filetype type;
 	mode_t permissions;
 
 	char user_name[USERNAME_COUNT];
 	char group_name[GROUPNAME_COUNT];
 
+	/* const */
 	struct tm *created_at;
 	struct tm *updated_at;
 
@@ -57,6 +64,7 @@ struct inode {
 };
 
 struct bloc {
+	/* const */
 	unsigned int id;
 	char filename[FILENAME_COUNT];
 	char content[BLOC_SIZE];
