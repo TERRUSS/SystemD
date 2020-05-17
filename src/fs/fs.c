@@ -255,35 +255,7 @@ struct inode create_file(char *filename, filetype type, const char *mode) {
  * failure : returns empty node TODO is_empty(inode)
  */
 struct inode iopen(char *filename, const char *mode) {
-	FILE *f;
-	int size;
-	int flag;
 	struct inode i;
-	unsigned int bloc_id;
-	int match;
-
-	bloc_id = get_bloc_id(filename);
-	if (bloc_id == -1) return i;
-
-	match = 0;
-	size = 0;
-	f = fopen(DISK, "rb");
-
-	do {
-		/*
-		 * We determine if it's a bloc or an inode by the flag
-		 */
-		size = fread(&flag, sizeof(const int), 1, f);
-
-		if (size == 0) continue;
-
-		if (flag == INODE_FLAG) {
-			fread(&i, sizeof(struct inode), 1, f);
-			if (contains(&i, bloc_id))
-				match = !match;
-		}
-
-	} while (size != 0 && !match);
 
 	return i;
 }
@@ -355,48 +327,6 @@ struct bloc get_bloc_by_id(unsigned int bloc_id) {
 void disk_free(unsigned int *blocs_available, unsigned int *inodes_available, size_t bytes_available) {
 }
 
-/**
- * Returns the bloc id for a filename
- *
- * Parses the disk and check each blocs filename
- * if the file is found, returns the bloc id
- * else returns -1
- */
-unsigned int get_bloc_id(char *filename) {
-	FILE *f;
-	int size;
-	int flag;
-	struct bloc b;
-	int match = 0;
-
-	size = 0;
-	f = fopen(DISK, "rb");
-
-	do {
-		/*
-		 * We determine if it's a bloc or an inode by the flag
-		 */
-		size = fread(&flag, sizeof(const int), 1, f);
-
-		if (size == 0) continue;
-
-		if (flag == BLOC_FLAG) {
-			fread(&b, sizeof(struct bloc), 1, f);
-			if (strcmp(b.filename, filename) == 0) {
-				printf("Found the file %s\n", filename);
-				match = !match;
-			}
-
-		}
-
-	} while (size != 0 && !match);
-
-	if (match) {
-		return b.id;
-	} else {
-		return -1;
-	}
-}
 
 
 
