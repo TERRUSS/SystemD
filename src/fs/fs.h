@@ -14,11 +14,11 @@
 
 #define DISK "rsc/disk"
 
-#define BLOC_SIZE 1024
-#define FILENAME_COUNT 15
-#define USERNAME_COUNT 15
-#define GROUPNAME_COUNT 15
-#define BLOC_IDS_COUNT 10
+#define BLOC_SIZE (1024)
+#define FILENAME_COUNT (15)
+#define USERNAME_COUNT (15)
+#define GROUPNAME_COUNT (15)
+#define BLOC_IDS_COUNT (10)
 
 /* Constants */
 

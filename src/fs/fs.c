@@ -54,6 +54,8 @@ struct inode create_inode(filetype type, mode_t perms, const char *user, const c
 
 	i.bloc_count = 0;
 
+	i.last_bloc = 1;
+
 	return i;
 }
 
@@ -187,16 +189,40 @@ void print_bloc(struct bloc *b) {
 }
 
 /**
+ * TODO
  * Updates the content of a file. If the file's new content
  * is more than the bloc's size, we add as much blocs
  * as we need to
  */
-void update_content(struct inode *i, struct bloc *b, const char *new_content) {
+void update_content(struct inode *i, const char *new_content) {
 	int nb_blocs;
+	char **contents;
+	int z;
 
 	nb_blocs = strlen(new_content) / BLOC_SIZE;
 
 	// make as much blocs as it's needed
+	for (z = 0; z != nb_blocs; z++) {
+		contents[z] = (char *) malloc(sizeof(char) * BLOC_SIZE);
+		strncpy(contents[z], new_content + (BLOC_SIZE * z), sizeof(char) * BLOC_SIZE);
+	}
+
+	// if new contents < old contents, blocs might be deleted
+	// else blocs might be added
+
+	for (z = 0; z != i->bloc_count; z++) {
+		// for each bloc, we update it
+		// for the last bloc we set last_bloc to 1
+		// update_bloc_content(i->bloc_ids[z], contents[z]);
+	}
+
+	if (z != nb_blocs) {
+		// we create a new bloc for the inode
+		for (; z != nb_blocs; z++) {
+		}
+	}
+
+	// then we add the new blocs to the inode, and then we update the inode
 }
 
 
@@ -263,6 +289,41 @@ int update_inode(struct inode *new_inode) {
 			if (new_inode->id == i.id) {
 				fseek(f, pos, SEEK_SET);
 				fwrite(new_inode, sizeof(struct inode), 1, f);
+			}
+
+		}
+
+	} while (size != 0);
+
+	return fclose(f);
+}
+
+/**
+ * Updates a bloc's content in the disk file
+ */
+int update_bloc_content(unsigned int bloc_id, const char *new_content) {
+	FILE *f;
+	int size;
+	int flag;
+	int pos;
+	struct inode b;
+
+	size = 0;
+	f = fopen(DISK, "r+b");
+
+	do {
+		size = fread(&flag, sizeof(const int), 1, f);
+		pos = ftell(f);
+
+		if (size == 0) continue;
+
+		if (flag == BLOC_FLAG) {
+			fread(&b, sizeof(struct bloc), 1, f);
+
+			if (bloc_id == b.id) {
+				fseek(f, pos, SEEK_SET);
+				strcpy(b.content, new_content);
+				fwrite(&b, sizeof(struct bloc), 1, f);
 			}
 
 		}
