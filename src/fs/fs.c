@@ -324,18 +324,39 @@ struct bloc get_bloc_by_id(unsigned int bloc_id) {
 	return b;
 }
 
-// TODO
-void disk_free(unsigned int *blocs_available, unsigned int *inodes_available, size_t bytes_available) {
-}
 
+/* Inode */
+
+/* Bloc */
+
+/* Disk */
 
 /**
  * Creates the root inode and write to a file
  * Call only once
  */
 void create_disk() {
-    create_root();
+	create_root();
 }
+
+/**
+ * Removes the disk file
+ */
+int clean_disk() {
+	return remove(DISK);
+}
+
+
+// TODO
+/**
+ * Get some info about the disk :
+ * available blocs
+ * available inodes
+ * available memory (in bytes)
+ */
+void disk_free(unsigned int *blocs_available, unsigned int *inodes_available, size_t bytes_available) {
+}
+
 
 /**
  * Reads the disk file, and fill the filetree with disk datas
@@ -343,6 +364,9 @@ void create_disk() {
 void get_filetree() {
 }
 
+/**
+ * Updates an inode in the disk file
+ */
 int update_inode(struct inode *new_inode) {
 	FILE *f;
 	int size;
@@ -376,9 +400,4 @@ int update_inode(struct inode *new_inode) {
 
 	return fclose(f);
 }
-
-int clean_disk() {
-	return remove(DISK);
-}
-
 
