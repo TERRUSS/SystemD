@@ -246,15 +246,6 @@ struct inode create_file(char *filename, filetype type, const char *mode) {
 }
 
 /**
- * Updates a bloc for an inode i
- *
- * on success : returns 1
- * on failure : returns 0
- */
-int update_bloc(struct inode *i) {
-}
-
-/**
  * TODO TO TEST
  * TODO To avoid conflict named it iopen
  * TODO open a file under a directory (here, opens any kind of file)
@@ -299,22 +290,69 @@ struct inode iopen(char *filename, const char *mode) {
 
 // TODO
 int iread(struct inode *i, char *buf, size_t len) {
+	return 0;
 }
 
 // TODO
 int iwrite(struct inode *i, char *buf, size_t len) {
+	return 0;
 }
 
 // TODO
 int iclose(struct inode *i) {
+	return 0;
 }
 
 // TODO
-char **list_files(struct inode i) {
+char **list_files(struct inode *i) {
+	int j;
+	char **filenames;
+	struct bloc b;
+
+	filenames = (char **) malloc(sizeof(char *) * i->bloc_count);
+
+	// for each bloc id
+	for (j = 0; j != i->bloc_count; j++) {
+		// we search in the file for the bloc id
+		b = get_bloc_by_id(i->bloc_ids[j]);
+		filenames[j] = (char *) malloc(sizeof(char) * FILENAME_COUNT);
+		// and then we take out the filename
+		strcpy(filenames[j], b.filename);
+	}
+
+	return filenames;
+}
+
+struct bloc get_bloc_by_id(unsigned int bloc_id) {
+	FILE *f;
+	int size;
+	int flag;
+	struct bloc b;
+	int match = 0;
+
+	size = 0;
+	f = fopen(DISK, "rb");
+
+	do {
+		size = fread(&flag, sizeof(const int), 1, f);
+
+		if (size == 0) continue;
+
+		if (flag == BLOC_FLAG) {
+			fread(&b, sizeof(struct bloc), 1, f);
+			if (b.id == bloc_id) {
+				match = !match;
+			}
+
+		}
+
+	} while (size != 0 && !match);
+
+	return b;
 }
 
 // TODO
-void disk_free(unsigned int *blocs_available, unsigned int inodes_available, size_t bytes_available) {
+void disk_free(unsigned int *blocs_available, unsigned int *inodes_available, size_t bytes_available) {
 }
 
 /**
@@ -359,6 +397,7 @@ unsigned int get_bloc_id(char *filename) {
 		return -1;
 	}
 }
+
 
 
 
