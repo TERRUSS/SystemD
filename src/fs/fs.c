@@ -246,6 +246,15 @@ struct inode create_file(char *filename, filetype type, const char *mode) {
 }
 
 /**
+ * Updates a bloc for an inode i
+ *
+ * on success : returns 1
+ * on failure : returns 0
+ */
+int update_bloc(struct inode *i) {
+}
+
+/**
  * TODO TO TEST
  * TODO To avoid conflict named it iopen
  * TODO open a file under a directory (here, opens any kind of file)
@@ -286,6 +295,26 @@ struct inode iopen(char *filename, const char *mode) {
 	} while (size != 0 && !match);
 
 	return i;
+}
+
+// TODO
+int iread(struct inode *i, char *buf, size_t len) {
+}
+
+// TODO
+int iwrite(struct inode *i, char *buf, size_t len) {
+}
+
+// TODO
+int iclose(struct inode *i) {
+}
+
+// TODO
+char **list_files(struct inode i) {
+}
+
+// TODO
+void disk_free(unsigned int *blocs_available, unsigned int inodes_available, size_t bytes_available) {
 }
 
 /**
