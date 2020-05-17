@@ -67,7 +67,7 @@ int write_bloc(struct bloc *b);
 int write_inode(struct inode *i);
 struct bloc create_bloc(const char *filename, const char *content);
 struct inode create_inode(filetype type, mode_t perms, const char *user, const char *group);
-struct inode create_regularfile(char *filename, const char *mode);
+struct inode create_file(char *filename, filetype type, const char *mode);
 struct inode create_root();
 unsigned int get_bloc_id(char *filename);
 void add_bloc(struct inode *i, struct bloc *b);

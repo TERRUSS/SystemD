@@ -222,19 +222,19 @@ int print_disk() {
 }
 
 /**
- * Created a regular file in the filesystem
+ * Created a file in the filesystem
  * and returns the inode created
  *
  * filename must not be NULL
  * TODO what's the mode for ? how do you use it,
  * since you only return an inode
  */
-struct inode create_regularfile(char *filename, const char *mode) {
+struct inode create_file(char *filename, filetype type, const char *mode) {
 	struct bloc b;
 	struct inode i;
 
 	b = create_bloc(filename, "");
-	i = create_inode(REGULAR_FILE, DEFAULT_PERMISSIONS, USERNAME, USERNAME);
+	i = create_inode(type, DEFAULT_PERMISSIONS, USERNAME, USERNAME);
 
 	// we link the bloc to the inode
 	add_bloc(&i, &b);

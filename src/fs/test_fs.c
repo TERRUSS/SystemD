@@ -67,7 +67,7 @@ int test_print_disk() {
 int test_create_regularfile() {
 	struct inode i;
 
-	i = create_regularfile("toto", "");
+	i = create_file("toto", REGULAR_FILE, "");
 
 	return 0;
 }
