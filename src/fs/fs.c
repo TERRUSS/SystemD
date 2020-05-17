@@ -14,7 +14,6 @@ const char USERNAME[USERNAME_COUNT] = "macron";
  * on success : returns inode
  * on failure : returns NULL
  */
-/*struct inode create_inode(filetype type, mode_t perms, unsigned char *user, unsigned char *group) {*/
 struct inode create_inode(filetype type, mode_t perms, const char *user, const char *group) {
 
 	struct inode i;
@@ -26,10 +25,6 @@ struct inode create_inode(filetype type, mode_t perms, const char *user, const c
 	i.type = type;
 	i.permissions = perms;
 
-	/*
-	i.user_name = user;
-	i.group_name = group;
-	*/
 	strcpy(i.user_name, user);
 	if (group != NULL)
 		strcpy(i.group_name, group);
@@ -41,7 +36,6 @@ struct inode create_inode(filetype type, mode_t perms, const char *user, const c
 	i.created_at = localtime(&t);
 	i.updated_at = localtime(&t);
 
-	/*i.bloc_ids = NULL;*/
 	i.bloc_count = 0;
 
 	return i;
@@ -106,16 +100,6 @@ void print_inode(struct inode *i) {
 	}
 
 	puts("");
-	/*
-	printf(" created at: %d-%02d-%02d %02d:%02d:%02d",
-	i->created_at.tm_year + 1900, i->created_at.tm_mon + 1,
-	i->created_at.tm_mday, i->created_at.tm_hour, i->created_at.tm_min,
-	i->created_at.tm_sec);
-	printf(" updated at: %d-%02d-%02d %02d:%02d:%02d\n",
-	i->updated_at.tm_year + 1900, i->updated_at.tm_mon + 1,
-	i->updated_at.tm_mday, i->updated_at.tm_hour, i->updated_at.tm_min,
-	i->updated_at.tm_sec);
-	*/
 }
 
 /**
