@@ -186,6 +186,19 @@ void print_bloc(struct bloc *b) {
 	puts("");
 }
 
+/**
+ * Updates the content of a file. If the file's new content
+ * is more than the bloc's size, we add as much blocs
+ * as we need to
+ */
+void update_content(struct inode *i, struct bloc *b, const char *new_content) {
+	int nb_blocs;
+
+	nb_blocs = strlen(new_content) / BLOC_SIZE;
+
+	// make as much blocs as it's needed
+}
+
 
 /* Disk */
 
