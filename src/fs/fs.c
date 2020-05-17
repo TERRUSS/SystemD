@@ -42,6 +42,27 @@ struct inode create_inode(filetype type, mode_t perms, const char *user, const c
 }
 
 /**
+ * The root has an id == 1, and an empty filename
+ * Written on the disk
+ */
+struct inode create_root() {
+	struct inode i;
+	struct bloc b;
+	mode_t root_permissions = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
+
+	i = create_inode(DIRECTORY, root_permissions, "root", "root");
+	b = create_bloc("", "");
+	b.id = 1;
+
+	add_bloc(&i, &b);
+
+	write_inode(&i);
+	write_bloc(&b);
+
+	return i;
+}
+
+/**
  * Adds a bloc id to an inode
  */
 void add_bloc(struct inode *i, struct bloc *b) {
