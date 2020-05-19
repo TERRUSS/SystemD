@@ -54,8 +54,6 @@ struct inode create_inode(filetype type, mode_t perms, const char *user, const c
 
 	i.bloc_count = 0;
 
-	i.last_bloc = 1;
-
 	return i;
 }
 
@@ -179,6 +177,13 @@ struct bloc create_bloc(const char *filename, const char *content) {
 }
 
 /**
+ * Deletes a bloc : set the id to DELETED (0)
+ */
+void delete_bloc(struct bloc *b) {
+	b->id = DELETED;
+}
+
+/**
  * Prints a bloc to the terminal
  */
 void print_bloc(struct bloc *b) {
@@ -190,6 +195,7 @@ void print_bloc(struct bloc *b) {
 
 /**
  * TODO
+ * TODO fix redundancy
  * Updates the content of a file. If the file's new content
  * is more than the bloc's size, we add as much blocs
  * as we need to
@@ -198,8 +204,14 @@ void update_content(struct inode *i, const char *new_content) {
 	int nb_blocs;
 	char **contents;
 	int z;
+	struct bloc b;
+	char *filename;
 
 	nb_blocs = strlen(new_content) / BLOC_SIZE;
+	b = get_bloc_by_id(i->bloc_ids[0]);
+	filename = NULL;
+	strncpy(filename, b.filename, FILENAME_COUNT);
+	contents = NULL;
 
 	// make as much blocs as it's needed
 	for (z = 0; z != nb_blocs; z++) {
@@ -209,20 +221,46 @@ void update_content(struct inode *i, const char *new_content) {
 
 	// if new contents < old contents, blocs might be deleted
 	// else blocs might be added
+	// IMPORTANT To destroy a bloc, we set the id to 0
+	if (i->bloc_count * BLOC_SIZE < strlen(new_content)) {
 
-	for (z = 0; z != i->bloc_count; z++) {
-		// for each bloc, we update it
-		// for the last bloc we set last_bloc to 1
-		// update_bloc_content(i->bloc_ids[z], contents[z]);
-	}
-
-	if (z != nb_blocs) {
-		// we create a new bloc for the inode
-		for (; z != nb_blocs; z++) {
+		for (z = 0; z != i->bloc_count; z++) {
+			// for each bloc, we update it
+			b = get_bloc_by_id(i->bloc_ids[z]);
+			b.last_bloc = NOT_LAST_BLOC;
+			// for the last bloc we set last_bloc to 1
+			strncpy(b.content, contents[z], BLOC_SIZE);
+			update_bloc_content(i->bloc_ids[z], contents[z]);
 		}
+
+		if (z != nb_blocs) {
+			// we create a new bloc for the inode
+			for (; z != nb_blocs - 1; z++) {
+				b = create_bloc(filename, contents[z]);
+				b.last_bloc = NOT_LAST_BLOC;
+				add_bloc(i, &b);
+			}
+
+			b = create_bloc(filename, contents[z]);
+			b.last_bloc = LAST_BLOC;
+			add_bloc(i, &b);
+		}
+
+	} else {
+		TODO_PRINT;
+		// else, blocs will be deleted
+		for (z = 0; z != nb_blocs - 1; z++) {
+			// update
+		}
+
+		if (z != i->bloc_count) {
+			for (; z != i->bloc_count - 1; z++) {
+				// delete
+			}
+		}
+
 	}
 
-	// then we add the new blocs to the inode, and then we update the inode
 }
 
 
@@ -306,7 +344,7 @@ int update_bloc_content(unsigned int bloc_id, const char *new_content) {
 	int size;
 	int flag;
 	int pos;
-	struct inode b;
+	struct bloc b;
 
 	size = 0;
 	f = fopen(DISK, "r+b");

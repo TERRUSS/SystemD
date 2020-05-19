@@ -19,6 +19,10 @@
 #define USERNAME_COUNT (15)
 #define GROUPNAME_COUNT (15)
 #define BLOC_IDS_COUNT (10)
+#define LAST_BLOC (3)
+#define NOT_LAST_BLOC (4)
+#define DELETED (0)
+#define TODO_PRINT printf("TODO line %d\n", __LINE__)
 
 /* Constants */
 
@@ -97,6 +101,7 @@ struct inode create_inode(filetype type, mode_t perms, const char *user, const c
 struct inode create_root();
 unsigned int get_bloc_id(char *filename);
 void add_bloc(struct inode *i, struct bloc *b);
+int update_bloc_content(unsigned int bloc_id, const char *new_content);
 void create_disk();
 void print_bloc(struct bloc *b);
 void print_inode(struct inode *i);

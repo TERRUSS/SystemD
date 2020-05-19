@@ -72,26 +72,6 @@ int test_create_regularfile() {
 	return 0;
 }
 
-/*
-int test_get_bloc_id() {
-	struct inode i;
-
-	if (get_bloc_id("toto") == -1) {
-		printf("Test failure\n");
-	} else {
-		printf("Test success\n");
-	}
-
-	if (get_bloc_id("gqrgqratag") != -1) {
-		printf("Test failure\n");
-	} else {
-		printf("Test success\n");
-	}
-
-	return 0;
-}
-*/
-
 int test_update() {
 	srand(getpid()+time(NULL)+__LINE__);
 	struct bloc b;
@@ -117,6 +97,10 @@ int test_update() {
 	puts("");
 	print_disk();
 
+	return 1;
+}
+
+int test_update_content() {
 	return 1;
 }
 
