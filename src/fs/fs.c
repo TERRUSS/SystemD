@@ -67,7 +67,7 @@ struct inode create_root() {
 
 	i = create_inode(DIRECTORY, ROOT_PERMISSIONS, ROOT, ROOT);
 	b = create_bloc("", "");
-	b.id = ROOT_ID;
+	i.id = ROOT_ID;
 
 	add_bloc(&i, &b);
 
@@ -333,19 +333,33 @@ int update_inode(struct inode *new_inode) {
 	return fclose(f);
 }
 
-void write_file(char *filename, char *content) {
+void create_regularfile(char *filename, char *content) {
 	struct inode i;
 	struct bloc b;
 	int z;
-	int blocs_count;
+	int len;
+	char **blocs_contents;
 
-	blocs_count = strlen(content) / BLOC_SIZE;
+	blocs_contents = NULL;
+	len = strncut(&blocs_contents, content, BLOC_SIZE);
+
 	i = create_inode(REGULAR_FILE, DEFAULT_PERMISSIONS, USERNAME, USERNAME);
 
 
-	for (z = 0; z != blocs_count; z++) {
-		//b = create_bloc(filename, content + (z * BLOC_SIZE));
+	for (z = 0; z != len - 1; z++) {
+		b = create_bloc(filename, blocs_contents[z]);
+		add_bloc(&i, &b);
+		write_bloc(&b);
 	}
+
+	b = create_bloc(filename, blocs_contents[z]);
+	b.last_bloc = LAST_BLOC;
+	add_bloc(&i, &b);
+	write_bloc(&b);
+
+	write_inode(&i);
+
+	free_str_array(blocs_contents, len);
 }
 
 /**

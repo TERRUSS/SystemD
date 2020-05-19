@@ -92,25 +92,6 @@ int test_update() {
 	return 1;
 }
 
-int test_update_content() {
-	char filename[FILENAME_COUNT] = "FILENAME";
-	char old_content[BLOC_SIZE] = "Old content";
-	char *new_content;
-	struct inode i;
-	struct bloc b;
-
-	new_content = rd("README.md");
-	if (new_content == NULL) {
-		perror("Test failed");
-		return 0;
-	} else {
-		//i = create_inode();
-		b = create_bloc(filename, old_content);
-		free(new_content);
-	}
-
-	return 1;
-}
 
 int test_strncut() {
 	char **str_array;
@@ -124,6 +105,25 @@ int test_strncut() {
 		printf("[%d] %d %s\n", i, strlen(str_array[i]), str_array[i]);
 	}
 	free_str_array(str_array, len);
+
+	return 1;
+}
+
+int test_create_regularfile() {
+	char filename[FILENAME_COUNT] = "FILENAME";
+	char *content;
+
+	clean_disk();
+	create_disk();
+	content = rd("README.md");
+	if (content == NULL) {
+		perror("Test failed");
+		return 0;
+	} else {
+		create_regularfile(filename, content);
+		print_disk();
+		free(content);
+	}
 
 	return 1;
 }
@@ -147,7 +147,8 @@ int main() {
 	*/
 
 	//test_update();
-	test_strncut();
+	//test_strncut();
+	test_create_regularfile();
 
 	return 0;
 }

@@ -90,6 +90,7 @@ struct file {
 int clean_disk();
 int contains(struct inode *i, unsigned int bloc_id);
 int print_disk();
+int strncut(char ***str_array, char *str, size_t n);
 int update_bloc_content(unsigned int bloc_id, const char *new_content);
 int update_inode(struct inode *new_inode);
 int write_bloc(struct bloc *b);
@@ -102,11 +103,11 @@ struct inode create_root();
 unsigned int get_bloc_id(char *filename);
 void add_bloc(struct inode *i, struct bloc *b);
 void create_disk();
+void create_regularfile(char *filename, char *content);
+void free_str_array(char **str_array, int len);
 void init_id_generator();
 void print_bloc(struct bloc *b);
 void print_inode(struct inode *i);
-int strncut(char ***str_array, char *str, size_t n);
-void free_str_array(char **str_array, int len);
 
 #endif
 
