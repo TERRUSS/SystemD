@@ -13,6 +13,7 @@
 /* Macros */
 
 #define DISK "rsc/disk"
+#define ROOT_ID (1)
 
 #define BLOC_SIZE (1024)
 #define FILENAME_COUNT (15)
@@ -34,7 +35,6 @@ extern const mode_t DEFAULT_PERMISSIONS;
 
 extern struct inode g_current_node;
 extern struct file g_filetree;
-extern unsigned int g_increment_id;
 
 /* Enumerations */
 
@@ -105,6 +105,7 @@ int update_bloc_content(unsigned int bloc_id, const char *new_content);
 void create_disk();
 void print_bloc(struct bloc *b);
 void print_inode(struct inode *i);
+void init_id_generator();
 
 #endif
 

@@ -73,7 +73,6 @@ int test_create_regularfile() {
 }
 
 int test_update() {
-	srand(getpid()+time(NULL)+__LINE__);
 	struct bloc b;
 	clean_disk();
 	create_disk();
@@ -106,6 +105,7 @@ int test_update_content() {
 
 int main() {
 
+	init_id_generator();
 	/*
 	test_create_inode();
 	test_print_inode();

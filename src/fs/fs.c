@@ -15,8 +15,6 @@ const mode_t ROOT_PERMISSIONS = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
 struct inode g_current_node;
 /* Contains the filetree TODO will be used ? */
 struct file g_filetree;
-/* Generates id */
-unsigned int g_increment_id = 1;
 
 /* Functions */
 
@@ -36,7 +34,7 @@ struct inode create_inode(filetype type, mode_t perms, const char *user, const c
 	struct inode i;
 	time_t t;
 
-	i.id = g_increment_id++;
+	i.id = rand();
 
 	i.type = type;
 	i.permissions = perms;
@@ -69,7 +67,7 @@ struct inode create_root() {
 
 	i = create_inode(DIRECTORY, ROOT_PERMISSIONS, ROOT, ROOT);
 	b = create_bloc("", "");
-	b.id = g_increment_id++;
+	b.id = ROOT_ID;
 
 	add_bloc(&i, &b);
 
@@ -161,8 +159,7 @@ int write_inode(struct inode *i) {
 struct bloc create_bloc(const char *filename, const char *content) {
 	struct bloc b;
 
-	//b.id = rand();
-	b.id = g_increment_id++;
+	b.id = rand();
 
 	// TODO strncpy for safer copy
 	strcpy(b.filename, filename);
@@ -574,4 +571,11 @@ struct bloc get_bloc_by_id(unsigned int bloc_id) {
 	return b;
 }
 
+
+/**
+ * Initialize the id generator (seed for random)
+ */
+void init_id_generator() {
+	srand(getpid() + time(NULL) + __LINE__);
+}
 
