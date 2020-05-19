@@ -1,3 +1,4 @@
+#include "fileio/fileio.h"
 #include "fs/fs.h"
 
 int test_create_inode() {
@@ -64,14 +65,6 @@ int test_print_disk() {
 	return 0;
 }
 
-int test_create_regularfile() {
-	struct inode i;
-
-	i = create_file("toto", REGULAR_FILE, "");
-
-	return 0;
-}
-
 int test_update() {
 	struct bloc b;
 	clean_disk();
@@ -100,6 +93,38 @@ int test_update() {
 }
 
 int test_update_content() {
+	char filename[FILENAME_COUNT] = "FILENAME";
+	char old_content[BLOC_SIZE] = "Old content";
+	char *new_content;
+	struct inode i;
+	struct bloc b;
+
+	new_content = rd("README.md");
+	if (new_content == NULL) {
+		perror("Test failed");
+		return 0;
+	} else {
+		//i = create_inode();
+		b = create_bloc(filename, old_content);
+		free(new_content);
+	}
+
+	return 1;
+}
+
+int test_strncut() {
+	char **str_array;
+	char str[] = "Hello world !";
+	int len;
+	int i;
+
+	str_array = NULL;
+	len = strncut(&str_array, str, 2);
+	for (i = 0; i != len; i++) {
+		printf("[%d] %d %s\n", i, strlen(str_array[i]), str_array[i]);
+	}
+	free_str_array(str_array, len);
+
 	return 1;
 }
 
@@ -120,7 +145,9 @@ int main() {
 	test_get_bloc_id();
 	test_print_disk();
 	*/
-	test_update();
+
+	//test_update();
+	test_strncut();
 
 	return 0;
 }

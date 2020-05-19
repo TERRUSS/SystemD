@@ -15,7 +15,7 @@
 #define DISK "rsc/disk"
 #define ROOT_ID (1)
 
-#define BLOC_SIZE (1024)
+#define BLOC_SIZE (512)
 #define FILENAME_COUNT (15)
 #define USERNAME_COUNT (15)
 #define GROUPNAME_COUNT (15)
@@ -96,7 +96,7 @@ int write_bloc(struct bloc *b);
 int write_inode(struct inode *i);
 struct bloc create_bloc(const char *filename, const char *content);
 struct bloc get_bloc_by_id(unsigned int bloc_id);
-struct inode create_file(char *filename, filetype type, const char *mode);
+struct inode create_emptyfile(char *filename, filetype type, const char *mode);
 struct inode create_inode(filetype type, mode_t perms, const char *user, const char *group);
 struct inode create_root();
 unsigned int get_bloc_id(char *filename);
@@ -105,6 +105,8 @@ void create_disk();
 void init_id_generator();
 void print_bloc(struct bloc *b);
 void print_inode(struct inode *i);
+int strncut(char ***str_array, char *str, size_t n);
+void free_str_array(char **str_array, int len);
 
 #endif
 

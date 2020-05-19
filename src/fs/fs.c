@@ -333,6 +333,21 @@ int update_inode(struct inode *new_inode) {
 	return fclose(f);
 }
 
+void write_file(char *filename, char *content) {
+	struct inode i;
+	struct bloc b;
+	int z;
+	int blocs_count;
+
+	blocs_count = strlen(content) / BLOC_SIZE;
+	i = create_inode(REGULAR_FILE, DEFAULT_PERMISSIONS, USERNAME, USERNAME);
+
+
+	for (z = 0; z != blocs_count; z++) {
+		//b = create_bloc(filename, content + (z * BLOC_SIZE));
+	}
+}
+
 /**
  * Updates a bloc's content in the disk file
  */
@@ -460,7 +475,7 @@ int print_disk() {
  * TODO what's the mode for ? how do you use it,
  * since you only return an inode
  */
-struct inode create_file(char *filename, filetype type, const char *mode) {
+struct inode create_emptyfile(char *filename, filetype type, const char *mode) {
 	struct bloc b;
 	struct inode i;
 
@@ -578,5 +593,43 @@ struct bloc get_bloc_by_id(unsigned int bloc_id) {
  */
 void init_id_generator() {
 	srand(getpid() + time(NULL) + __LINE__);
+}
+
+/**
+ * Slice a char* in a char**, n sized
+ * Don't forget to free str_array
+ */
+int strncut(char ***str_array, char *str, size_t n) {
+	int z;
+	int blocs_count;
+	size_t str_size;
+
+	str_size = strlen(str);
+	blocs_count = str_size / n;
+
+	*str_array = (char **) malloc(sizeof(char *) * (blocs_count + 1));
+	for (z = 0; z != blocs_count; z++) {
+		printf("%d\n", z);
+		*(*str_array + z) = (char *) malloc(n);
+		strncpy(*(*str_array + z), str + (n * z), n);
+	}
+
+	if (z * n < str_size) {
+		*(*str_array + z) = (char *) malloc(sizeof(char) * n);
+		strncpy(*(*str_array + z), str + (n * z - 1), (str_size - (n * z)));
+		strcat(*(*str_array + z), "");// adds a terminating null byte
+	}
+
+	return z;
+}
+
+void free_str_array(char **str_array, int len) {
+	int i;
+
+	for (i = 0; i != len; i++) {
+		free(str_array[i]);
+	}
+
+	free(str_array);
 }
 
