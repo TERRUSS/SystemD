@@ -609,20 +609,23 @@ int strncut(char ***str_array, char *str, size_t n) {
 
 	*str_array = (char **) malloc(sizeof(char *) * (blocs_count + 1));
 	for (z = 0; z != blocs_count; z++) {
-		printf("%d\n", z);
 		*(*str_array + z) = (char *) malloc(n);
 		strncpy(*(*str_array + z), str + (n * z), n);
+		strcat(*(*str_array + z), "");// adds a terminating null byte
 	}
 
 	if (z * n < str_size) {
-		*(*str_array + z) = (char *) malloc(sizeof(char) * n);
-		strncpy(*(*str_array + z), str + (n * z - 1), (str_size - (n * z)));
-		strcat(*(*str_array + z), "");// adds a terminating null byte
+		*(*str_array + z) = (char *) malloc(n);
+		strncpy(*(*str_array + z), str + (n * z), (str_size - (n * z) ));
+		z++;
 	}
 
 	return z;
 }
 
+/**
+ * To free a 2D array of char
+ */
 void free_str_array(char **str_array, int len) {
 	int i;
 
