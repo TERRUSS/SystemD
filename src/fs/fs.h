@@ -73,8 +73,7 @@ struct bloc {
 	char filename[FILENAME_COUNT];
 	char content[BLOC_SIZE];
 	/* A file's content can be scattered among multiple blocs
-	 * 0 indicates this is NOT the last bloc
-	 * 1 indicates this IS the last bloc
+	 * Can be set to LAST_BLOC or NOT_LAST_BLOC
 	 */
 	unsigned int last_bloc;
 };
@@ -91,6 +90,7 @@ struct file {
 int clean_disk();
 int contains(struct inode *i, unsigned int bloc_id);
 int print_disk();
+int update_bloc_content(unsigned int bloc_id, const char *new_content);
 int update_inode(struct inode *new_inode);
 int write_bloc(struct bloc *b);
 int write_inode(struct inode *i);
@@ -101,11 +101,10 @@ struct inode create_inode(filetype type, mode_t perms, const char *user, const c
 struct inode create_root();
 unsigned int get_bloc_id(char *filename);
 void add_bloc(struct inode *i, struct bloc *b);
-int update_bloc_content(unsigned int bloc_id, const char *new_content);
 void create_disk();
+void init_id_generator();
 void print_bloc(struct bloc *b);
 void print_inode(struct inode *i);
-void init_id_generator();
 
 #endif
 

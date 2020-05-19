@@ -571,6 +571,7 @@ struct bloc get_bloc_by_id(unsigned int bloc_id) {
 	return b;
 }
 
+/* Utils */
 
 /**
  * Initialize the id generator (seed for random)
