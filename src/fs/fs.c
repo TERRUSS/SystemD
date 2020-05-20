@@ -436,6 +436,24 @@ int print_disk() {
 }
 
 /**
+ * Creates a directory
+ */
+struct inode create_directory(char *dirname) {
+	struct inode i;
+	struct bloc b;
+
+	i = create_inode(DIRECTORY, DEFAULT_PERMISSIONS, USERNAME, USERNAME);
+	b = new_bloc(dirname, "");
+
+	add_bloc(&i, &b);
+
+	write_inode(&i);
+	write_bloc(&b);
+
+	return i;
+}
+
+/**
  * Created a file in the filesystem
  * and returns the inode created
  *
