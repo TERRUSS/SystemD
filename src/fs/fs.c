@@ -578,13 +578,13 @@ int strncut(char ***str_array, char *str, size_t n) {
 	}
 	for (z = 0; z != blocs_count; z++) {
 		*(*str_array + z) = (char *) malloc(n);
-		strncpy(*(*str_array + z), str + (n * z), n);
-		strcat(*(*str_array + z), "");// adds a terminating null byte
+		strncpy(*(*str_array + z), str + (n * z), n - 1);
+		strcat(*(*str_array + z), "\0");// adds a terminating null byte
 	}
 
 	if (z * n < str_size) {
 		*(*str_array + z) = (char *) malloc(n);
-		strncpy(*(*str_array + z), str + (n * z), (str_size - (n * z) ));
+		strncpy(*(*str_array + z), str + (n * z), (str_size - (n * z)));
 		z++;
 	}
 
@@ -641,6 +641,7 @@ void iwrite(struct inode *i, char *buf) {
 			/*blocs[z].last_bloc = NOT_LAST_BLOC;*/
 			printf("__LINE__ %d\n", __LINE__);
 			print_bloc(blocs + z);
+			printf("SIZE %d\n", strlen(blocs[z].content));
 			update_bloc(blocs + z);
 		}
 
