@@ -128,11 +128,11 @@ void print_inode(struct inode *i) {
 	printf(" created at:%s", s);
 	printf(" updated at:%s", s2);
 
+	puts("");
 	for (j = 0; j != i->bloc_count; j++) {
-		printf(" bloc_id:%d", i->bloc_ids[j]);
+		printf("\tbloc_id:%d\n", i->bloc_ids[j]);
 	}
 
-	puts("");
 }
 
 /**
@@ -145,10 +145,16 @@ int write_inode(struct inode *i) {
 
 	f = fopen(DISK, "ab");
 
+	if (f == NULL) {
+		perror("Can't open file");
+		return 0;
+	}
+
 	fwrite(&INODE_FLAG, sizeof(const int), 1, f);
 	fwrite(i, sizeof(struct inode), 1, f);
 
-	return fclose(f);
+	fclose(f);
+	return 1;
 }
 
 
@@ -264,7 +270,8 @@ int update_inode(struct inode *new_inode) {
 
 	} while (size != 0);
 
-	return fclose(f);
+	fclose(f);
+	return 1;
 }
 
 struct inode create_regularfile(char *filename, char *content) {
@@ -346,8 +353,18 @@ int update_bloc(struct bloc *new_bloc) {
 	int pos;
 	struct inode b;
 
+	if (new_bloc == NULL) {
+		perror("Bloc's NULL");
+		return 0;
+	}
+
 	size = 0;
 	f = fopen(DISK, "r+b");
+
+	if (f == NULL) {
+		perror("Can't open file");
+		return 0;
+	}
 
 	do {
 		/*
@@ -370,7 +387,8 @@ int update_bloc(struct bloc *new_bloc) {
 
 	} while (size != 0);
 
-	return fclose(f);
+	fclose(f);
+	return 1;
 }
 
 /**
@@ -553,7 +571,11 @@ int strncut(char ***str_array, char *str, size_t n) {
 	str_size = strlen(str);
 	blocs_count = str_size / n;
 
-	*str_array = (char **) malloc(sizeof(char *) * (blocs_count + 1));
+	if (str_size % n == 0) {
+		*str_array = (char **) malloc(sizeof(char *) * (blocs_count));
+	} else {
+		*str_array = (char **) malloc(sizeof(char *) * (blocs_count + 1));
+	}
 	for (z = 0; z != blocs_count; z++) {
 		*(*str_array + z) = (char *) malloc(n);
 		strncpy(*(*str_array + z), str + (n * z), n);
@@ -588,7 +610,7 @@ struct bloc *get_inode_blocs(struct inode *i) {
 	int z;
 	struct bloc *blocs;
 
-	blocs = (struct bloc *) malloc(sizeof(struct bloc) * i->bloc_count);
+	blocs = (struct bloc *) calloc(i->bloc_count, sizeof(struct bloc));
 
 	for (z = 0; z != i->bloc_count; z++) {
 		blocs[z] = get_bloc_by_id(i->bloc_ids[z]);
@@ -617,11 +639,14 @@ void iwrite(struct inode *i, char *buf) {
 		for (z = 0; z != i->bloc_count; z++) {
 			strncpy(blocs[z].content, contents[z], BLOC_SIZE);
 			/*blocs[z].last_bloc = NOT_LAST_BLOC;*/
+			printf("__LINE__ %d\n", __LINE__);
+			print_bloc(blocs + z);
 			update_bloc(blocs + z);
 		}
 
 		for (; z != len; z++) {
 			b = new_bloc(filename, contents[z]);
+			print_bloc(blocs + z);
 			write_bloc(&b);
 			add_bloc(i, &b);
 		}
@@ -637,9 +662,6 @@ void iwrite(struct inode *i, char *buf) {
 		TODO_PRINT;
 
 		for (; z != i->bloc_count; z++) {
-			b = new_bloc(filename, contents[z]);
-			write_bloc(&b);
-			add_bloc(i, &b);
 		}
 		free_str_array(contents, i->bloc_count);
 	}
