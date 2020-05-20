@@ -522,22 +522,9 @@ int iclose(struct inode *i) {
 
 // TODO
 char **list_files(struct inode *i) {
-	int j;
-	char **filenames;
-	struct bloc b;
-
-	filenames = (char **) malloc(sizeof(char *) * i->bloc_count);
-
-	// for each bloc id
-	for (j = 0; j != i->bloc_count; j++) {
-		// we search in the file for the bloc id
-		b = get_bloc_by_id(i->bloc_ids[j]);
-		filenames[j] = (char *) malloc(sizeof(char) * FILENAME_COUNT);
-		// and then we take out the filename
-		strcpy(filenames[j], b.filename);
-	}
-
-	return filenames;
+	char **files;
+	files = NULL;
+	return files;
 }
 
 struct bloc get_bloc_by_id(unsigned int bloc_id) {
@@ -637,6 +624,64 @@ struct bloc *get_inode_blocs(struct inode *i) {
 	return blocs;
 }
 
+/**
+ * Link inode to other inode (directory)
+ * Returns the bloc to update (in the disk)
+ */
+struct bloc add_inode_to_inode(struct inode *dir, struct inode *i) {
+	/* TODO out of bound */
+	char str_id[15];
+	struct bloc b;
+
+
+	/* We assume a directory has only one bloc */
+	b = get_bloc_by_id(dir->bloc_ids[0]);
+	sprintf(str_id, "%d", i->id);
+	strcat(b.content, str_id);
+	strcat(b.content, ",");
+
+	return b;
+}
+
+/**
+ * TODO
+ */
+struct inode *get_inodes(struct inode *i) {
+	struct inode *inodes;
+	int z;
+
+	inodes = NULL;
+	//inodes = (struct inode *) malloc(sizeof(struct inode));
+
+	for (z = 0; z != i->bloc_count; z++) {
+	}
+
+	return inodes;
+}
+
+
+/**
+ * Parse inode ids in a bloc (directory)
+ * Don't forget to free the array
+ */
+unsigned int *parse_ids(char *str) {
+	int i;
+	unsigned int *ids;
+	int file_count;
+	int o;
+
+	file_count = ocr(str, ',');
+	ids = (unsigned int) malloc(sizeof(unsigned int) * file_count);
+
+	for (i = 0; i != file_count; i++) {
+		sscanf(str + o, "%lu", ids + i);
+		i++;
+		o = get_index(str + o, ',');
+	}
+
+	return ids;
+}
+
 
 
 /**
@@ -687,5 +732,40 @@ void iwrite(struct inode *i, char *buf) {
 
 	update_inode(i);
 	free(blocs);
+}
+
+
+/**
+ * Counts the number of occurences in a char*
+ */
+int ocr(char *str, char c) {
+	int o;
+	int i;
+
+	if (str == NULL) return 0;
+
+	i = 0;
+	o = 0;
+	while (str + i != '\0') {
+		if (*(str + i) == c) {
+			o++;
+		}
+		i++;
+	}
+
+	return o;
+}
+
+
+
+/*
+ * Returns the index of the first occurence of a character
+ * in a string
+ */
+int get_index(char *str, char chr) {
+    char *c;
+
+    c = strchr(str, chr);
+    return (int) (c - str);
 }
 

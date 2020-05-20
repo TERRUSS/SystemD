@@ -110,6 +110,8 @@ void init_id_generator();
 void iwrite(struct inode *i, char *buf);
 void print_bloc(struct bloc *b);
 void print_inode(struct inode *i);
+int ocr(char *str, char c);
+int get_index(char *str, char chr);
 
 #endif
 
