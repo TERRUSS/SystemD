@@ -39,10 +39,10 @@ int test_write_inode() {
 	return 0;
 }
 
-int test_create_bloc() {
+int test_new_bloc() {
 	struct bloc b;
 
-	b = create_bloc("hello_world.c", "#include<stdio.h>\nint main(){printf(\"HelloWorld\n\");return 0;}");
+	b = new_bloc("hello_world.c", "#include<stdio.h>\nint main(){printf(\"HelloWorld\n\");return 0;}");
 
 	return 0;
 }
@@ -50,7 +50,7 @@ int test_create_bloc() {
 int test_write_bloc() {
 	struct bloc b;
 
-	b = create_bloc("hello_world.c", "#include<stdio.h>\nint main(){printf(\"HelloWorld\n\");return 0;}");
+	b = new_bloc("hello_world.c", "#include<stdio.h>\nint main(){printf(\"HelloWorld\n\");return 0;}");
 	if (write_bloc(&b) == 0)
 		printf("Test success\n");
 	else
@@ -69,7 +69,7 @@ int test_update() {
 	struct bloc b;
 	clean_disk();
 	create_disk();
-	b = create_bloc("hello_world.c", "#include<stdio.h>\nint main(){printf(\"HelloWorld\n\");return 0;}");
+	b = new_bloc("hello_world.c", "#include<stdio.h>\nint main(){printf(\"HelloWorld\n\");return 0;}");
 	filetype t = REGULAR_FILE;
 	mode_t m = S_IRWXU;
 	char user[10] = "Paul";
@@ -128,6 +128,33 @@ int test_create_regularfile() {
 	return 1;
 }
 
+int test_get_inode_blocs() {
+	int z;
+	char filename[FILENAME_COUNT] = "FILENAME";
+	char *content;
+	struct inode i;
+	struct bloc *blocs;
+
+	clean_disk();
+	create_disk();
+	content = rd("README.md");
+	if (content == NULL) {
+		perror("Test failed");
+		return 0;
+	} else {
+		i = create_regularfile(filename, content);
+		blocs = get_inode_blocs(&i);
+		for (z = 0; z != i.bloc_count; z++) {
+			print_bloc(blocs + z);
+		}
+		free(blocs);
+
+		free(content);
+	}
+
+	return 1;
+}
+
 int main() {
 
 	init_id_generator();
@@ -135,7 +162,7 @@ int main() {
 	test_create_inode();
 	test_print_inode();
 	test_write_inode();
-	test_create_bloc();
+	test_new_bloc();
 	test_write_bloc();
 	*/
 
@@ -148,7 +175,8 @@ int main() {
 
 	//test_update();
 	//test_strncut();
-	test_create_regularfile();
+	/*test_create_regularfile();*/
+	test_get_inode_blocs();
 
 	return 0;
 }

@@ -4,7 +4,7 @@ A basic File Manager System implemented in C, accessible throught a cusom shell 
 
 
 
-## Abscract
+## Abstract
 
 1) ### The Shell
    
