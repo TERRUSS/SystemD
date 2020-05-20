@@ -75,7 +75,7 @@ struct bloc {
 	/* A file's content can be scattered among multiple blocs
 	 * Can be set to LAST_BLOC or NOT_LAST_BLOC
 	 */
-	unsigned int last_bloc;
+	/*unsigned int last_bloc;*/
 };
 
 struct file {
@@ -107,7 +107,7 @@ void add_bloc(struct inode *i, struct bloc *b);
 void create_disk();
 void free_str_array(char **str_array, int len);
 void init_id_generator();
-void iwrite(struct inode *i, char *buf, size_t n);
+void iwrite(struct inode *i, char *buf);
 void print_bloc(struct bloc *b);
 void print_inode(struct inode *i);
 

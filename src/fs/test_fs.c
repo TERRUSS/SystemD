@@ -155,6 +155,28 @@ int test_get_inode_blocs() {
 	return 1;
 }
 
+int test_iwrite() {
+	char filename[FILENAME_COUNT] = "FILENAME";
+	char *content;
+	struct inode i;
+
+	clean_disk();
+	create_disk();
+	i = create_emptyfile(filename, REGULAR_FILE, "a");
+	content = rd("README.md");
+	if (content == NULL) {
+		perror("Test failed");
+		return 0;
+	} else {
+		print_disk();
+		iwrite(&i, content);
+		print_disk();
+		free(content);
+	}
+
+	return 1;
+}
+
 int main() {
 
 	init_id_generator();
@@ -176,7 +198,8 @@ int main() {
 	//test_update();
 	//test_strncut();
 	/*test_create_regularfile();*/
-	test_get_inode_blocs();
+	/*test_get_inode_blocs();*/
+	test_iwrite();
 
 	return 0;
 }
