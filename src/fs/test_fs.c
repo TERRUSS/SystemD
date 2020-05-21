@@ -305,6 +305,26 @@ int test_create_directory() {
 	return EXIT_SUCCESS;
 }
 
+int test_create_emptyfile() {
+	struct inode i;
+
+	clean_disk();
+	g_working_directory = create_disk();
+	i = create_emptyfile(&g_working_directory, "hello.py", REGULAR_FILE, "a+");
+
+	if (i.bloc_count != 1) {
+		perror("test_create_emptyfile() failed");
+		return EXIT_FAILURE;
+	}
+	if (get_filecount(&g_working_directory) != 1) {
+		perror("test_create_emptyfile() failed");
+		return EXIT_FAILURE;
+	}
+
+	printf("test_create_emptyfile() successful\n");
+	return EXIT_SUCCESS;
+}
+
 int main() {
 
 	init_id_generator();
@@ -333,6 +353,7 @@ int main() {
 	test_inode_count();
 	test_add_inode_to_inode();
 	test_create_directory();
+	test_create_emptyfile();
 
 	return 0;
 }
