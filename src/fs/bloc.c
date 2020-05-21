@@ -28,8 +28,7 @@ struct bloc new_bloc(const char *filename, const char *content) {
 
 	b.id = rand();
 
-	// TODO strncpy for safer copy
-	strcpy(b.filename, filename);
+	strncpy(b.filename, filename, FILENAME_COUNT);
 
 	if (content == NULL) {
 		strcpy(b.content, "");
@@ -56,5 +55,4 @@ void print_bloc(struct bloc *b) {
 	printf(" content:%s", b->content);
 	puts("");
 }
-
 

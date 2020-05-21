@@ -475,7 +475,7 @@ void iwrite(struct inode *i, char *buf) {
 			/*blocs[z].last_bloc = NOT_LAST_BLOC;*/
 			printf("__LINE__ %d\n", __LINE__);
 			print_bloc(blocs + z);
-			printf("SIZE %d\n", strlen(blocs[z].content));
+			printf("SIZE %lu\n", strlen(blocs[z].content));
 			update_bloc(blocs + z);
 		}
 

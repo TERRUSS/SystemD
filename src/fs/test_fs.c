@@ -102,7 +102,7 @@ int test_strncut() {
 	str_array = NULL;
 	len = strncut(&str_array, str, 2);
 	for (i = 0; i != len; i++) {
-		printf("[%d] %d %s\n", i, strlen(str_array[i]), str_array[i]);
+		printf("[%d] %lu %s\n", i, strlen(str_array[i]), str_array[i]);
 	}
 	free_str_array(str_array, len);
 
@@ -179,6 +179,7 @@ int test_iwrite() {
 
 int test_add_inode_to_inode() {
 
+	return 1;
 }
 
 int main() {

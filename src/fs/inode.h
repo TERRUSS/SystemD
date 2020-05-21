@@ -31,7 +31,6 @@ typedef enum filetype {
  * Stores metadata of blocs
  */
 struct inode {
-	/* const */
 	unsigned char id;
 
 	/* const */

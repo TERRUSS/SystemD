@@ -6,9 +6,7 @@
 #define BLOC_SIZE (512)
 #define FILENAME_COUNT (15)
 
-
 struct bloc {
-	/* const */
 	unsigned int id;
 
 	char filename[FILENAME_COUNT];
