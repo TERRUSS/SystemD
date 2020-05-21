@@ -129,16 +129,20 @@ int test_strncut() {
 
 	str_array = NULL;
 	len = strncut(&str_array, str, 2);
+	if (len != 7) {
+		perror("test_strncut() failed");
+		return EXIT_FAILURE;
+	}
 	for (i = 0; i != len; i++) {
 		printf("[%d] %lu %s\n", i, strlen(str_array[i]), str_array[i]);
 	}
 	free_str_array(str_array, len);
 
-	return 1;
+	printf("test_strncut() successful\n");
+	return EXIT_SUCCESS;
 }
 
 int test_create_regularfile() {
-	struct inode i;
 	char filename[FILENAME_COUNT] = "FILENAME";
 	char *content;
 
@@ -403,21 +407,17 @@ int main() {
 	test_get_filecount();
 	test_add_inode_to_inode();
 	test_create_regularfile();
-
-	/*
-	test_get_bloc_id();
-	*/
+	test_create_emptyfile();
+	test_create_directory();
+	test_parse_ids();
+	test_inode_count();
 
 	//test_update();
-	//test_strncut();
+	test_strncut();
 	/*test_get_inode_blocs();*/
 	/*test_iwrite();*/
 	/*test_get_filename_for_inode();*/
 	/*
-	test_inode_count();
-	test_create_directory();
-	test_create_emptyfile();
-	test_parse_ids();
 	test_list_files();
 	*/
 
