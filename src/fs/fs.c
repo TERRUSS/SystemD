@@ -390,6 +390,11 @@ struct inode get_inode_by_id(unsigned int inode_id) {
 	size = 0;
 	f = fopen(DISK, "rb");
 
+	if (f == NULL) {
+		perror(NO_FILE_ERROR_MESSAGE);
+		return i;
+	}
+
 	do {
 		size = fread(&flag, sizeof(const int), 1, f);
 
@@ -405,6 +410,8 @@ struct inode get_inode_by_id(unsigned int inode_id) {
 		}
 
 	} while (size != 0 && !match);
+
+	fclose(f);
 
 	return i;
 }
@@ -620,7 +627,7 @@ char **list_files(struct inode *dir, int *filecount) {
 
 	for (z = 0; z != *filecount; z++) {
 		i = get_inode_by_id(inode_ids[z]);
-		strncpy(files[z], get_filename_for_inode(&i), FILENAME_COUNT + 1);
+		strncpy(files[z], get_filename_for_inode(&i), FILENAME_COUNT);
 	}
 
 	free(inode_ids);
