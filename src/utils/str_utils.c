@@ -90,10 +90,11 @@ unsigned int *parse_ids(char *str) {
 	int o;
 
 	filecount = ocr(str, ',');
-	ids = (unsigned int *) malloc(sizeof(unsigned int) * filecount);
+	ids = (unsigned int *) calloc(filecount, sizeof(unsigned int));
+	o = 0;
 
 	for (i = 0; i != filecount; i++) {
-		sscanf(str + o, "%u", ids + i);
+		sscanf(str + o, "%u", &(ids[i]));
 		i++;
 		o = get_index(str + o, ',');
 	}

@@ -310,6 +310,23 @@ int test_create_emptyfile() {
 	return EXIT_SUCCESS;
 }
 
+int test_parse_ids() {
+	unsigned int *rst;
+	char to_parse[] = "12,34,234,231,";
+
+	rst = parse_ids(to_parse);
+
+	if (rst[0] != 12 && rst[1] != 34
+			&& rst[2] != 234 && rst[3] != 231) {
+
+		perror("test_parse_ids() failed");
+		return EXIT_FAILURE;
+	}
+	free(rst);
+	printf("test_parse_ids() successful\n");
+	return EXIT_SUCCESS;
+}
+
 int main() {
 
 	init_id_generator();
@@ -324,14 +341,12 @@ int main() {
 
 
 	/*
-	test_create_regularfile();
 	test_get_bloc_id();
 	test_print_disk();
 	*/
 
 	//test_update();
 	//test_strncut();
-	/*test_create_regularfile();*/
 	/*test_get_inode_blocs();*/
 	/*test_iwrite();*/
 	test_get_filename_for_inode();
@@ -340,6 +355,7 @@ int main() {
 	test_create_directory();
 	test_create_emptyfile();
 	test_create_regularfile();
+	test_parse_ids();
 
 	return 0;
 }

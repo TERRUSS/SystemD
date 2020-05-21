@@ -377,6 +377,38 @@ int write_bloc(struct bloc *b) {
 
 	return fclose(f);
 }
+/**
+ * Returns an inode by its id
+ */
+struct inode get_inode_by_id(unsigned int inode_id) {
+	FILE *f;
+	int size;
+	int flag;
+	struct bloc b;
+	struct inode i;
+	int match = 0;
+
+	size = 0;
+	f = fopen(DISK, "rb");
+
+	do {
+		size = fread(&flag, sizeof(const int), 1, f);
+
+		if (size == 0) continue;
+
+		if (flag == INODE_FLAG) {
+			fread(&i, sizeof(struct inode), 1, f);
+			if (i.id == inode_id) {
+				match = !match;
+			}
+		} else {
+			fread(&b, sizeof(struct bloc), 1, f);
+		}
+
+	} while (size != 0 && !match);
+
+	return i;
+}
 
 /**
  * Returns a bloc by its id
@@ -386,6 +418,7 @@ struct bloc get_bloc_by_id(unsigned int bloc_id) {
 	int size;
 	int flag;
 	struct bloc b;
+	struct inode i;
 	int match = 0;
 
 	size = 0;
@@ -401,7 +434,8 @@ struct bloc get_bloc_by_id(unsigned int bloc_id) {
 			if (b.id == bloc_id) {
 				match = !match;
 			}
-
+		} else {
+			fread(&i, sizeof(struct inode), 1, f);
 		}
 
 	} while (size != 0 && !match);
@@ -422,22 +456,6 @@ struct bloc *get_inode_blocs(struct inode *i) {
 	}
 
 	return blocs;
-}
-
-/**
- * TODO
- */
-struct inode *get_inodes(struct inode *i) {
-	struct inode *inodes;
-	int z;
-
-	inodes = NULL;
-	//inodes = (struct inode *) malloc(sizeof(struct inode));
-
-	for (z = 0; z != i->bloc_count; z++) {
-	}
-
-	return inodes;
 }
 
 /**
@@ -576,9 +594,29 @@ int iclose(struct inode *i) {
 }
 
 // TODO
-char **list_files(struct inode *i) {
+/**
+ * List all files under a dir
+ *
+ * note: don't forget to free the array
+ */
+char **list_files(struct inode *dir) {
 	char **files;
+	unsigned int *inode_ids;
+	int filecount, z;
+	struct inode i;
+
 	files = NULL;
+	filecount = get_filecount(dir);
+	inode_ids = parse_ids(get_bloc_by_id(dir->bloc_ids[0]).content);
+	files = (char **) malloc(filecount * sizeof(char *));
+
+	for (z = 0; z != filecount; z++) {
+		i = get_inode_by_id(inode_ids[z]);
+		files[z] = get_filename_for_inode(&i);
+	}
+
+	free(inode_ids);
+
 	return files;
 }
 
