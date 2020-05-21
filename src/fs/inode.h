@@ -9,10 +9,8 @@
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
-#include "utils/str_utils.h"
 
 #define ROOT_ID (1)
-
 #define USERNAME_COUNT (15)
 #define GROUPNAME_COUNT (15)
 #define BLOC_IDS_COUNT (10)
@@ -24,13 +22,11 @@ extern const char ROOT[USERNAME_COUNT];
 extern const mode_t ROOT_PERMISSIONS;
 extern char g_username[USERNAME_COUNT];
 
-
-/* Enumerations */
-
-// TODO discard typedef, see Torvald's recommandations
+/* TODO discard typedef, see Torvald's recommandations */
 typedef enum filetype {
 	REGULAR_FILE, DIRECTORY, SYMBOLIC_LINK, FIFO, SOCKET, DEVICE
 } filetype;
+
 /**
  * Stores metadata of blocs
  */

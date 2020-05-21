@@ -1,6 +1,5 @@
 #include "utils/str_utils.h"
 
-
 /**
  * Slice a char* in a char**, n sized
  * Don't forget to free str_array
@@ -68,8 +67,6 @@ int ocr(char *str, char c) {
 	return o;
 }
 
-
-
 /*
  * Returns the index of the first occurence of a character
  * in a string
@@ -82,21 +79,19 @@ int get_index(char *str, char chr) {
 }
 
 /**
- * TODO
- * str_utils
  * Parse inode ids in a bloc (directory)
  * Don't forget to free the array
  */
 unsigned int *parse_ids(char *str) {
 	int i;
 	unsigned int *ids;
-	int file_count;
+	int filecount;
 	int o;
 
-	file_count = ocr(str, ',');
-	ids = (unsigned int *) malloc(sizeof(unsigned int) * file_count);
+	filecount = ocr(str, ',');
+	ids = (unsigned int *) malloc(sizeof(unsigned int) * filecount);
 
-	for (i = 0; i != file_count; i++) {
+	for (i = 0; i != filecount; i++) {
 		sscanf(str + o, "%u", ids + i);
 		i++;
 		o = get_index(str + o, ',');
@@ -104,3 +99,4 @@ unsigned int *parse_ids(char *str) {
 
 	return ids;
 }
+
