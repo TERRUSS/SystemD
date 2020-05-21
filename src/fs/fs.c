@@ -22,12 +22,24 @@ struct file g_filetree;
  * on failure: returns NULL
  */
 char *get_filename_for_inode(struct inode *i) {
+	struct bloc b;
+	//char filename[FILENAME_COUNT];
+	char *filename;
+
 	if (i->bloc_count == 0) {
 		perror("The inode has no blocs");
 		return NULL;
 	}
 
-	return get_bloc_by_id(i->bloc_ids[0]).filename;
+	b = get_bloc_by_id(i->bloc_ids[0]);
+	if (b.id == DELETED) {
+		perror("No bloc found");
+		return NULL;
+	}
+
+	filename = (char*) malloc(FILENAME_COUNT);
+	strcpy(filename, b.filename);
+	return filename;
 }
 
 /**

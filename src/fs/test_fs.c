@@ -204,12 +204,18 @@ int test_get_filename_for_inode() {
 	g_working_directory = create_disk();
 	i = create_regularfile(&g_working_directory, filename, content);
 	rst = get_filename_for_inode(&i);
-	if (strcmp(rst, filename) == 0) {
-		perror("test_get_filename_for_inode() failed");
-		return 0;
-	} else {
-		printf("test_get_filename_for_inode() succesful\n");
+	if (rst == NULL) {
+		perror("Ah !");
+		return EXIT_FAILURE;
 	}
+
+	if (strncmp(rst, filename, FILENAME_COUNT) != 0) {
+		perror("test_get_filename_for_inode() failed");
+		return EXIT_FAILURE;
+	}
+	free(rst);
+
+	printf("test_get_filename_for_inode() succesful\n");
 
 	return 1;
 }
