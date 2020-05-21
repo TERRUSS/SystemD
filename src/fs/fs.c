@@ -161,7 +161,6 @@ int overwrite_inode(struct inode *new_inode, unsigned int id) {
 			if (i.id == id) {
 				fseek(f, pos, SEEK_SET);
 				fwrite(new_inode, sizeof(struct inode), 1, f);
-				puts("FOUND");
 				updated = 1;
 			}
 		} else {
