@@ -243,29 +243,25 @@ int update_bloc(struct bloc *new_bloc) {
 	return overwrite_bloc(new_bloc, new_bloc->id);
 }
 
-struct inode create_regularfile(char *filename, char *content) {
+struct inode create_regularfile(struct inode *under_dir, char *filename, char *content) {
 	struct inode i;
-	struct bloc b;
-	int z;
-	int len;
+	struct bloc b, to_update;
+	int z, len;
 	char **blocs_contents;
 
 	blocs_contents = NULL;
 	len = strncut(&blocs_contents, content, BLOC_SIZE);
 
 	i = new_inode(REGULAR_FILE, DEFAULT_PERMISSIONS, g_username, g_username);
+	to_update = add_inode_to_inode(under_dir, &i);
 
-
-	for (z = 0; z != len - 1; z++) {
+	for (z = 0; z != len; z++) {
 		b = new_bloc(filename, blocs_contents[z]);
 		add_bloc(&i, &b);
 		write_bloc(&b);
 	}
 
-	b = new_bloc(filename, blocs_contents[z]);
-	add_bloc(&i, &b);
-	write_bloc(&b);
-
+	update_bloc(&to_update);
 	write_inode(&i);
 
 	free_str_array(blocs_contents, len);

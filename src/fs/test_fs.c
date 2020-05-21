@@ -110,47 +110,32 @@ int test_strncut() {
 }
 
 int test_create_regularfile() {
+	struct inode i;
 	char filename[FILENAME_COUNT] = "FILENAME";
 	char *content;
 
 	clean_disk();
-	create_disk();
+	g_working_directory = create_disk();
+
 	content = rd("README.md");
 	if (content == NULL) {
-		perror("Test failed");
-		return 0;
-	} else {
-		create_regularfile(filename, content);
-		print_disk();
-		free(content);
+		perror("test_create_regularfile() failed");
+		return EXIT_FAILURE;
 	}
+	create_regularfile(&g_working_directory, filename, content);
+	if (get_filecount(&g_working_directory) != 1) {
+		perror("test_create_regularfile() failed");
+		return EXIT_FAILURE;
+	}
+	free(content);
+	printf("test_create_regularfile() succesful\n");
 
-	return 1;
+	return EXIT_SUCCESS;
 }
 
 int test_get_inode_blocs() {
-	int z;
-	char filename[FILENAME_COUNT] = "FILENAME";
-	char *content;
-	struct inode i;
-	struct bloc *blocs;
-
 	clean_disk();
 	create_disk();
-	content = rd("README.md");
-	if (content == NULL) {
-		perror("Test failed");
-		return 0;
-	} else {
-		i = create_regularfile(filename, content);
-		blocs = get_inode_blocs(&i);
-		for (z = 0; z != i.bloc_count; z++) {
-			print_bloc(blocs + z);
-		}
-		free(blocs);
-
-		free(content);
-	}
 
 	return 1;
 }
@@ -184,8 +169,8 @@ int test_get_filename_for_inode() {
 	struct inode i;
 
 	clean_disk();
-	create_disk();
-	i = create_regularfile(filename, content);
+	g_working_directory = create_disk();
+	i = create_regularfile(&g_working_directory, filename, content);
 	rst = get_filename_for_inode(&i);
 	if (strcmp(rst, filename) == 0) {
 		perror("test_get_filename_for_inode() failed");
@@ -354,6 +339,7 @@ int main() {
 	test_add_inode_to_inode();
 	test_create_directory();
 	test_create_emptyfile();
+	test_create_regularfile();
 
 	return 0;
 }
