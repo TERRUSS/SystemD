@@ -216,35 +216,38 @@ int test_inode_count() {
 	// write inode
 	i = create_disk();
 
-	/*print_disk();*/
 	// check number of inodes == 1
 	inode_count(&available, &deleted);
-		printf("available %u deleted %u\n", available, deleted);
 	if (available != 1 && deleted != 0) {
+		printf("available %u deleted %u\n", available, deleted);
 		perror("test_inode_count() failed");
+		return 0;
 	}
 
 	// delete inode
 	delete_inode(&i);
-	/*print_disk();*/
 
 	// check number of inodes == 0
 	inode_count(&available, &deleted);
-		printf("available %u deleted %u\n", available, deleted);
 	if (available != 0 && deleted != 1) {
+		printf("available %u deleted %u\n", available, deleted);
 		perror("test_inode_count() failed");
+		return 0;
 	}
 
 	// write inode
 	i2 = new_inode(t, m, user, NULL);
 	write_inode(&i2);
-	/*print_disk();*/
+
 	// check number of inodes == 1
 	inode_count(&available, &deleted);
-		printf("available %u deleted %u\n", available, deleted);
 	if (available != 1 && deleted != 0) {
+		printf("available %u deleted %u\n", available, deleted);
 		perror("test_inode_count() failed");
+		return 0;
 	}
+
+	printf("test_inode_count() successful\n");
 
 	return 1;
 }
