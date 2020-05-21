@@ -8,7 +8,22 @@ struct inode g_working_directory;
 /* Contains the filetree TODO will be used ? */
 struct file g_filetree;
 
+/**
+ * NOTE Don't forget to free the char
+ */
 char *get_filename_for_inode(struct inode *i) {
+	struct bloc b;
+	char *filename;
+
+	if (i->bloc_count == 0) {
+		perror("The inode has no blocs");
+	}
+
+	b = get_bloc_by_id(i->bloc_ids[0]);
+	filename = malloc(FILENAME_COUNT);
+	strncpy(filename, b.content, FILENAME_COUNT);
+
+	return filename;
 }
 
 /**

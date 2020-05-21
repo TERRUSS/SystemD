@@ -182,6 +182,28 @@ int test_add_inode_to_inode() {
 	return 1;
 }
 
+int test_get_filename_for_inode() {
+	char filename[FILENAME_COUNT] = "FILENAME";
+	char content[] = "TRUC";
+	char *rst;
+	struct inode i;
+
+	clean_disk();
+	create_disk();
+	i = create_regularfile(filename, content);
+	rst = get_filename_for_inode(&i);
+	if (strcmp(rst, filename) == 0) {
+		perror("test_get_filename_for_inode() failed");
+		return 0;
+	} else {
+		printf("test_get_filename_for_inode() succesful\n");
+	}
+
+	free(rst);
+
+	return 1;
+}
+
 int main() {
 
 	init_id_generator();
@@ -204,7 +226,8 @@ int main() {
 	//test_strncut();
 	/*test_create_regularfile();*/
 	/*test_get_inode_blocs();*/
-	test_iwrite();
+	/*test_iwrite();*/
+	test_get_filename_for_inode();
 
 	return 0;
 }

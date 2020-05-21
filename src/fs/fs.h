@@ -31,6 +31,7 @@ struct file {
 int clean_disk();
 int print_disk();
 int update_inode(struct inode *new_inode);
+char *get_filename_for_inode(struct inode *i);
 int write_bloc(struct bloc *b);
 int write_inode(struct inode *i);
 struct bloc *get_inode_blocs(struct inode *i);
@@ -41,8 +42,9 @@ struct inode create_root();
 unsigned int get_bloc_id(char *filename);
 void create_disk();
 void free_str_array(char **str_array, int len);
-void iwrite(struct inode *i, char *buf);
 struct bloc add_inode_to_inode(struct inode *dir, struct inode *i);
+
+void iwrite(struct inode *i, char *buf);
 
 #endif
 
