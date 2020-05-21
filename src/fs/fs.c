@@ -23,7 +23,6 @@ struct file g_filetree;
  */
 char *get_filename_for_inode(struct inode *i) {
 	struct bloc b;
-	//char filename[FILENAME_COUNT];
 	char *filename;
 
 	if (i->bloc_count == 0) {
@@ -627,7 +626,7 @@ int iclose(struct inode *i) {
  * note: don't forget to free the array
  */
 char **list_files(struct inode *dir, int *filecount) {
-	char **files;
+	char **files, *filename;
 	unsigned int *inode_ids;
 	int z;
 	struct inode i;
@@ -639,7 +638,9 @@ char **list_files(struct inode *dir, int *filecount) {
 
 	for (z = 0; z != *filecount; z++) {
 		i = get_inode_by_id(inode_ids[z]);
-		strncpy(files[z], get_filename_for_inode(&i), FILENAME_COUNT);
+		filename = get_filename_for_inode(&i);
+		strncpy(files[z], filename, FILENAME_COUNT);
+		free(filename);
 	}
 
 	free(inode_ids);
