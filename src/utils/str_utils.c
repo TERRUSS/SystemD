@@ -80,3 +80,27 @@ int get_index(char *str, char chr) {
     c = strchr(str, chr);
     return (int) (c - str);
 }
+
+/**
+ * TODO
+ * str_utils
+ * Parse inode ids in a bloc (directory)
+ * Don't forget to free the array
+ */
+unsigned int *parse_ids(char *str) {
+	int i;
+	unsigned int *ids;
+	int file_count;
+	int o;
+
+	file_count = ocr(str, ',');
+	ids = (unsigned int *) malloc(sizeof(unsigned int) * file_count);
+
+	for (i = 0; i != file_count; i++) {
+		sscanf(str + o, "%u", ids + i);
+		i++;
+		o = get_index(str + o, ',');
+	}
+
+	return ids;
+}

@@ -4,10 +4,6 @@
 
 const int INODE_FLAG = 1;
 const int BLOC_FLAG = 2;
-const mode_t DEFAULT_PERMISSIONS = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
-const char USERNAME[USERNAME_COUNT] = "macron";
-const char ROOT[USERNAME_COUNT] = "root";
-const mode_t ROOT_PERMISSIONS = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
 
 /* Globals */
 
@@ -18,42 +14,6 @@ struct file g_filetree;
 
 /* Functions */
 
-/* Inode */
-
-/**
- * Returns an inode
- *
- * user must not be NULL
- * group can be NULL
- *
- * on success : returns inode
- * on failure : TODO
- */
-struct inode create_inode(filetype type, mode_t perms, const char *user, const char *group) {
-
-	struct inode i;
-	time_t t;
-
-	i.id = rand();
-
-	i.type = type;
-	i.permissions = perms;
-
-	strcpy(i.user_name, user);
-	if (group != NULL)
-		strcpy(i.group_name, group);
-	else
-		strcpy(i.group_name, user);
-
-
-	t = time(NULL);
-	i.created_at = localtime(&t);
-	i.updated_at = localtime(&t);
-
-	i.bloc_count = 0;
-
-	return i;
-}
 
 /**
  * The root has an id == 1, and an empty filename
@@ -93,47 +53,6 @@ void add_bloc(struct inode *i, struct bloc *b) {
 	}
 }
 
-/**
- * Checks if a bloc id is in the bloc ids of an inode
- *
- * success : 1
- * failure : 0
- */
-int contains(struct inode *i, unsigned int bloc_id) {
-	int j;
-
-	for (j = 0; j != i->bloc_count; j++) {
-		if (i->bloc_ids[j] == bloc_id)
-			return 1;
-	}
-
-	return 0;
-}
-
-/**
- * Prints an inode in the terminal
- */
-void print_inode(struct inode *i) {
-	char s[64];
-	char s2[64];
-	int j;
-
-	printf("<INODE> id:%d", i->id);
-	printf(" filetype:%d", i->type);
-	printf(" permissions:%d", i->permissions);
-	printf(" user:%s", i->user_name);
-	printf(" group:%s", i->group_name);
-	assert(strftime(s, sizeof(s), "%c", i->created_at));
-	assert(strftime(s2, sizeof(s2), "%c", i->updated_at));
-	printf(" created at:%s", s);
-	printf(" updated at:%s", s2);
-
-	puts("");
-	for (j = 0; j != i->bloc_count; j++) {
-		printf("\tbloc_id:%d\n", i->bloc_ids[j]);
-	}
-
-}
 
 /**
  * Writes an inode to the disk (by append)
@@ -284,7 +203,7 @@ struct inode create_regularfile(char *filename, char *content) {
 	blocs_contents = NULL;
 	len = strncut(&blocs_contents, content, BLOC_SIZE);
 
-	i = create_inode(REGULAR_FILE, DEFAULT_PERMISSIONS, USERNAME, USERNAME);
+	i = create_inode(REGULAR_FILE, DEFAULT_PERMISSIONS, g_username, g_username);
 
 
 	for (z = 0; z != len - 1; z++) {
@@ -442,7 +361,7 @@ struct inode create_directory(char *dirname) {
 	struct inode i;
 	struct bloc b;
 
-	i = create_inode(DIRECTORY, DEFAULT_PERMISSIONS, USERNAME, USERNAME);
+	i = create_inode(DIRECTORY, DEFAULT_PERMISSIONS, g_username, g_username);
 	b = new_bloc(dirname, "");
 
 	add_bloc(&i, &b);
@@ -466,7 +385,7 @@ struct inode create_emptyfile(char *filename, filetype type, const char *mode) {
 	struct inode i;
 
 	b = new_bloc(filename, "");
-	i = create_inode(type, DEFAULT_PERMISSIONS, USERNAME, USERNAME);
+	i = create_inode(type, DEFAULT_PERMISSIONS, g_username, g_username);
 
 	// we link the bloc to the inode
 	add_bloc(&i, &b);
@@ -558,12 +477,6 @@ struct bloc get_bloc_by_id(unsigned int bloc_id) {
 /* Utils */
 
 /**
- * Initialize the id generator (seed for random)
- */
-void init_id_generator() {
-	srand(getpid() + time(NULL) + __LINE__);
-}
-/**
  */
 struct bloc *get_inode_blocs(struct inode *i) {
 	int z;
@@ -578,24 +491,6 @@ struct bloc *get_inode_blocs(struct inode *i) {
 	return blocs;
 }
 
-/**
- * Link inode to other inode (directory)
- * Returns the bloc to update (in the disk)
- */
-struct bloc add_inode_to_inode(struct inode *dir, struct inode *i) {
-	/* TODO out of bound */
-	char str_id[15];
-	struct bloc b;
-
-
-	/* We assume a directory has only one bloc */
-	b = get_bloc_by_id(dir->bloc_ids[0]);
-	sprintf(str_id, "%d", i->id);
-	strcat(b.content, str_id);
-	strcat(b.content, ",");
-
-	return b;
-}
 
 /**
  * TODO
@@ -614,27 +509,6 @@ struct inode *get_inodes(struct inode *i) {
 }
 
 
-/**
- * Parse inode ids in a bloc (directory)
- * Don't forget to free the array
- */
-unsigned int *parse_ids(char *str) {
-	int i;
-	unsigned int *ids;
-	int file_count;
-	int o;
-
-	file_count = ocr(str, ',');
-	ids = (unsigned int *) malloc(sizeof(unsigned int) * file_count);
-
-	for (i = 0; i != file_count; i++) {
-		sscanf(str + o, "%u", ids + i);
-		i++;
-		o = get_index(str + o, ',');
-	}
-
-	return ids;
-}
 
 
 
@@ -689,3 +563,22 @@ void iwrite(struct inode *i, char *buf) {
 }
 
 
+
+/**
+ * Link inode to other inode (directory)
+ * Returns the bloc to update (in the disk)
+ */
+struct bloc add_inode_to_inode(struct inode *dir, struct inode *i) {
+	/* TODO out of bound */
+	char str_id[15];
+	struct bloc b;
+
+
+	/* We assume a directory has only one bloc */
+	b = get_bloc_by_id(dir->bloc_ids[0]);
+	sprintf(str_id, "%d", i->id);
+	strcat(b.content, str_id);
+	strcat(b.content, ",");
+
+	return b;
+}
