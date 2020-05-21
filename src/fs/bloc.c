@@ -40,6 +40,12 @@ struct bloc new_bloc(const char *filename, const char *content) {
 	return b;
 }
 
+struct bloc empty_bloc() {
+	struct bloc b;
+	memset(&b, 0, sizeof(struct bloc));
+	return b;
+}
+
 /**
  * Deletes a bloc : set the id to DELETED (0)
  */

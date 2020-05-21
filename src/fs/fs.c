@@ -423,6 +423,13 @@ struct bloc get_bloc_by_id(unsigned int bloc_id) {
 	size = 0;
 	f = fopen(DISK, "rb");
 
+	if (f == NULL) {
+		perror(NO_FILE_ERROR_MESSAGE);
+		b = empty_bloc();
+		b.id = DELETED;
+		return b;
+	}
+
 	do {
 		size = fread(&flag, sizeof(const int), 1, f);
 
@@ -438,6 +445,8 @@ struct bloc get_bloc_by_id(unsigned int bloc_id) {
 		}
 
 	} while (size != 0 && !match);
+
+	fclose(f);
 
 	return b;
 }

@@ -14,6 +14,7 @@
 #include "fs/bloc.h"
 
 #define PRINT_LINE printf("LINE %d\n", __LINE__)
+#define NO_FILE_ERROR_MESSAGE "File's NULL"
 
 #define DISK "rsc/disk"
 

@@ -79,15 +79,17 @@ int test_create_disk() {
 	return EXIT_SUCCESS;
 }
 
+/*
 int test_update() {
 	struct bloc b;
-	clean_disk();
-	create_disk();
-	b = new_bloc("hello_world.c", "#include<stdio.h>\nint main(){printf(\"HelloWorld\n\");return 0;}");
 	filetype t = REGULAR_FILE;
 	mode_t m = S_IRWXU;
 	char user[10] = "Paul";
 	struct inode i;
+
+	clean_disk();
+	create_disk();
+	b = new_bloc("hello_world.c", "#include<stdio.h>\nint main(){printf(\"HelloWorld\n\");return 0;}");
 
 	i = new_inode(t, m, user, NULL);
 	write_inode(&i);
@@ -104,6 +106,18 @@ int test_update() {
 	print_disk();
 
 	return 1;
+}
+*/
+
+int test_update_inode() {
+	struct inode i;
+
+	clean_disk();
+	g_working_directory = create_disk();
+
+	i = create_regularfile(&g_working_directory, "FILENAME", "TRUC");
+
+	return EXIT_SUCCESS;
 }
 
 
@@ -137,10 +151,12 @@ int test_create_regularfile() {
 		return EXIT_FAILURE;
 	}
 	create_regularfile(&g_working_directory, filename, content);
+	/*
 	if (get_filecount(&g_working_directory) != 1) {
 		perror("test_create_regularfile() failed");
 		return EXIT_FAILURE;
 	}
+	*/
 	free(content);
 	printf("test_create_regularfile() succesful\n");
 
@@ -361,6 +377,18 @@ int test_list_files() {
 	return EXIT_SUCCESS;
 }
 
+int test_get_filecount() {
+	clean_disk();
+	g_working_directory = create_disk();
+	if (get_filecount(&g_working_directory) != 0) {
+		perror("test_get_filecount() failed");
+		return EXIT_FAILURE;
+	}
+
+	printf("test_get_filecount() successful\n");
+	return EXIT_SUCCESS;
+}
+
 int main() {
 
 	init_id_generator();
@@ -373,10 +401,13 @@ int main() {
 	test_write_bloc();
 
 	test_create_disk();
+	test_print_disk();
+	test_get_filecount();
 
 	/*
+	test_add_inode_to_inode();
+	test_create_regularfile();
 	test_get_bloc_id();
-	test_print_disk();
 	*/
 
 	//test_update();
@@ -386,13 +417,11 @@ int main() {
 	/*test_get_filename_for_inode();*/
 	/*
 	test_inode_count();
-	test_add_inode_to_inode();
 	test_create_directory();
 	test_create_emptyfile();
-	test_create_regularfile();
 	test_parse_ids();
-	*/
 	test_list_files();
+	*/
 
 	return 0;
 }
