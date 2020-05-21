@@ -9,7 +9,11 @@ struct inode g_working_directory;
 struct file g_filetree;
 
 /**
- * NOTE Don't forget to free the char
+ * Gets the filename of a file/inode
+ *
+ * note: don't forget to free the char
+ * on success: returns the filename
+ * on failure: returns NULL
  */
 char *get_filename_for_inode(struct inode *i) {
 	struct bloc b;
@@ -17,6 +21,7 @@ char *get_filename_for_inode(struct inode *i) {
 
 	if (i->bloc_count == 0) {
 		perror("The inode has no blocs");
+		return NULL;
 	}
 
 	b = get_bloc_by_id(i->bloc_ids[0]);
@@ -51,24 +56,26 @@ struct inode create_root() {
 /**
  * Writes an inode to the disk (by append)
  *
+ * on failure: returns 0
+ * on success: returns 1
  */
 int write_inode(struct inode *i) {
 	FILE *f;
 
-	if (overwrite_inode(i, DELETED)) return 1;
+	if (overwrite_inode(i, DELETED)) return EXIT_SUCCESS;
 
 	f = fopen(DISK, "ab");
 
 	if (f == NULL) {
 		fprintf(stderr, "File's NULL %d", __LINE__);
-		return 0;
+		return EXIT_FAILURE;
 	}
 
 	fwrite(&INODE_FLAG, sizeof(const int), 1, f);
 	fwrite(i, sizeof(struct inode), 1, f);
 
 	fclose(f);
-	return 1;
+	return EXIT_SUCCESS;
 }
 
 int delete_inode(struct inode *i) {
@@ -133,7 +140,7 @@ int overwrite_inode(struct inode *new_inode, unsigned int id) {
 
 	if (f == NULL) {
 		fprintf(stderr, "File empty %d", __LINE__);
-		return 0;
+		return EXIT_FAILURE;
 	}
 
 	do {
@@ -162,9 +169,9 @@ int overwrite_inode(struct inode *new_inode, unsigned int id) {
 	fclose(f);
 
 	if (updated) {
-		return 1;
+		return EXIT_SUCCESS;
 	} else {
-		return 0;
+		return EXIT_FAILURE;
 	}
 }
 
@@ -183,7 +190,7 @@ int overwrite_bloc(struct bloc *new_bloc, unsigned int id) {
 
 	if (f == NULL) {
 		fprintf(stderr, "File empty %d", __LINE__);
-		return 0;
+		return EXIT_FAILURE;
 	}
 
 	do {
@@ -209,11 +216,12 @@ int overwrite_bloc(struct bloc *new_bloc, unsigned int id) {
 	fclose(f);
 
 	if (updated) {
-		return 1;
+		return EXIT_SUCCESS;
 	} else {
-		return 0;
+		return EXIT_FAILURE;
 	}
 }
+
 /**
  * Updates an inode in the disk file
  * DEPRECATED use overwrite_inode instead
@@ -224,6 +232,10 @@ int overwrite_bloc(struct bloc *new_bloc, unsigned int id) {
 int update_inode(struct inode *new_inode) {
 	return overwrite_inode(new_inode, new_inode->id);
 }
+
+/**
+ * TODO fix redundancy
+ */
 int update_bloc(struct bloc *new_bloc) {
 	return overwrite_bloc(new_bloc, new_bloc->id);
 }
@@ -257,63 +269,6 @@ struct inode create_regularfile(char *filename, char *content) {
 
 	return i;
 }
-
-
-
-/**
- * Updates a bloc in the disk file
- * Before calling the function, check the content is < 1024
- * if not, create a new for the inode
- */
-/*
-int update_bloc(struct bloc *new_bloc) {
-	FILE *f;
-	int size;
-	int flag;
-	int pos;
-	struct inode b;
-	struct inode i;
-	int updated;
-
-	if (new_bloc == NULL) {
-		fprintf(stderr, "Bloc's NULL %d", __LINE__);
-		return 0;
-	}
-
-	updated = 0;
-	size = 0;
-	f = fopen(DISK, "r+b");
-
-	if (f == NULL) {
-		fprintf(stderr, "File's NULL %d", __LINE__);
-		return 0;
-	}
-
-	do {
-		size = fread(&flag, sizeof(const int), 1, f);
-		pos = ftell(f);
-
-		if (size == 0) continue;
-
-		if (flag == BLOC_FLAG) {
-			fread(&b, sizeof(struct bloc), 1, f);
-
-			if (new_bloc->id == b.id) {
-				fseek(f, pos, SEEK_SET);
-				fwrite(new_bloc, sizeof(struct bloc), 1, f);
-				updated = 1;
-			}
-
-		} else {
-			fread(&i, sizeof(struct inode), 1, f);
-		}
-
-	} while (size != 0 && !updated);
-
-	fclose(f);
-	return 1;
-}
-*/
 
 /**
  * Prints the disk in the terminal, inodes and blocs alike
@@ -417,6 +372,9 @@ int write_bloc(struct bloc *b) {
 	return fclose(f);
 }
 
+/**
+ * Returns a bloc by its id
+ */
 struct bloc get_bloc_by_id(unsigned int bloc_id) {
 	FILE *f;
 	int size;
@@ -506,7 +464,7 @@ struct bloc add_inode_to_inode(struct inode *dir, struct inode *i) {
 }
 
 /**
- * Counts number of inodes in_store and deleted
+ * Counts number of inodes used and deleted in the disk
  */
 void inode_count(unsigned int *in_store, unsigned int *deleted) {
 	FILE *f;
@@ -593,7 +551,6 @@ void iwrite(struct inode *i, char *buf) {
  * Returns an inode of a file
  *
  * success : returns the inode
- * failure : TODO
  */
 struct inode iopen(char *filename, const char *mode) {
 	struct inode i;
@@ -603,13 +560,13 @@ struct inode iopen(char *filename, const char *mode) {
 
 // TODO
 int iread(struct inode *i, char *buf, size_t len) {
-	return 0;
+	return EXIT_FAILURE;
 }
 
 
 // TODO
 int iclose(struct inode *i) {
-	return 0;
+	return EXIT_FAILURE;
 }
 
 // TODO

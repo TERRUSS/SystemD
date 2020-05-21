@@ -53,7 +53,6 @@ int ocr(char *str, char c) {
 	int o;
 	int i;
 
-	printf(">%s\n", str);
 	if (str == NULL) return 0;
 	if (strcmp(str, "") == 0) return 0;
 
