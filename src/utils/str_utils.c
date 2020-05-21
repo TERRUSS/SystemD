@@ -95,10 +95,20 @@ unsigned int *parse_ids(char *str) {
 
 	for (i = 0; i != filecount; i++) {
 		sscanf(str + o, "%u", &(ids[i]));
-		i++;
 		o = get_index(str + o, ',');
 	}
 
 	return ids;
 }
+
+void print_str_array(char **str_array, int len) {
+	int z;
+
+	if (str_array == NULL) return;
+
+	for (z = 0; z != len; z++) {
+		printf("\t%s", str_array[z]);
+	}
+}
+
 

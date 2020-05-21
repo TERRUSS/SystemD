@@ -54,7 +54,7 @@ void free_str_array(char **str_array, int len);
 void inode_count(unsigned int *in_store, unsigned int *deleted);
 
 void iwrite(struct inode *i, char *buf);
-char **list_files(struct inode *dir);
+char **list_files(struct inode *dir, int *filecount);
 
 #endif
 

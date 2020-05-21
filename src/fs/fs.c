@@ -599,18 +599,22 @@ int iclose(struct inode *i) {
  *
  * note: don't forget to free the array
  */
-char **list_files(struct inode *dir) {
+char **list_files(struct inode *dir, int *filecount) {
 	char **files;
 	unsigned int *inode_ids;
-	int filecount, z;
+	int z;
 	struct inode i;
 
 	files = NULL;
-	filecount = get_filecount(dir);
+	*filecount = get_filecount(dir);
+	print_disk();
+	printf("filecount %d\n", *filecount);
+	printf("%s\n", get_bloc_by_id(dir->bloc_ids[0]).content);
 	inode_ids = parse_ids(get_bloc_by_id(dir->bloc_ids[0]).content);
-	files = (char **) malloc(filecount * sizeof(char *));
+	PRINT_LINE;
+	files = (char **) malloc(*filecount * sizeof(char *));
 
-	for (z = 0; z != filecount; z++) {
+	for (z = 0; z != *filecount; z++) {
 		i = get_inode_by_id(inode_ids[z]);
 		files[z] = get_filename_for_inode(&i);
 	}

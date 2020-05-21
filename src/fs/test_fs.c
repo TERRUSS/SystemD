@@ -327,6 +327,23 @@ int test_parse_ids() {
 	return EXIT_SUCCESS;
 }
 
+int test_list_files() {
+	struct inode i;
+	int filecount;
+	char **files;
+
+	clean_disk();
+	g_working_directory = create_disk();
+	i = create_directory(&g_working_directory, "home");
+
+	files = list_files(&g_working_directory, &filecount);
+	print_str_array(files, filecount);
+	free_str_array(files, filecount);
+
+	printf("test_list_files() successful\n");
+	return EXIT_SUCCESS;
+}
+
 int main() {
 
 	init_id_generator();
@@ -356,6 +373,7 @@ int main() {
 	test_create_emptyfile();
 	test_create_regularfile();
 	test_parse_ids();
+	test_list_files();
 
 	return 0;
 }
