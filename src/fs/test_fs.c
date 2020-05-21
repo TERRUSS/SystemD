@@ -177,11 +177,6 @@ int test_iwrite() {
 	return 1;
 }
 
-int test_add_inode_to_inode() {
-
-	return 1;
-}
-
 int test_get_filename_for_inode() {
 	char filename[FILENAME_COUNT] = "FILENAME";
 	char content[] = "TRUC";
@@ -252,9 +247,48 @@ int test_inode_count() {
 	return 1;
 }
 
+int test_add_inode_to_inode() {
+	struct inode i, i2;
+	struct bloc b;
+
+	clean_disk();
+	create_disk();
+	b = new_bloc("dir", "");
+	i = new_inode(DIRECTORY, DEFAULT_PERMISSIONS, g_username, g_username);
+	write_bloc(&b);
+	add_bloc(&i, &b);
+	write_inode(&i);
+
+	// check filecount == 0
+	if (get_filecount(&i) != 0) {
+		fprintf(stderr, "test_add_inode_to_inode() failed\n");
+		return EXIT_FAILURE;
+	}
+
+	// add inode/file to dir
+	b = new_bloc("file.py", "print('Hello World')\\n");
+	i2 = new_inode(REGULAR_FILE, DEFAULT_PERMISSIONS, g_username, g_username);
+	write_inode(&i2);
+	write_bloc(&b);
+	add_bloc(&i2, &b);
+
+	b = add_inode_to_inode(&i, &i2);
+	update_bloc(&b);
+	print_disk();
+	// check filecount == 1
+	if (get_filecount(&i) != 1) {
+		fprintf(stderr, "test_add_inode_to_inode() failed\n");
+		return EXIT_FAILURE;
+	}
+
+	printf("test_add_inode_to_inode() successful\n");
+	return EXIT_SUCCESS;
+}
+
 int main() {
 
 	init_id_generator();
+	strcpy(g_username, "Paul");
 	/*
 	test_new_inode();
 	test_print_inode();
@@ -277,6 +311,7 @@ int main() {
 	/*test_iwrite();*/
 	test_get_filename_for_inode();
 	test_inode_count();
+	test_add_inode_to_inode();
 
 	return 0;
 }

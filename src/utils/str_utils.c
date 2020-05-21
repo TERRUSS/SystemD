@@ -53,12 +53,14 @@ int ocr(char *str, char c) {
 	int o;
 	int i;
 
+	printf(">%s\n", str);
 	if (str == NULL) return 0;
+	if (strcmp(str, "") == 0) return 0;
 
 	i = 0;
 	o = 0;
-	while (str + i != '\0') {
-		if (*(str + i) == c) {
+	while (str[i] != '\0') {
+		if (str[i] == c) {
 			o++;
 		}
 		i++;

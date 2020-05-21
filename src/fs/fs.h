@@ -13,6 +13,8 @@
 #include "fs/inode.h"
 #include "fs/bloc.h"
 
+#define PRINT_LINE printf("LINE %d\n", __LINE__)
+
 #define DISK "rsc/disk"
 
 extern const int INODE_FLAG;
@@ -34,6 +36,8 @@ int delete_inode(struct inode *i);
 int overwrite_inode(struct inode *new_inode, unsigned int id);
 int print_disk();
 int update_inode(struct inode *new_inode);
+int overwrite_bloc(struct bloc *new_bloc, unsigned int id);
+int update_bloc(struct bloc *new_bloc);
 int write_bloc(struct bloc *b);
 int write_inode(struct inode *i);
 struct bloc *get_inode_blocs(struct inode *i);
@@ -46,6 +50,7 @@ struct inode create_root();
 unsigned int get_bloc_id(char *filename);
 void free_str_array(char **str_array, int len);
 void inode_count(unsigned int *in_store, unsigned int *deleted);
+unsigned int get_filecount(struct inode *dir);
 
 void iwrite(struct inode *i, char *buf);
 
