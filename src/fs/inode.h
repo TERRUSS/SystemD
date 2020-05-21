@@ -1,0 +1,63 @@
+#ifndef INODE_H
+#define INODE_H
+
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <time.h>
+#include <stdio.h>
+#include <assert.h>
+#include <string.h>
+#include "utils/str_utils.h"
+
+#define ROOT_ID (1)
+
+#define USERNAME_COUNT (15)
+#define GROUPNAME_COUNT (15)
+#define BLOC_IDS_COUNT (10)
+#define DELETED (0)
+#define TODO_PRINT printf("TODO line %d\n", __LINE__)
+
+extern const mode_t DEFAULT_PERMISSIONS;
+extern const char ROOT[USERNAME_COUNT];
+extern const mode_t ROOT_PERMISSIONS;
+extern char g_username[USERNAME_COUNT];
+
+
+/* Enumerations */
+
+// TODO discard typedef, see Torvald's recommandations
+typedef enum filetype {
+	REGULAR_FILE, DIRECTORY, SYMBOLIC_LINK, FIFO, SOCKET, DEVICE
+} filetype;
+/**
+ * Stores metadata of blocs
+ */
+struct inode {
+	/* const */
+	unsigned char id;
+
+	/* const */
+	filetype type;
+	mode_t permissions;
+
+	char user_name[USERNAME_COUNT];
+	char group_name[GROUPNAME_COUNT];
+
+	/* const */
+	struct tm *created_at;
+	struct tm *updated_at;
+
+	unsigned int bloc_ids[BLOC_IDS_COUNT];
+	int bloc_count;
+};
+
+int delete_inode(struct inode *i);
+void print_inode(struct inode *i);
+struct inode create_inode(filetype type, mode_t perms, const char *user, const char *group);
+int contains(struct inode *i, unsigned int bloc_id);
+void init_id_generator();
+
+#endif
+
