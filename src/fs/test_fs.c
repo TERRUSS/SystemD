@@ -274,7 +274,6 @@ int test_add_inode_to_inode() {
 
 	b = add_inode_to_inode(&i, &i2);
 	update_bloc(&b);
-	print_disk();
 	// check filecount == 1
 	if (get_filecount(&i) != 1) {
 		fprintf(stderr, "test_add_inode_to_inode() failed\n");
@@ -282,6 +281,27 @@ int test_add_inode_to_inode() {
 	}
 
 	printf("test_add_inode_to_inode() successful\n");
+	return EXIT_SUCCESS;
+}
+
+int test_create_directory() {
+	struct inode dir;
+
+	clean_disk();
+	g_working_directory = create_disk();
+	dir = create_directory(&g_working_directory, "home");
+
+	if (get_filecount(&g_working_directory) != 1) {
+		perror("test_create_directory() failed");
+		return EXIT_FAILURE;
+	}
+	if (get_filecount(&dir) != 0) {
+		perror("test_create_directory() failed");
+		return EXIT_FAILURE;
+	}
+
+	printf("test_create_directory() successful\n");
+
 	return EXIT_SUCCESS;
 }
 
@@ -312,6 +332,7 @@ int main() {
 	test_get_filename_for_inode();
 	test_inode_count();
 	test_add_inode_to_inode();
+	test_create_directory();
 
 	return 0;
 }

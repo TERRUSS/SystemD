@@ -62,7 +62,10 @@ struct inode create_root() {
 int write_inode(struct inode *i) {
 	FILE *f;
 
-	if (overwrite_inode(i, DELETED)) return EXIT_SUCCESS;
+	if (overwrite_inode(i, DELETED) == EXIT_SUCCESS) {
+		printf("Inode overwritten\n");
+		return EXIT_SUCCESS;
+	}
 
 	f = fopen(DISK, "ab");
 
@@ -158,6 +161,7 @@ int overwrite_inode(struct inode *new_inode, unsigned int id) {
 			if (i.id == id) {
 				fseek(f, pos, SEEK_SET);
 				fwrite(new_inode, sizeof(struct inode), 1, f);
+				puts("FOUND");
 				updated = 1;
 			}
 		} else {
@@ -284,6 +288,10 @@ int print_disk() {
 
 	size = 0;
 	f = fopen(DISK, "rb");
+	if (f == NULL) {
+		fprintf(stderr, "File's NULL %d\n", __LINE__);
+		return EXIT_FAILURE;
+	}
 
 	printf("<<<<<<<<<< DISK >>>>>>>>>>\n");
 
@@ -317,17 +325,19 @@ int print_disk() {
 /**
  * Creates a directory
  */
-struct inode create_directory(char *dirname) {
+struct inode create_directory(struct inode *under_dir, char *dirname) {
 	struct inode i;
-	struct bloc b;
+	struct bloc b, to_update;
 
 	i = new_inode(DIRECTORY, DEFAULT_PERMISSIONS, g_username, g_username);
 	b = new_bloc(dirname, "");
 
 	add_bloc(&i, &b);
+	to_update = add_inode_to_inode(under_dir, &i);
 
 	write_inode(&i);
 	write_bloc(&b);
+	update_bloc(&to_update);
 
 	return i;
 }
