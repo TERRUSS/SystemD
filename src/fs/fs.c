@@ -349,18 +349,19 @@ struct inode create_directory(struct inode *under_dir, char *dirname) {
  * TODO what's the mode for ? how do you use it,
  * since you only return an inode
  */
-struct inode create_emptyfile(char *filename, filetype type, const char *mode) {
-	struct bloc b;
+struct inode create_emptyfile(struct inode *under_dir, char *filename, filetype type, const char *mode) {
+	struct bloc b, to_update;
 	struct inode i;
 
 	b = new_bloc(filename, "");
 	i = new_inode(type, DEFAULT_PERMISSIONS, g_username, g_username);
 
-	// we link the bloc to the inode
 	add_bloc(&i, &b);
+	to_update = add_inode_to_inode(under_dir, &i);
 
 	write_inode(&i);
 	write_bloc(&b);
+	update_bloc(&to_update);
 
 	return i;
 }

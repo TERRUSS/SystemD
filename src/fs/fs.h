@@ -44,7 +44,7 @@ struct bloc *get_inode_blocs(struct inode *i);
 struct bloc add_inode_to_inode(struct inode *dir, struct inode *i);
 struct bloc get_bloc_by_id(unsigned int bloc_id);
 struct inode create_disk();
-struct inode create_emptyfile(char *filename, filetype type, const char *mode);
+struct inode create_emptyfile(struct inode *under_dir, char *filename, filetype type, const char *mode);
 struct inode create_regularfile(char *filename, char *content);
 struct inode create_directory(struct inode *under_dir, char *dirname);
 struct inode create_root();

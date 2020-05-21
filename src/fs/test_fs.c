@@ -161,8 +161,8 @@ int test_iwrite() {
 	struct inode i;
 
 	clean_disk();
-	create_disk();
-	i = create_emptyfile(filename, REGULAR_FILE, "a");
+	g_working_directory = create_disk();
+	i = create_emptyfile(&g_working_directory, filename, REGULAR_FILE, "a");
 	content = rd("README.md");
 	if (content == NULL) {
 		perror("Test failed");
