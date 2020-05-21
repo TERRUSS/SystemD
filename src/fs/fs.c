@@ -177,45 +177,6 @@ int overwrite_inode(struct inode *new_inode, unsigned int id) {
  */
 int update_inode(struct inode *new_inode) {
 	return overwrite_inode(new_inode, new_inode->id);
-	/*
-	FILE *f;
-	int size;
-	int flag;
-	int pos;
-	struct inode i;
-	int updated;
-
-	size = 0;
-	updated = 0;
-	f = fopen(DISK, "r+b");
-
-	do {
-		size = fread(&flag, sizeof(const int), 1, f);
-		pos = ftell(f);
-
-		if (size == 0) continue;
-
-		if (flag == INODE_FLAG) {
-			fread(&i, sizeof(struct inode), 1, f);
-
-			if (new_inode->id == i.id) {
-				fseek(f, pos, SEEK_SET);
-				fwrite(new_inode, sizeof(struct inode), 1, f);
-				updated = 1;
-			}
-
-		}
-
-	} while (size != 0 && !updated);
-
-	fclose(f);
-
-	if (updated) {
-		return 1;
-	} else {
-		return 0;
-	}
-	*/
 }
 
 struct inode create_regularfile(char *filename, char *content) {
