@@ -109,6 +109,19 @@ void print_str_array(char **str_array, int len) {
 	for (z = 0; z != len; z++) {
 		printf("\t%s", str_array[z]);
 	}
+	puts("");
 }
 
+char **init_str_array(unsigned int len, unsigned int size) {
+	char **str_array;
+	int z;
+
+	str_array = (char **) malloc(len * sizeof(char *));
+
+	for (z = 0; z != len; z++) {
+		str_array[z] = (char *) calloc(size, sizeof(char));
+	}
+
+	return str_array;
+}
 

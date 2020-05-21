@@ -340,6 +340,11 @@ int test_list_files() {
 	print_str_array(files, filecount);
 	free_str_array(files, filecount);
 
+	i = create_regularfile(&g_working_directory, "hey.txt", "OwO");
+	files = list_files(&g_working_directory, &filecount);
+	print_str_array(files, filecount);
+	free_str_array(files, filecount);
+
 	printf("test_list_files() successful\n");
 	return EXIT_SUCCESS;
 }

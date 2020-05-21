@@ -16,19 +16,23 @@ struct file g_filetree;
  * on failure: returns NULL
  */
 char *get_filename_for_inode(struct inode *i) {
-	struct bloc b;
+	/*struct bloc b;
 	char *filename;
+	 */
 
 	if (i->bloc_count == 0) {
 		perror("The inode has no blocs");
 		return NULL;
 	}
 
+	/*
 	b = get_bloc_by_id(i->bloc_ids[0]);
 	filename = malloc(FILENAME_COUNT);
-	strncpy(filename, b.content, FILENAME_COUNT);
+	strncpy(filename, b.filename, FILENAME_COUNT);
 
 	return filename;
+	*/
+	return get_bloc_by_id(i->bloc_ids[0]).filename;
 }
 
 /**
@@ -608,15 +612,15 @@ char **list_files(struct inode *dir, int *filecount) {
 	files = NULL;
 	*filecount = get_filecount(dir);
 	print_disk();
-	printf("filecount %d\n", *filecount);
-	printf("%s\n", get_bloc_by_id(dir->bloc_ids[0]).content);
 	inode_ids = parse_ids(get_bloc_by_id(dir->bloc_ids[0]).content);
-	PRINT_LINE;
-	files = (char **) malloc(*filecount * sizeof(char *));
+	/*
+	files = (char **) malloc(*filecount * sizeof(char[FILENAME_COUNT]));
+	*/
+	files = init_str_array(*filecount, FILENAME_COUNT);
 
 	for (z = 0; z != *filecount; z++) {
 		i = get_inode_by_id(inode_ids[z]);
-		files[z] = get_filename_for_inode(&i);
+		strncpy(files[z], get_filename_for_inode(&i), FILENAME_COUNT + 1);
 	}
 
 	free(inode_ids);
