@@ -116,7 +116,13 @@ int test_update_inode() {
 	g_working_directory = create_disk();
 
 	i = create_regularfile(&g_working_directory, "FILENAME", "TRUC");
+	strcpy(i.user_name, "Pauli");
+	if (update_inode(&i) == EXIT_FAILURE) {
+		perror("test_update_inode() failed");
+		return EXIT_FAILURE;
+	}
 
+	printf("test_update_inode() successful\n");
 	return EXIT_SUCCESS;
 }
 
@@ -364,19 +370,18 @@ int test_parse_ids() {
 }
 
 int test_list_files() {
-	struct inode i;
 	int filecount;
 	char **files;
 
 	clean_disk();
 	g_working_directory = create_disk();
-	i = create_directory(&g_working_directory, "home");
+	create_directory(&g_working_directory, "home");
 
 	files = list_files(&g_working_directory, &filecount);
 	print_str_array(files, filecount);
 	free_str_array(files, filecount);
 
-	i = create_regularfile(&g_working_directory, "hey.txt", "OwO");
+	create_regularfile(&g_working_directory, "hey.txt", "OwO");
 	files = list_files(&g_working_directory, &filecount);
 	print_str_array(files, filecount);
 	free_str_array(files, filecount);
@@ -423,9 +428,8 @@ int main() {
 	/*test_get_inode_blocs();*/
 	/*test_iwrite();*/
 	test_get_filename_for_inode();
-	/*
-	*/
 	test_list_files();
+	test_update_inode();
 
 	return 0;
 }
