@@ -52,7 +52,7 @@ doc:
 
 .PHONY: fs_test
 fs_test:
-	gcc -Wall -pedantic -g -Isrc src/fileio/fileio.c src/fs/fs.c src/fs/test_fs.c 
+	gcc -Wall -pedantic -g -Isrc src/utils/str_utils.c src/fileio/fileio.c src/fs/fs.c src/fs/test_fs.c 
 
 .PHONY: clean_disk
 clean_disk:

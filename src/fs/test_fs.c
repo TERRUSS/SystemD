@@ -177,6 +177,10 @@ int test_iwrite() {
 	return 1;
 }
 
+int test_add_inode_to_inode() {
+
+}
+
 int main() {
 
 	init_id_generator();

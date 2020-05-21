@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
+#include "utils/str_utils.h"
 
 /* Macros */
 
@@ -90,12 +91,12 @@ struct file {
 int clean_disk();
 int contains(struct inode *i, unsigned int bloc_id);
 int print_disk();
-int strncut(char ***str_array, char *str, size_t n);
 int update_bloc_content(unsigned int bloc_id, const char *new_content);
 int update_inode(struct inode *new_inode);
 int write_bloc(struct bloc *b);
 int write_inode(struct inode *i);
 struct bloc *get_inode_blocs(struct inode *i);
+struct bloc add_inode_to_inode(struct inode *dir, struct inode *i);
 struct bloc get_bloc_by_id(unsigned int bloc_id);
 struct bloc new_bloc(const char *filename, const char *content);
 struct inode create_emptyfile(char *filename, filetype type, const char *mode);
@@ -110,8 +111,6 @@ void init_id_generator();
 void iwrite(struct inode *i, char *buf);
 void print_bloc(struct bloc *b);
 void print_inode(struct inode *i);
-int ocr(char *str, char c);
-int get_index(char *str, char chr);
 
 #endif
 
