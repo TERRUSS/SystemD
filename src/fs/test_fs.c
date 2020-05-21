@@ -1,13 +1,13 @@
 #include "fileio/fileio.h"
 #include "fs/fs.h"
 
-int test_create_inode() {
+int test_new_inode() {
 	filetype t = REGULAR_FILE;
 	mode_t m = S_IRWXU;
 	char user[10] = "Paul";
 
 
-	struct inode i = create_inode(t, m, user, NULL);
+	struct inode i = new_inode(t, m, user, NULL);
 
 	return 0;
 }
@@ -18,7 +18,7 @@ int test_print_inode() {
 	char user[10] = "Paul";
 
 
-	struct inode i = create_inode(t, m, user, NULL);
+	struct inode i = new_inode(t, m, user, NULL);
 	print_inode(&i);
 
 	return 0;
@@ -30,7 +30,7 @@ int test_write_inode() {
 	char user[10] = "Paul";
 	struct inode i;
 
-	i = create_inode(t, m, user, NULL);
+	i = new_inode(t, m, user, NULL);
 	if (write_inode(&i) == 0)
 		printf("Test success\n");
 	else
@@ -75,7 +75,7 @@ int test_update() {
 	char user[10] = "Paul";
 	struct inode i;
 
-	i = create_inode(t, m, user, NULL);
+	i = new_inode(t, m, user, NULL);
 	write_inode(&i);
 	//write inodes to disk
 	//print disk
@@ -186,7 +186,7 @@ int main() {
 
 	init_id_generator();
 	/*
-	test_create_inode();
+	test_new_inode();
 	test_print_inode();
 	test_write_inode();
 	test_new_bloc();

@@ -4,7 +4,7 @@ const int INODE_FLAG = 1;
 const int BLOC_FLAG = 2;
 
 /* Current working directory */
-struct inode g_current_node;
+struct inode g_working_directory;
 /* Contains the filetree TODO will be used ? */
 struct file g_filetree;
 
@@ -18,7 +18,7 @@ struct inode create_root() {
 	struct inode i;
 	struct bloc b;
 
-	i = create_inode(DIRECTORY, ROOT_PERMISSIONS, ROOT, ROOT);
+	i = new_inode(DIRECTORY, ROOT_PERMISSIONS, ROOT, ROOT);
 	b = new_bloc("", "");
 	i.id = ROOT_ID;
 
@@ -132,7 +132,7 @@ struct inode create_regularfile(char *filename, char *content) {
 	blocs_contents = NULL;
 	len = strncut(&blocs_contents, content, BLOC_SIZE);
 
-	i = create_inode(REGULAR_FILE, DEFAULT_PERMISSIONS, g_username, g_username);
+	i = new_inode(REGULAR_FILE, DEFAULT_PERMISSIONS, g_username, g_username);
 
 
 	for (z = 0; z != len - 1; z++) {
@@ -290,7 +290,7 @@ struct inode create_directory(char *dirname) {
 	struct inode i;
 	struct bloc b;
 
-	i = create_inode(DIRECTORY, DEFAULT_PERMISSIONS, g_username, g_username);
+	i = new_inode(DIRECTORY, DEFAULT_PERMISSIONS, g_username, g_username);
 	b = new_bloc(dirname, "");
 
 	add_bloc(&i, &b);
@@ -314,7 +314,7 @@ struct inode create_emptyfile(char *filename, filetype type, const char *mode) {
 	struct inode i;
 
 	b = new_bloc(filename, "");
-	i = create_inode(type, DEFAULT_PERMISSIONS, g_username, g_username);
+	i = new_inode(type, DEFAULT_PERMISSIONS, g_username, g_username);
 
 	// we link the bloc to the inode
 	add_bloc(&i, &b);
@@ -422,6 +422,7 @@ struct bloc add_inode_to_inode(struct inode *dir, struct inode *i) {
 /* Primitives */
 
 /**
+ * TODO not working, segfault
  */
 void iwrite(struct inode *i, char *buf) {
 	struct bloc *blocs, b;
@@ -442,7 +443,7 @@ void iwrite(struct inode *i, char *buf) {
 			printf("__LINE__ %d\n", __LINE__);
 			print_bloc(blocs + z);
 			printf("SIZE %lu\n", strlen(blocs[z].content));
-			update_bloc(blocs + z);
+			update_bloc(blocs + z);// segfault
 		}
 
 		for (; z != len; z++) {
@@ -472,9 +473,6 @@ void iwrite(struct inode *i, char *buf) {
 }
 
 /**
- * TODO TO TEST
- * TODO To avoid conflict named it iopen
- * TODO open a file under a directory (here, opens any kind of file)
  * Returns an inode of a file
  *
  * success : returns the inode
@@ -503,3 +501,4 @@ char **list_files(struct inode *i) {
 	files = NULL;
 	return files;
 }
+

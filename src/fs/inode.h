@@ -48,11 +48,11 @@ struct inode {
 	int bloc_count;
 };
 
-int delete_inode(struct inode *i);
-void print_inode(struct inode *i);
-struct inode create_inode(filetype type, mode_t perms, const char *user, const char *group);
 int contains(struct inode *i, unsigned int bloc_id);
+int delete_inode(struct inode *i);
+struct inode new_inode(filetype type, mode_t perms, const char *user, const char *group);
 void init_id_generator();
+void print_inode(struct inode *i);
 
 #endif
 

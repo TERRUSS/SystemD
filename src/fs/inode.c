@@ -15,7 +15,7 @@ char g_username[USERNAME_COUNT];
  * on success : returns inode
  * on failure : TODO
  */
-struct inode create_inode(filetype type, mode_t perms, const char *user, const char *group) {
+struct inode new_inode(filetype type, mode_t perms, const char *user, const char *group) {
 
 	struct inode i;
 	time_t t;

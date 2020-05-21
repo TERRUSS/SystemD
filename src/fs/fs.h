@@ -24,7 +24,7 @@ extern const int BLOC_FLAG;
 
 /* Globals */
 
-extern struct inode g_current_node;
+extern struct inode g_working_directory;
 extern struct file g_filetree;
 
 /* Structures */
