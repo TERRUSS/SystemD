@@ -416,10 +416,10 @@ int main() {
 	test_strncut();
 	/*test_get_inode_blocs();*/
 	/*test_iwrite();*/
-	/*test_get_filename_for_inode();*/
+	test_get_filename_for_inode();
 	/*
-	*/
 	test_list_files();
+	*/
 
 	return 0;
 }
