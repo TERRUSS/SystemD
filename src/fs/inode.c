@@ -13,7 +13,6 @@ struct inode new_inode(filetype type, mode_t perms, const char *user, const char
 
 	struct inode i;
 	time_t t;
-	int z;
 
 	memset(&i, 0, sizeof(struct inode));
 	i.id = rand();
@@ -33,10 +32,6 @@ struct inode new_inode(filetype type, mode_t perms, const char *user, const char
 	i.updated_at = localtime(&t);
 
 	i.bloc_count = 0;
-	/*
-	for (z = 0; z != BLOC_IDS_COUNT; z++)
-		i.bloc_ids[z] = DELETED;
-	*/
 
 	return i;
 }

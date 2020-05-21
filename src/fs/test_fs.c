@@ -151,12 +151,10 @@ int test_create_regularfile() {
 		return EXIT_FAILURE;
 	}
 	create_regularfile(&g_working_directory, filename, content);
-	/*
 	if (get_filecount(&g_working_directory) != 1) {
 		perror("test_create_regularfile() failed");
 		return EXIT_FAILURE;
 	}
-	*/
 	free(content);
 	printf("test_create_regularfile() succesful\n");
 
@@ -403,10 +401,10 @@ int main() {
 	test_create_disk();
 	test_print_disk();
 	test_get_filecount();
-
-	/*
 	test_add_inode_to_inode();
 	test_create_regularfile();
+
+	/*
 	test_get_bloc_id();
 	*/
 
