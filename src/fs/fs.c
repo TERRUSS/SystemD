@@ -3,6 +3,12 @@
 const int INODE_FLAG = 1;
 const int BLOC_FLAG = 2;
 
+const mode_t DEFAULT_PERMISSIONS = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
+const char ROOT[USERNAME_COUNT] = "root";
+const mode_t ROOT_PERMISSIONS = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
+
+char g_username[USERNAME_COUNT];
+
 /* Current working directory */
 struct inode g_working_directory;
 /* Contains the filetree TODO will be used ? */
@@ -16,22 +22,11 @@ struct file g_filetree;
  * on failure: returns NULL
  */
 char *get_filename_for_inode(struct inode *i) {
-	/*struct bloc b;
-	char *filename;
-	 */
-
 	if (i->bloc_count == 0) {
 		perror("The inode has no blocs");
 		return NULL;
 	}
 
-	/*
-	b = get_bloc_by_id(i->bloc_ids[0]);
-	filename = malloc(FILENAME_COUNT);
-	strncpy(filename, b.filename, FILENAME_COUNT);
-
-	return filename;
-	*/
 	return get_bloc_by_id(i->bloc_ids[0]).filename;
 }
 
@@ -78,7 +73,7 @@ int write_inode(struct inode *i) {
 		return EXIT_FAILURE;
 	}
 
-	fwrite(&INODE_FLAG, sizeof(const int), 1, f);
+	fwrite(&INODE_FLAG, sizeof(INODE_FLAG), 1, f);
 	fwrite(i, sizeof(struct inode), 1, f);
 
 	fclose(f);
@@ -611,11 +606,7 @@ char **list_files(struct inode *dir, int *filecount) {
 
 	files = NULL;
 	*filecount = get_filecount(dir);
-	print_disk();
 	inode_ids = parse_ids(get_bloc_by_id(dir->bloc_ids[0]).content);
-	/*
-	files = (char **) malloc(*filecount * sizeof(char[FILENAME_COUNT]));
-	*/
 	files = init_str_array(*filecount, FILENAME_COUNT);
 
 	for (z = 0; z != *filecount; z++) {

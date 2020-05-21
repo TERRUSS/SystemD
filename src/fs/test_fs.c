@@ -8,8 +8,10 @@ int test_new_inode() {
 
 
 	struct inode i = new_inode(t, m, user, NULL);
+	(void) i;
 
-	return 0;
+	printf("test_new_inode() successful\n");
+	return EXIT_SUCCESS;
 }
 
 int test_print_inode() {
@@ -21,7 +23,7 @@ int test_print_inode() {
 	struct inode i = new_inode(t, m, user, NULL);
 	print_inode(&i);
 
-	return 0;
+	return EXIT_SUCCESS;
 }
 
 int test_write_inode() {
@@ -31,32 +33,33 @@ int test_write_inode() {
 	struct inode i;
 
 	i = new_inode(t, m, user, NULL);
-	if (write_inode(&i) == 0)
-		printf("Test success\n");
-	else
-		printf("Test failure\n");
+	if (write_inode(&i) != EXIT_SUCCESS)
+		perror("test_write_inode() failed");
+	printf("test_write_inode() success\n");
 
-	return 0;
+	return EXIT_SUCCESS;
 }
 
 int test_new_bloc() {
 	struct bloc b;
 
 	b = new_bloc("hello_world.c", "#include<stdio.h>\nint main(){printf(\"HelloWorld\n\");return 0;}");
+	printf("test_new_bloc() successful\n");
+	(void) b;
 
-	return 0;
+	return EXIT_SUCCESS;
 }
 
 int test_write_bloc() {
 	struct bloc b;
 
 	b = new_bloc("hello_world.c", "#include<stdio.h>\nint main(){printf(\"HelloWorld\n\");return 0;}");
-	if (write_bloc(&b) == 0)
-		printf("Test success\n");
-	else
-		printf("Test failure\n");
+	if (write_bloc(&b) != EXIT_SUCCESS)
+		perror("test_write_bloc() failure");
 
-	return 0;
+	printf("test_write_bloc() successful\n");
+
+	return EXIT_SUCCESS;
 }
 
 int test_print_disk() {
@@ -178,8 +181,6 @@ int test_get_filename_for_inode() {
 	} else {
 		printf("test_get_filename_for_inode() succesful\n");
 	}
-
-	free(rst);
 
 	return 1;
 }
@@ -340,10 +341,12 @@ int test_list_files() {
 	print_str_array(files, filecount);
 	free_str_array(files, filecount);
 
+	/*
 	i = create_regularfile(&g_working_directory, "hey.txt", "OwO");
 	files = list_files(&g_working_directory, &filecount);
 	print_str_array(files, filecount);
 	free_str_array(files, filecount);
+	*/
 
 	printf("test_list_files() successful\n");
 	return EXIT_SUCCESS;
@@ -353,16 +356,15 @@ int main() {
 
 	init_id_generator();
 	strcpy(g_username, "Paul");
-	/*
+
 	test_new_inode();
 	test_print_inode();
 	test_write_inode();
 	test_new_bloc();
 	test_write_bloc();
-	*/
-
-
 	/*
+
+
 	test_get_bloc_id();
 	test_print_disk();
 	*/
@@ -371,7 +373,8 @@ int main() {
 	//test_strncut();
 	/*test_get_inode_blocs();*/
 	/*test_iwrite();*/
-	test_get_filename_for_inode();
+	/*test_get_filename_for_inode();*/
+	/*
 	test_inode_count();
 	test_add_inode_to_inode();
 	test_create_directory();
@@ -379,6 +382,7 @@ int main() {
 	test_create_regularfile();
 	test_parse_ids();
 	test_list_files();
+	*/
 
 	return 0;
 }

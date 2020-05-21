@@ -20,6 +20,10 @@
 extern const int INODE_FLAG;
 extern const int BLOC_FLAG;
 
+extern const mode_t DEFAULT_PERMISSIONS;
+extern const char ROOT[USERNAME_COUNT];
+extern const mode_t ROOT_PERMISSIONS;
+extern char g_username[USERNAME_COUNT];
 extern struct inode g_working_directory;
 extern struct file g_filetree;
 

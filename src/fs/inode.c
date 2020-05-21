@@ -1,11 +1,5 @@
 #include "fs/inode.h"
 
-const mode_t DEFAULT_PERMISSIONS = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
-const char ROOT[USERNAME_COUNT] = "root";
-const mode_t ROOT_PERMISSIONS = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
-
-char g_username[USERNAME_COUNT];
-
 /**
  * Returns an inode
  *
@@ -19,7 +13,9 @@ struct inode new_inode(filetype type, mode_t perms, const char *user, const char
 
 	struct inode i;
 	time_t t;
+	int z;
 
+	memset(&i, 0, sizeof(struct inode));
 	i.id = rand();
 
 	i.type = type;
@@ -37,6 +33,10 @@ struct inode new_inode(filetype type, mode_t perms, const char *user, const char
 	i.updated_at = localtime(&t);
 
 	i.bloc_count = 0;
+	/*
+	for (z = 0; z != BLOC_IDS_COUNT; z++)
+		i.bloc_ids[z] = DELETED;
+	*/
 
 	return i;
 }

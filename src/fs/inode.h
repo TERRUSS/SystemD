@@ -17,11 +17,6 @@
 #define DELETED (0)
 #define TODO_PRINT printf("TODO line %d\n", __LINE__)
 
-extern const mode_t DEFAULT_PERMISSIONS;
-extern const char ROOT[USERNAME_COUNT];
-extern const mode_t ROOT_PERMISSIONS;
-extern char g_username[USERNAME_COUNT];
-
 /* TODO discard typedef, see Torvald's recommandations */
 typedef enum filetype {
 	REGULAR_FILE, DIRECTORY, SYMBOLIC_LINK, FIFO, SOCKET, DEVICE

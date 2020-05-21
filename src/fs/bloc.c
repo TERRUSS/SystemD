@@ -26,6 +26,7 @@ int add_bloc(struct inode *i, struct bloc *b) {
 struct bloc new_bloc(const char *filename, const char *content) {
 	struct bloc b;
 
+	memset(&b, 0, sizeof(struct bloc));
 	b.id = rand();
 
 	strncpy(b.filename, filename, FILENAME_COUNT);
