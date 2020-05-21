@@ -28,24 +28,24 @@ struct file {
 	int files_count;
 };
 
+char *get_filename_for_inode(struct inode *i);
 int clean_disk();
+int delete_inode(struct inode *i);
+int overwrite_inode(struct inode *new_inode, unsigned int id);
 int print_disk();
 int update_inode(struct inode *new_inode);
-char *get_filename_for_inode(struct inode *i);
 int write_bloc(struct bloc *b);
 int write_inode(struct inode *i);
 struct bloc *get_inode_blocs(struct inode *i);
+struct bloc add_inode_to_inode(struct inode *dir, struct inode *i);
 struct bloc get_bloc_by_id(unsigned int bloc_id);
+struct inode create_disk();
 struct inode create_emptyfile(char *filename, filetype type, const char *mode);
 struct inode create_regularfile(char *filename, char *content);
 struct inode create_root();
 unsigned int get_bloc_id(char *filename);
-struct inode create_disk();
-int delete_inode(struct inode *i);
 void free_str_array(char **str_array, int len);
-struct bloc add_inode_to_inode(struct inode *dir, struct inode *i);
-int overwrite_inode(struct inode *new_inode, unsigned int id);
-void inode_count(unsigned int *available, unsigned int *deleted);
+void inode_count(unsigned int *in_store, unsigned int *deleted);
 
 void iwrite(struct inode *i, char *buf);
 

@@ -481,9 +481,9 @@ struct bloc add_inode_to_inode(struct inode *dir, struct inode *i) {
 }
 
 /**
- * Counts number of inodes available and deleted
+ * Counts number of inodes in_store and deleted
  */
-void inode_count(unsigned int *available, unsigned int *deleted) {
+void inode_count(unsigned int *in_store, unsigned int *deleted) {
 	FILE *f;
 	int size;
 	int flag;
@@ -491,7 +491,7 @@ void inode_count(unsigned int *available, unsigned int *deleted) {
 	struct bloc b;
 
 	size = 0;
-	*available = 0;
+	*in_store = 0;
 	*deleted = 0;
 	f = fopen(DISK, "r+b");
 
@@ -503,7 +503,7 @@ void inode_count(unsigned int *available, unsigned int *deleted) {
 			if (i.id == DELETED)
 				*deleted = *deleted +1;
 			else
-				*available = *available + 1;
+				*in_store = *in_store + 1;
 		} else {
 			fread(&b, sizeof(struct bloc), 1, f);
 		}
