@@ -68,6 +68,17 @@ int test_print_disk() {
 	return 0;
 }
 
+int test_create_disk() {
+	struct inode i;
+
+	clean_disk();
+	i = create_disk();
+	(void) i;
+
+	printf("test_create_disk() successful\n");
+	return EXIT_SUCCESS;
+}
+
 int test_update() {
 	struct bloc b;
 	clean_disk();
@@ -341,12 +352,10 @@ int test_list_files() {
 	print_str_array(files, filecount);
 	free_str_array(files, filecount);
 
-	/*
 	i = create_regularfile(&g_working_directory, "hey.txt", "OwO");
 	files = list_files(&g_working_directory, &filecount);
 	print_str_array(files, filecount);
 	free_str_array(files, filecount);
-	*/
 
 	printf("test_list_files() successful\n");
 	return EXIT_SUCCESS;
@@ -362,9 +371,10 @@ int main() {
 	test_write_inode();
 	test_new_bloc();
 	test_write_bloc();
+
+	test_create_disk();
+
 	/*
-
-
 	test_get_bloc_id();
 	test_print_disk();
 	*/
@@ -381,8 +391,8 @@ int main() {
 	test_create_emptyfile();
 	test_create_regularfile();
 	test_parse_ids();
-	test_list_files();
 	*/
+	test_list_files();
 
 	return 0;
 }
