@@ -204,6 +204,51 @@ int test_get_filename_for_inode() {
 	return 1;
 }
 
+int test_inode_count() {
+	unsigned int available, deleted;
+	filetype t = REGULAR_FILE;
+	mode_t m = S_IRWXU;
+	char user[10] = "Paul";
+	struct inode i, i2;
+
+	clean_disk();
+
+	// write inode
+	i = create_disk();
+
+	/*print_disk();*/
+	// check number of inodes == 1
+	inode_count(&available, &deleted);
+		printf("available %u deleted %u\n", available, deleted);
+	if (available != 1 && deleted != 0) {
+		perror("test_inode_count() failed");
+	}
+
+	// delete inode
+	delete_inode(&i);
+	/*print_disk();*/
+
+	// check number of inodes == 0
+	inode_count(&available, &deleted);
+		printf("available %u deleted %u\n", available, deleted);
+	if (available != 0 && deleted != 1) {
+		perror("test_inode_count() failed");
+	}
+
+	// write inode
+	i2 = new_inode(t, m, user, NULL);
+	write_inode(&i2);
+	/*print_disk();*/
+	// check number of inodes == 1
+	inode_count(&available, &deleted);
+		printf("available %u deleted %u\n", available, deleted);
+	if (available != 1 && deleted != 0) {
+		perror("test_inode_count() failed");
+	}
+
+	return 1;
+}
+
 int main() {
 
 	init_id_generator();
@@ -228,6 +273,7 @@ int main() {
 	/*test_get_inode_blocs();*/
 	/*test_iwrite();*/
 	test_get_filename_for_inode();
+	test_inode_count();
 
 	return 0;
 }

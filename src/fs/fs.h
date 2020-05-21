@@ -40,9 +40,12 @@ struct inode create_emptyfile(char *filename, filetype type, const char *mode);
 struct inode create_regularfile(char *filename, char *content);
 struct inode create_root();
 unsigned int get_bloc_id(char *filename);
-void create_disk();
+struct inode create_disk();
+int delete_inode(struct inode *i);
 void free_str_array(char **str_array, int len);
 struct bloc add_inode_to_inode(struct inode *dir, struct inode *i);
+int overwrite_inode(struct inode *new_inode, unsigned int id);
+void inode_count(unsigned int *available, unsigned int *deleted);
 
 void iwrite(struct inode *i, char *buf);
 

@@ -84,18 +84,6 @@ void print_inode(struct inode *i) {
 }
 
 /**
- * Deletes an inode
- */
-int delete_inode(struct inode *i) {
-    if (i->id == DELETED) {
-        return 0;
-    } else {
-        i->id = DELETED;
-        return 1;
-    }
-}
-
-/**
  * Initialize the id generator (seed for random)
  * TODO put in rand_utils/c
  */

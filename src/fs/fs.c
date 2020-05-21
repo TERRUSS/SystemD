@@ -51,15 +51,16 @@ struct inode create_root() {
 /**
  * Writes an inode to the disk (by append)
  *
- * Returns fclose return value
  */
 int write_inode(struct inode *i) {
 	FILE *f;
 
+	if (overwrite_inode(i, DELETED)) return 1;
+
 	f = fopen(DISK, "ab");
 
 	if (f == NULL) {
-		perror("Can't open file");
+		fprintf(stderr, "File's NULL %d", __LINE__);
 		return 0;
 	}
 
@@ -70,12 +71,28 @@ int write_inode(struct inode *i) {
 	return 1;
 }
 
+int delete_inode(struct inode *i) {
+	struct inode new_inode;
+	int rst;
+
+	new_inode = *i;
+	new_inode.id = DELETED;
+	rst = overwrite_inode(&new_inode, i->id);
+	i->id = DELETED;
+
+	return rst;
+}
+
 /**
  * Creates the root inode and write to a file
  * Call only once
  */
-void create_disk() {
-	create_root();
+struct inode create_disk() {
+	FILE *f;
+
+	f = fopen(DISK, "ab+");
+	fclose(f);
+	return create_root();
 }
 
 /**
@@ -96,17 +113,28 @@ void disk_free(unsigned int *blocs_available, unsigned int *inodes_available, si
 }
 
 /**
- * Updates an inode in the disk file
+ * Overwrite an inode by its id
+ *
+ * on success : returns 1
+ * on failure : returns 0
  */
-int update_inode(struct inode *new_inode) {
+int overwrite_inode(struct inode *new_inode, unsigned int id) {
 	FILE *f;
 	int size;
 	int flag;
 	int pos;
 	struct inode i;
+	int updated;
+	struct bloc b;
 
 	size = 0;
+	updated = 0;
 	f = fopen(DISK, "r+b");
+
+	if (f == NULL) {
+		fprintf(stderr, "File empty %d", __LINE__);
+		return 0;
+	}
 
 	do {
 		/*
@@ -120,17 +148,74 @@ int update_inode(struct inode *new_inode) {
 		if (flag == INODE_FLAG) {
 			fread(&i, sizeof(struct inode), 1, f);
 
+			if (i.id == id) {
+				fseek(f, pos, SEEK_SET);
+				fwrite(new_inode, sizeof(struct inode), 1, f);
+				updated = 1;
+			}
+		} else {
+			fread(&b, sizeof(struct bloc), 1, f);
+		}
+
+	} while (size != 0 && !updated);
+
+	fclose(f);
+
+	if (updated) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+/**
+ * Updates an inode in the disk file
+ * DEPRECATED use overwrite_inode instead
+ *
+ * on success : returns 1
+ * on failure : returns 0
+ */
+int update_inode(struct inode *new_inode) {
+	return overwrite_inode(new_inode, new_inode->id);
+	/*
+	FILE *f;
+	int size;
+	int flag;
+	int pos;
+	struct inode i;
+	int updated;
+
+	size = 0;
+	updated = 0;
+	f = fopen(DISK, "r+b");
+
+	do {
+		size = fread(&flag, sizeof(const int), 1, f);
+		pos = ftell(f);
+
+		if (size == 0) continue;
+
+		if (flag == INODE_FLAG) {
+			fread(&i, sizeof(struct inode), 1, f);
+
 			if (new_inode->id == i.id) {
 				fseek(f, pos, SEEK_SET);
 				fwrite(new_inode, sizeof(struct inode), 1, f);
+				updated = 1;
 			}
 
 		}
 
-	} while (size != 0);
+	} while (size != 0 && !updated);
 
 	fclose(f);
-	return 1;
+
+	if (updated) {
+		return 1;
+	} else {
+		return 0;
+	}
+	*/
 }
 
 struct inode create_regularfile(char *filename, char *content) {
@@ -178,7 +263,7 @@ int update_bloc(struct bloc *new_bloc) {
 	struct inode b;
 
 	if (new_bloc == NULL) {
-		perror("Bloc's NULL");
+		fprintf(stderr, "Bloc's NULL %d", __LINE__);
 		return 0;
 	}
 
@@ -186,7 +271,7 @@ int update_bloc(struct bloc *new_bloc) {
 	f = fopen(DISK, "r+b");
 
 	if (f == NULL) {
-		perror("Can't open file");
+		fprintf(stderr, "File's NULL %d", __LINE__);
 		return 0;
 	}
 
@@ -393,6 +478,39 @@ struct bloc add_inode_to_inode(struct inode *dir, struct inode *i) {
 	strcat(b.content, ",");
 
 	return b;
+}
+
+/**
+ * Counts number of inodes available and deleted
+ */
+void inode_count(unsigned int *available, unsigned int *deleted) {
+	FILE *f;
+	int size;
+	int flag;
+	struct inode i;
+	struct bloc b;
+
+	size = 0;
+	*available = 0;
+	*deleted = 0;
+	f = fopen(DISK, "r+b");
+
+	do {
+		size = fread(&flag, sizeof(const int), 1, f);
+
+		if (flag == INODE_FLAG) {
+			fread(&i, sizeof(struct inode), 1, f);
+			if (i.id == DELETED)
+				*deleted = *deleted +1;
+			else
+				*available = *available + 1;
+		} else {
+			fread(&b, sizeof(struct bloc), 1, f);
+		}
+
+	} while (size != 0);
+
+	fclose(f);
 }
 
 /* Primitives */
