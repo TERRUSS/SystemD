@@ -1,19 +1,12 @@
 #include "fs/fs.h"
 
-/* Constants */
-
 const int INODE_FLAG = 1;
 const int BLOC_FLAG = 2;
-
-/* Globals */
 
 /* Current working directory */
 struct inode g_current_node;
 /* Contains the filetree TODO will be used ? */
 struct file g_filetree;
-
-/* Functions */
-
 
 /**
  * The root has an id == 1, and an empty filename
@@ -37,7 +30,6 @@ struct inode create_root() {
 	return i;
 }
 
-
 /**
  * Writes an inode to the disk (by append)
  *
@@ -59,11 +51,6 @@ int write_inode(struct inode *i) {
 	fclose(f);
 	return 1;
 }
-
-
-/* Bloc */
-
-/* Disk */
 
 /**
  * Creates the root inode and write to a file
@@ -89,7 +76,6 @@ int clean_disk() {
  */
 void disk_free(unsigned int *blocs_available, unsigned int *inodes_available, size_t bytes_available) {
 }
-
 
 /**
  * TODO will be used?
@@ -339,7 +325,6 @@ struct inode create_emptyfile(char *filename, filetype type, const char *mode) {
 	return i;
 }
 
-
 /**
  * Writes a bloc to the disk (by append)
  *
@@ -354,39 +339,6 @@ int write_bloc(struct bloc *b) {
 	fwrite(b, sizeof(struct bloc), 1, f);
 
 	return fclose(f);
-}
-
-/**
- * TODO TO TEST
- * TODO To avoid conflict named it iopen
- * TODO open a file under a directory (here, opens any kind of file)
- * Returns an inode of a file
- *
- * success : returns the inode
- * failure : TODO
- */
-struct inode iopen(char *filename, const char *mode) {
-	struct inode i;
-
-	return i;
-}
-
-// TODO
-int iread(struct inode *i, char *buf, size_t len) {
-	return 0;
-}
-
-
-// TODO
-int iclose(struct inode *i) {
-	return 0;
-}
-
-// TODO
-char **list_files(struct inode *i) {
-	char **files;
-	files = NULL;
-	return files;
 }
 
 struct bloc get_bloc_by_id(unsigned int bloc_id) {
@@ -417,8 +369,6 @@ struct bloc get_bloc_by_id(unsigned int bloc_id) {
 	return b;
 }
 
-/* Utils */
-
 /**
  */
 struct bloc *get_inode_blocs(struct inode *i) {
@@ -433,7 +383,6 @@ struct bloc *get_inode_blocs(struct inode *i) {
 
 	return blocs;
 }
-
 
 /**
  * TODO
@@ -451,9 +400,26 @@ struct inode *get_inodes(struct inode *i) {
 	return inodes;
 }
 
+/**
+ * Link inode to other inode (directory)
+ * Returns the bloc to update (in the disk)
+ */
+struct bloc add_inode_to_inode(struct inode *dir, struct inode *i) {
+	/* TODO out of bound */
+	char str_id[15];
+	struct bloc b;
 
 
+	/* We assume a directory has only one bloc */
+	b = get_bloc_by_id(dir->bloc_ids[0]);
+	sprintf(str_id, "%d", i->id);
+	strcat(b.content, str_id);
+	strcat(b.content, ",");
 
+	return b;
+}
+
+/* Primitives */
 
 /**
  */
@@ -505,23 +471,35 @@ void iwrite(struct inode *i, char *buf) {
 	free(blocs);
 }
 
-
-
 /**
- * Link inode to other inode (directory)
- * Returns the bloc to update (in the disk)
+ * TODO TO TEST
+ * TODO To avoid conflict named it iopen
+ * TODO open a file under a directory (here, opens any kind of file)
+ * Returns an inode of a file
+ *
+ * success : returns the inode
+ * failure : TODO
  */
-struct bloc add_inode_to_inode(struct inode *dir, struct inode *i) {
-	/* TODO out of bound */
-	char str_id[15];
-	struct bloc b;
+struct inode iopen(char *filename, const char *mode) {
+	struct inode i;
+
+	return i;
+}
+
+// TODO
+int iread(struct inode *i, char *buf, size_t len) {
+	return 0;
+}
 
 
-	/* We assume a directory has only one bloc */
-	b = get_bloc_by_id(dir->bloc_ids[0]);
-	sprintf(str_id, "%d", i->id);
-	strcat(b.content, str_id);
-	strcat(b.content, ",");
+// TODO
+int iclose(struct inode *i) {
+	return 0;
+}
 
-	return b;
+// TODO
+char **list_files(struct inode *i) {
+	char **files;
+	files = NULL;
+	return files;
 }
