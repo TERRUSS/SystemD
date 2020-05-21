@@ -30,13 +30,13 @@ int main(int argc, char const *argv[]) {
 	char ** sd_argv = 0;
 	int sd_argc = 0;
 
-	int res = 0;
+	int cmd_status = 0;
 
 	clear();
 
 	do {
 
-		sd_argv = prompt(&sd_argc);
+		sd_argv = prompt(&sd_argc, cmd_status);
 
 		if (DEBUG) {
 			printf("[SD LOG] %s : %d parameters\n", sd_argv[0], sd_argc -1);
@@ -46,11 +46,11 @@ int main(int argc, char const *argv[]) {
 		}
 
 		if (sd_argc > 0)
-			res = execute(sd_argc, sd_argv);
+			cmd_status = execute(sd_argc, sd_argv);
 
 		free(sd_argv);
 
-	} while ( res != -1 );
+	} while ( cmd_status != 254 );
 
 	return 0;
 }

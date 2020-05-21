@@ -1,0 +1,16 @@
+
+NAME
+	clear - clear the terminal screen
+
+SYNOPSIS
+	clear
+
+DESCRIPTION
+	clears your screen if this is possible, including its
+	scrollback buffer.
+	clear looks the evironment (windows/unix) for a better clear.
+
+OPTIONS
+
+AUTHOR
+	Written by The SystemD Devlopement Team

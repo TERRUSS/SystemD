@@ -13,4 +13,4 @@
 char* readInput();
 char ** parseInput( char * line, int * argc );
 void clear();
-char ** prompt( int * argc );
+char ** prompt( int * argc, int cmd_status );

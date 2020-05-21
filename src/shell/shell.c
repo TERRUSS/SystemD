@@ -1,11 +1,17 @@
 #include "shell.h"
 
 
-char ** prompt( int * argc ) {
+char ** prompt( int * argc, int cmd_status ) {
 	char * input = 0;
 	char ** argv = 0;
 
-	printf("\033[1;35m┌─[\033[1;36muser\033[0;35m@\033[1;36mSYSTEMD\033[1;35m]─[/]\n└──╼ \033[0;35m$\033[0m ");
+	if(cmd_status == 0 ) {
+		printf("\033[1;35m┌─[\033[1;36muser\033[0;35m@\033[1;36mSYSTEMD\033[1;35m]─[/]\n└──╼ \033[0;35m$\033[0m ");
+	}
+	else {
+		printf("\033[1;35m┌─[✗]─[\033[1;36muser\033[0;35m@\033[1;36mSYSTEMD\033[1;35m]─[/]\n└──╼ \033[0;35m$\033[0m ");
+	}
+
 	input = readInput();
 	argv = parseInput(input, argc);
 

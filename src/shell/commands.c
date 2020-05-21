@@ -4,7 +4,7 @@
 int execute(int argc, char ** argv) {
 	
 	if(strcmp(argv[0], "exit") == 0){
-		return -1;
+		return 254;
 	}
 
 	pid_t pid = -1;
@@ -23,13 +23,14 @@ int execute(int argc, char ** argv) {
 		// Execute binary form /root/src/bin
 		if (execvp( path, argv) == -1) {
 			printf(" ✗ - sdsh : %s: command not found\n", argv[0]);
-			if (DEBUG){
+			if (DEBUG) {
 				perror("Err");
 			}
 		}
-		exit(0);
+		exit(404);
 	} else if (pid < 0) {
 		// Error forking
+		status = 503;
 		perror("sdsh fork err");
 	} else {
 		// Parent process
@@ -40,6 +41,8 @@ int execute(int argc, char ** argv) {
 
 	free(path);
 
+	if (DEBUG)
+		printf(" » %d\n", status);
 	return status;
 }
 
