@@ -424,8 +424,8 @@ int main() {
 	/*test_iwrite();*/
 	test_get_filename_for_inode();
 	/*
-	test_list_files();
 	*/
+	test_list_files();
 
 	return 0;
 }
