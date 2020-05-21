@@ -8,6 +8,9 @@ struct inode g_working_directory;
 /* Contains the filetree TODO will be used ? */
 struct file g_filetree;
 
+char *get_filename_for_inode(struct inode *i) {
+}
+
 /**
  * The root has an id == 1, and an empty filename
  * Written on the disk
@@ -78,13 +81,6 @@ void disk_free(unsigned int *blocs_available, unsigned int *inodes_available, si
 }
 
 /**
- * TODO will be used?
- * Reads the disk file, and fill the filetree with disk datas
- */
-void get_filetree() {
-}
-
-/**
  * Updates an inode in the disk file
  */
 int update_inode(struct inode *new_inode) {
@@ -142,7 +138,6 @@ struct inode create_regularfile(char *filename, char *content) {
 	}
 
 	b = new_bloc(filename, blocs_contents[z]);
-	/*b.last_bloc = LAST_BLOC;*/
 	add_bloc(&i, &b);
 	write_bloc(&b);
 
@@ -153,40 +148,6 @@ struct inode create_regularfile(char *filename, char *content) {
 	return i;
 }
 
-/**
- * Updates a bloc's content in the disk file
- */
-int update_bloc_content(unsigned int bloc_id, const char *new_content) {
-	FILE *f;
-	int size;
-	int flag;
-	int pos;
-	struct bloc b;
-
-	size = 0;
-	f = fopen(DISK, "r+b");
-
-	do {
-		size = fread(&flag, sizeof(const int), 1, f);
-		pos = ftell(f);
-
-		if (size == 0) continue;
-
-		if (flag == BLOC_FLAG) {
-			fread(&b, sizeof(struct bloc), 1, f);
-
-			if (bloc_id == b.id) {
-				fseek(f, pos, SEEK_SET);
-				strcpy(b.content, new_content);
-				fwrite(&b, sizeof(struct bloc), 1, f);
-			}
-
-		}
-
-	} while (size != 0);
-
-	return fclose(f);
-}
 
 
 /**
@@ -439,7 +400,6 @@ void iwrite(struct inode *i, char *buf) {
 		printf("__LINE__ %d\n", __LINE__);
 		for (z = 0; z != i->bloc_count; z++) {
 			strncpy(blocs[z].content, contents[z], BLOC_SIZE);
-			/*blocs[z].last_bloc = NOT_LAST_BLOC;*/
 			printf("__LINE__ %d\n", __LINE__);
 			print_bloc(blocs + z);
 			printf("SIZE %lu\n", strlen(blocs[z].content));
@@ -458,7 +418,6 @@ void iwrite(struct inode *i, char *buf) {
 		printf("__LINE__ %d\n", __LINE__);
 		for (z = 0; z != len; z++) {
 			strncpy(blocs[z].content, contents[z], BLOC_SIZE);
-			/*blocs[z].last_bloc = NOT_LAST_BLOC;*/
 			update_bloc(blocs + z);
 		}
 		TODO_PRINT;
