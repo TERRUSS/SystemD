@@ -390,7 +390,7 @@ int test_iread() {
 		perror("test_iread() failure");
 		return EXIT_FAILURE;
 	}
-	printf("%s\n%lu\n%u\n", buf, sizeof(buf), strlen(buf));
+	printf("%s\n%lu\n%lu\n", buf, sizeof(buf), strlen(buf));
 
 	printf("test_iread() successful\n");
 

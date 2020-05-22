@@ -49,19 +49,19 @@ int write_inode(struct inode *i);
 struct bloc *get_inode_blocs(struct inode *i);
 struct bloc add_inode_to_inode(struct inode *dir, struct inode *i);
 struct bloc get_bloc_by_id(unsigned int bloc_id);
-struct inode create_directory(struct inode *under_dir, char *dirname);
 struct inode create_disk();
-struct inode create_emptyfile(struct inode *under_dir, char *filename, filetype type, const char *mode);
-struct inode create_regularfile(struct inode *under_dir, char *filename, char *content);
 struct inode create_root();
 unsigned int get_bloc_id(char *filename);
 unsigned int get_filecount(struct inode *dir);
-void free_str_array(char **str_array, int len);
 void inode_count(unsigned int *in_store, unsigned int *deleted);
 
+struct inode create_regularfile(struct inode *under_dir, char *filename, char *content);
+struct inode create_emptyfile(struct inode *under_dir, char *filename, filetype type, const char *mode);
 void iwrite(struct inode *i, char *buf);
 char **list_files(struct inode *dir, int *filecount);
 int iread(struct inode *i, char *buf, size_t n);
+
+struct inode create_directory(struct inode *under_dir, char *dirname);
 
 #endif
 
