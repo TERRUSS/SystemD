@@ -618,7 +618,6 @@ int iread(struct inode *i, char *buf, size_t n) {
 	struct bloc b;
 	int pos;
 
-	/*buf = (char *) calloc(n, sizeof(char));*/
 	done = 0;
 	z = 0;
 	pos = 0;
@@ -630,18 +629,12 @@ int iread(struct inode *i, char *buf, size_t n) {
 			perror(BLOC_DELETED_MESSAGE);
 			continue;
 		}
-		printf("%lu - ", strlen(b.content));
-		printf("%lu = ", n);
-		printf("%lu\n", n - strlen(b.content));
-		printf("TO CONCAT %s\n", b.content);
 
 		if ((int) n >= 1 + (int) strlen(b.content)) {
-			puts("if");
 			strcat(buf + pos, b.content);
 			n -= strlen(b.content);
 			pos += strlen(b.content);
 		} else {
-			puts("else");
 			strncat(buf + pos, b.content, n - 1);
 			strcat(buf, "\0");
 			done = 1;
