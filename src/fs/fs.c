@@ -635,12 +635,9 @@ void iwrite(struct inode *i, char *buf) {
 }
 
 /*
- * TODO
- * Returns an inode of a file
- *
- * success : returns the inode
+ * Returns an inode matching the filename
  */
-struct inode iopen(struct inode *under_dir, char *filename, const char *mode) {
+struct inode get_inode_by_filename(struct inode *under_dir, char *filename) {
 	struct inode i, *inodes;
 	int len, z;
 	int done;
@@ -664,6 +661,16 @@ struct inode iopen(struct inode *under_dir, char *filename, const char *mode) {
 	free(inodes);
 
 	return i;
+}
+
+/*
+ * TODO
+ * Returns an inode of a file
+ *
+ * success : returns the inode
+ */
+struct inode iopen(struct inode *under_dir, char *filename, const char *mode) {
+	return get_inode_by_filename(under_dir, filename);
 }
 
 /*
@@ -740,10 +747,36 @@ char **list_files(struct inode *dir, int *filecount) {
 }
 
 /*
- * TODO
+ * Deletes an empty directory
+ *
+ * exception: directory is not empty, file's not a directory
  */
-int remove_empty_directory(char *dirname) {
-	return EXIT_FAILURE;
+int remove_empty_directory(struct inode *under_dir, char *dirname) {
+	struct inode i;
+	struct bloc b;
+
+	if (under_dir->type != DIRECTORY) {
+		perror("Inout is not a directory");
+		return EXIT_FAILURE;
+	}
+
+	i = get_inode_by_filename(under_dir, dirname);
+
+	if (i.type != DIRECTORY) {
+		perror("Input is not a directory");
+		return EXIT_FAILURE;
+	}
+
+	if (get_filecount(&i) == 0) {
+		b = get_bloc_by_id(i.bloc_ids[0]);
+		delete_bloc(&b);
+		delete_inode(&i);
+	} else {
+		perror(DIRECTORY_NOT_EMPTY_MESSAGE);
+		return EXIT_FAILURE;
+	}
+
+	return EXIT_SUCCESS;
 }
 
 

@@ -16,6 +16,7 @@
 #define PRINT_LINE printf("LINE %d\n", __LINE__)
 #define NO_FILE_ERROR_MESSAGE "File's NULL"
 #define BLOC_DELETED_MESSAGE "Bloc's deleted (id == 0)"
+#define DIRECTORY_NOT_EMPTY_MESSAGE "Directory's not empty"
 
 #define DISK "rsc/disk"
 
@@ -55,6 +56,7 @@ struct inode create_disk();
 struct inode create_root();
 unsigned int get_filecount(struct inode *dir);
 void inode_count(unsigned int *in_store, unsigned int *deleted);
+struct inode get_inode_by_filename(struct inode *under_dir, char *filename);
 
 struct inode create_regularfile(struct inode *under_dir, char *filename, char *content);
 struct inode create_emptyfile(struct inode *under_dir, char *filename, filetype type, const char *mode);
@@ -64,6 +66,7 @@ int iread(struct inode *i, char *buf, size_t n);
 struct inode iopen(struct inode *under_dir, char *filename, const char *mode);
 
 struct inode create_directory(struct inode *under_dir, char *dirname);
+int remove_empty_directory(struct inode *under_dir, char *dirname);
 
 #endif
 

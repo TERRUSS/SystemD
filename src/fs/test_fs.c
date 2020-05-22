@@ -446,6 +446,36 @@ int test_iopen() {
 	return EXIT_SUCCESS;
 }
 
+int test_remove_empty_directory() {
+
+	clean_disk();
+	g_working_directory = create_disk();
+
+	create_regularfile(&g_working_directory, "FILENAME", "TRUC");
+	create_directory(&g_working_directory, "home");
+	print_disk();
+
+	if (remove_empty_directory(&g_working_directory, "FILENAME") != EXIT_FAILURE) {
+		perror("Wrong1");
+		return EXIT_FAILURE;
+	}
+	if (remove_empty_directory(&g_working_directory, "home") != EXIT_SUCCESS) {
+		perror("Wrong2");
+		return EXIT_FAILURE;
+	}
+
+	create_directory(&g_working_directory, "usr");
+	create_regularfile(&g_working_directory, "user_file.sh", "echo 'je suis une loutre'");
+	if (remove_empty_directory(&g_working_directory, "usr") != EXIT_FAILURE) {
+		perror("Wrong3");
+		return EXIT_FAILURE;
+	}
+	print_disk();
+
+	printf("test_remove_empty_directory() successful\n");
+	return EXIT_SUCCESS;
+}
+
 int main() {
 
 	init_id_generator();
@@ -476,6 +506,7 @@ int main() {
 	test_strsplt();
 	test_get_inodes();
 	test_iopen();
+	test_remove_empty_directory();
 
 	return EXIT_SUCCESS;
 }
