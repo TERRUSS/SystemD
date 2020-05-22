@@ -652,6 +652,7 @@ int iread(struct inode *i, char *buf, size_t n) {
 	done = 0;
 	z = 0;
 	pos = 0;
+	strcpy(buf, "");
 
 	while (!done && z != i->bloc_count) {
 		b = get_bloc_by_id(i->bloc_ids[z]);
