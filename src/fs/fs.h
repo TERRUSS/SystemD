@@ -57,6 +57,7 @@ struct inode create_root();
 unsigned int get_filecount(struct inode *dir);
 void inode_count(unsigned int *in_store, unsigned int *deleted);
 struct inode get_inode_by_filename(struct inode *under_dir, char *filename);
+int remove_inode_from_directory(struct inode *dir, unsigned int id);
 void disk_free(unsigned int *blocs_available, unsigned int *inodes_available, size_t *bytes_available);
 
 struct inode create_regularfile(struct inode *under_dir, char *filename, char *content);
@@ -68,6 +69,7 @@ struct inode iopen(struct inode *under_dir, char *filename, const char *mode);
 
 struct inode create_directory(struct inode *under_dir, char *dirname);
 int remove_empty_directory(struct inode *under_dir, char *dirname);
+int remove_file(struct inode *under_dir, char *filename, filetype ft);
 
 int remove_int(int **int_array, int *len, int i);
 

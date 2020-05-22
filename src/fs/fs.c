@@ -395,6 +395,50 @@ int get_inodes(struct inode *under_dir, struct inode **inodes) {
 	return len;
 }
 
+/*
+ * TODO
+ */
+int remove_file(struct inode *under_dir, char *filename, filetype ft) {
+	struct inode i;
+	struct bloc b;
+	unsigned int file_id;
+	int z;
+
+	if (under_dir->type != DIRECTORY) {
+		perror("Input is not a directory");
+		return EXIT_FAILURE;
+	}
+
+	// first we remove the dir's inode and bloc
+	i = get_inode_by_filename(under_dir, filename);
+
+	if (i.type != ft) {
+		perror("Wrong file type");
+		return EXIT_FAILURE;
+	}
+
+	file_id = i.id;
+
+	if (ft == DIRECTORY) {
+		if (get_filecount(&i) != 0) {
+			perror(DIRECTORY_NOT_EMPTY_MESSAGE);
+			return EXIT_FAILURE;
+		}
+	}
+	// remove all blocs
+	for (z = 0; z != i.bloc_count; z++) {
+		b = get_bloc_by_id(i.bloc_ids[0]);
+		delete_bloc(&b);
+	}
+
+	delete_inode(&i);
+
+	// then we remove the inode from the content in under_dir's bloc
+	remove_inode_from_directory(under_dir, file_id);
+
+	return EXIT_SUCCESS;
+}
+
 /**
  * Creates a directory
  */
@@ -745,12 +789,30 @@ char **list_files(struct inode *dir, int *filecount) {
 	return files;
 }
 
+int remove_inode_from_directory(struct inode *dir, unsigned int id) {
+	struct bloc b;
+	int len;
+	int *inode_ids;
+
+	b = get_bloc_by_id(dir->id);
+
+	len = strsplt(b.content, &inode_ids, ',');
+	remove_int(&inode_ids, &len, id);
+	strjoin(b.content, inode_ids, len, ',');
+	update_bloc(&b);
+
+	free(inode_ids);
+
+	return EXIT_SUCCESS;
+}
+
 /*
  * Deletes an empty directory
  *
  * exception: directory is not empty, file's not a directory
  */
 int remove_empty_directory(struct inode *under_dir, char *dirname) {
+	/*
 	struct inode i;
 	struct bloc b;
 	unsigned int dir_id;
@@ -782,17 +844,14 @@ int remove_empty_directory(struct inode *under_dir, char *dirname) {
 	}
 
 	// then we remove the inode from the content in under_dir's bloc
-	b = get_bloc_by_id(under_dir->id);
-
-	len = strsplt(b.content, &inode_ids, ',');
-	remove_int(&inode_ids, &len, dir_id);
-	strjoin(b.content, inode_ids, len, ',');
-	update_bloc(&b);
-
-	free(inode_ids);
+	remove_inode_from_directory(under_dir, dir_id);
 
 	return EXIT_SUCCESS;
+	*/
+	return remove_file(under_dir, dirname, DIRECTORY);
 }
+
+
 
 
 /*

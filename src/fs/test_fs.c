@@ -475,6 +475,41 @@ int test_strjoin() {
 	return EXIT_SUCCESS;
 }
 
+int test_remove_file() {
+	unsigned int blocs, inodes;
+	size_t bytes;
+
+
+	clean_disk();
+	g_working_directory = create_disk();
+	create_regularfile(&g_working_directory, "FILENAME", "TRUC");
+	create_directory(&g_working_directory, "home");
+
+	if (remove_file(&g_working_directory, "home", REGULAR_FILE) != EXIT_FAILURE) {
+		perror("test_remove_file() failed");
+		return EXIT_FAILURE;
+	}
+
+	disk_free(&blocs, &inodes, &bytes);
+	if (blocs != 0 && inodes != 0 && bytes != 0) {
+		perror("test_remove_file() failed");
+		return EXIT_FAILURE;
+	}
+
+	if (remove_file(&g_working_directory, "FILENAME", REGULAR_FILE) != EXIT_SUCCESS) {
+		perror("test_remove_file() failed");
+		return EXIT_FAILURE;
+	}
+	disk_free(&blocs, &inodes, &bytes);
+	if (blocs != 1 && inodes != 1) {
+		perror("test_remove_file() failed");
+		return EXIT_FAILURE;
+	}
+
+	printf("test_remove_file() successful\n");
+	return EXIT_SUCCESS;
+}
+
 int main() {
 
 	init_id_generator();
@@ -505,6 +540,7 @@ int main() {
 	test_remove_empty_directory();
 	test_strjoin();
 	test_disk_free();
+	test_remove_file();
 
 	return EXIT_SUCCESS;
 }
