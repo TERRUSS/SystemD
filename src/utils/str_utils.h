@@ -7,9 +7,10 @@
 
 char **init_str_array(unsigned int len, unsigned int size);
 int get_index(char *str, char chr);
-int ocr(char *str, char c);
 int strncut(char ***str_array, char *str, size_t n);
 unsigned int *parse_ids(char *str);
+unsigned int ocr(char *str, char c);
+unsigned int strsplt(char *str_tosplit, int **ints, char sep);
 void free_str_array(char **str_array, int len);
 void print_str_array(char **str_array, int len);
 

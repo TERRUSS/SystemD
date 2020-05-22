@@ -339,6 +339,23 @@ int print_disk() {
 	return fclose(f);
 }
 
+int get_inodes(struct inode *under_dir, struct inode **inodes) {
+	int len;
+	struct bloc b;
+	int z;
+	int *inode_ids;
+
+	b = get_bloc_by_id(under_dir->bloc_ids[0]);
+	len = strsplt(b.content, &inode_ids, ',');
+	*inodes = (struct inode *) malloc(len * sizeof(struct inode));
+
+	for (z = 0; z != len; z++) {
+		(*inodes)[z] = get_inode_by_id((unsigned int) inode_ids[z]);
+	}
+
+	return len;
+}
+
 /**
  * Creates a directory
  */
@@ -697,6 +714,7 @@ char **list_files(struct inode *dir, int *filecount) {
  * TODO
  */
 int remove_empty_directory(char *dirname) {
+	return EXIT_FAILURE;
 }
 
 

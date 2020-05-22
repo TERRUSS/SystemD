@@ -378,21 +378,41 @@ int test_iread() {
 	char *content;
 	struct inode i;
 	char buf[121];
+	size_t n = 120;
 
 	clean_disk();
 	g_working_directory = create_disk();
 	content = rd("README.md");
 	i = create_regularfile(&g_working_directory, filename, content);
 	free(content);
-	iread(&i, buf, 121);
+	iread(&i, buf, n);
 
-	if (buf == NULL || strlen(buf) != 120) {
+	if (buf == NULL) {
 		perror("test_iread() failure");
 		return EXIT_FAILURE;
 	}
 	printf("%s\n%lu\n%lu\n", buf, sizeof(buf), strlen(buf));
 
 	printf("test_iread() successful\n");
+
+	return EXIT_SUCCESS;
+}
+
+int test_strsplt() {
+	int len;
+	char c[] = "1231,23423,12,2,";
+	int *ints;
+
+
+	len = strsplt(c, &ints, ',');
+
+	if (len != 4 && ints[0] != 1231 && ints[1] != 23423) {
+		perror("test_strsplt() failed");
+		return EXIT_FAILURE;
+	}
+	free(ints);
+
+	printf("test_strsplt() successful\n");
 
 	return EXIT_SUCCESS;
 }
@@ -425,6 +445,7 @@ int main() {
 	test_list_files();
 	test_update_inode();
 	test_iread();
+	test_strsplt();
 
 	return EXIT_SUCCESS;
 }

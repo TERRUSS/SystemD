@@ -47,7 +47,7 @@ void free_str_array(char **str_array, int len) {
 /**
  * Counts the number of occurences in a char*
  */
-int ocr(char *str, char c) {
+unsigned int ocr(char *str, char c) {
 	int o;
 	int i;
 
@@ -84,7 +84,7 @@ int get_index(char *str, char chr) {
 unsigned int *parse_ids(char *str) {
 	int i;
 	unsigned int *ids;
-	int filecount;
+	unsigned int filecount;
 	int o;
 
 	filecount = ocr(str, ',');
@@ -98,6 +98,24 @@ unsigned int *parse_ids(char *str) {
 
 	return ids;
 }
+
+unsigned int strsplt(char *str_tosplit, int **ints, char sep) {
+	int i;
+	unsigned int filecount;
+	int o;
+
+	filecount = ocr(str_tosplit, ',');
+	*ints = (int *) calloc(filecount, sizeof(int));
+	o = 0;
+
+	for (i = 0; i != filecount; i++) {
+		sscanf(str_tosplit + o, "%d", *(ints) + i);
+		o = get_index(str_tosplit + o, sep);
+	}
+
+	return filecount;
+}
+
 
 void print_str_array(char **str_array, int len) {
 	int z;
