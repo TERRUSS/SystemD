@@ -754,18 +754,24 @@ char **list_files(struct inode *dir, int *filecount) {
 int remove_empty_directory(struct inode *under_dir, char *dirname) {
 	struct inode i;
 	struct bloc b;
+	unsigned int dir_id;
+	int *inode_ids;
+	int len;
 
 	if (under_dir->type != DIRECTORY) {
 		perror("Inout is not a directory");
 		return EXIT_FAILURE;
 	}
 
+	// first we remove the dir's inode and bloc
 	i = get_inode_by_filename(under_dir, dirname);
 
 	if (i.type != DIRECTORY) {
 		perror("Input is not a directory");
 		return EXIT_FAILURE;
 	}
+
+	dir_id = i.id;
 
 	if (get_filecount(&i) == 0) {
 		b = get_bloc_by_id(i.bloc_ids[0]);
@@ -776,30 +782,43 @@ int remove_empty_directory(struct inode *under_dir, char *dirname) {
 		return EXIT_FAILURE;
 	}
 
+	// then we remove the inode from the content in under_dir's bloc
+	b = get_bloc_by_id(under_dir->id);
+
+	len = strsplt(b.content, &inode_ids, ',');
+	remove_int(&inode_ids, &len, dir_id);
+	strjoin(b.content, inode_ids, len, ',');
+	update_bloc(&b);
+
+	free(inode_ids);
+
 	return EXIT_SUCCESS;
 }
 
+
 /*
+ * TODO put in utils somewhere
  * Removes an integer from an array of ints
  * Reallocates the array if the int is found (and removed)
  *
  * exception: integer not found
  */
-int remove_int(int **int_array, int len, int i) {
+int remove_int(int **int_array, int *len, int i) {
 	int z;
 	int remove;
 
 	remove = 0;
 
-	for (z = 0; z != len && !remove; z++)
+	for (z = 0; z != *len && !remove; z++)
 		if ((*int_array)[z] == i)
 			remove = 1;
 
 	if (remove) {
-		for (; z != len; z++) {
+		for (; z != *len; z++) {
 			(*int_array)[z] = (*int_array)[z + 1];
 		}
-		*int_array = (int *) realloc(*int_array, sizeof(int) * len - 1);
+		*int_array = (int *) realloc(*int_array, sizeof(int) * *len - 1);
+		*len -= 1;
 		return EXIT_SUCCESS;
 	}
 

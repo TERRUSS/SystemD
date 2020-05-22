@@ -68,5 +68,7 @@ struct inode iopen(struct inode *under_dir, char *filename, const char *mode);
 struct inode create_directory(struct inode *under_dir, char *dirname);
 int remove_empty_directory(struct inode *under_dir, char *dirname);
 
+int remove_int(int **int_array, int *len, int i);
+
 #endif
 

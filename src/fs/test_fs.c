@@ -455,18 +455,19 @@ int test_remove_empty_directory() {
 	create_directory(&g_working_directory, "home");
 	print_disk();
 
-	if (remove_empty_directory(&g_working_directory, "FILENAME") != EXIT_FAILURE) {
+	if (remove_empty_directory(&g_working_directory, "FILENAME") != EXIT_FAILURE
+			&& get_filecount(&g_working_directory) != 2) {
 		perror("Wrong1");
 		return EXIT_FAILURE;
 	}
-	if (remove_empty_directory(&g_working_directory, "home") != EXIT_SUCCESS) {
+	if (remove_empty_directory(&g_working_directory, "home") != EXIT_SUCCESS && get_filecount(&g_working_directory) != 1) {
 		perror("Wrong2");
 		return EXIT_FAILURE;
 	}
 
 	create_directory(&g_working_directory, "usr");
 	create_regularfile(&g_working_directory, "user_file.sh", "echo 'je suis une loutre'");
-	if (remove_empty_directory(&g_working_directory, "usr") != EXIT_FAILURE) {
+	if (remove_empty_directory(&g_working_directory, "usr") != EXIT_FAILURE && get_filecount(&g_working_directory) != 3) {
 		perror("Wrong3");
 		return EXIT_FAILURE;
 	}
