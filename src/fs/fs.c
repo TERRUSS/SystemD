@@ -779,5 +779,30 @@ int remove_empty_directory(struct inode *under_dir, char *dirname) {
 	return EXIT_SUCCESS;
 }
 
+/*
+ * Removes an integer from an array of ints
+ * Reallocates the array if the int is found (and removed)
+ *
+ * exception: integer not found
+ */
+int remove_int(int **int_array, int len, int i) {
+	int z;
+	int remove;
 
+	remove = 0;
+
+	for (z = 0; z != len && !remove; z++)
+		if ((*int_array)[z] == i)
+			remove = 1;
+
+	if (remove) {
+		for (; z != len; z++) {
+			(*int_array)[z] = (*int_array)[z + 1];
+		}
+		*int_array = (int *) realloc(*int_array, sizeof(int) * len - 1);
+		return EXIT_SUCCESS;
+	}
+
+	return EXIT_FAILURE;
+}
 

@@ -476,6 +476,20 @@ int test_remove_empty_directory() {
 	return EXIT_SUCCESS;
 }
 
+int test_strjoin() {
+	char str[] = "";
+	int int_array[] = {12, 434, 121, 13};
+
+	strjoin(str, int_array, 4, ',');
+	if (strcmp(str, "12,434,121,13,") != 0) {
+		fprintf(stderr, "Unexpected %s\n", str);
+		return EXIT_FAILURE;
+	}
+
+	printf("test_strjoin() successful\n");
+	return EXIT_SUCCESS;
+}
+
 int main() {
 
 	init_id_generator();
@@ -507,6 +521,7 @@ int main() {
 	test_get_inodes();
 	test_iopen();
 	test_remove_empty_directory();
+	test_strjoin();
 
 	return EXIT_SUCCESS;
 }

@@ -12,6 +12,7 @@ unsigned int ocr(char *str, char c);
 unsigned int strsplt(char *str_tosplit, int **ints, char sep);
 void free_str_array(char **str_array, int len);
 void print_str_array(char **str_array, int len);
+int strjoin(char *str, int *int_array, int len, char sep);
 
 #endif
 

@@ -135,3 +135,25 @@ char **init_str_array(unsigned int len, unsigned int size) {
 	return str_array;
 }
 
+/*
+ * Join integers into a string, separated by sep
+ */
+int strjoin(char *str, int *int_array, int len, char sep) {
+	int z;
+	size_t offset;
+	char tmp[10];
+
+	for (z = 0, offset = 0; z != len; z++, offset++) {
+		sprintf(tmp, "%d", int_array[z]);
+		strcat(str + offset, tmp);
+		offset += strlen(tmp);
+		str[offset] = sep;
+	}
+
+	str[offset] = '\0';
+
+	return EXIT_SUCCESS;
+}
+
+
+
