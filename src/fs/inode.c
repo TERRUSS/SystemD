@@ -36,6 +36,13 @@ struct inode new_inode(filetype type, mode_t perms, const char *user, const char
 	return i;
 }
 
+/*
+ * Checks if 2 inodes are equal
+ */
+int inode_equals(struct inode i1, struct inode i2) {
+	return i1.id == i2.id;
+}
+
 /**
  * Checks if a bloc id is in the bloc ids of an inode
  *

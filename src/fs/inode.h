@@ -44,6 +44,7 @@ struct inode {
 };
 
 int contains(struct inode *i, unsigned int bloc_id);
+int inode_equals(struct inode i1, struct inode i2);
 struct inode new_inode(filetype type, mode_t perms, const char *user, const char *group);
 void init_id_generator();
 void print_inode(struct inode *i);

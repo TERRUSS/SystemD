@@ -423,6 +423,24 @@ int test_get_inodes() {
 	return EXIT_SUCCESS;
 }
 
+int test_iopen() {
+	struct inode i, j;
+
+	clean_disk();
+	g_working_directory = create_disk();
+
+	i = create_regularfile(&g_working_directory, "Bidsouf", "Yahoo");
+	j = iopen(&g_working_directory, "Bidsouf", "a");
+	if (!inode_equals(i, j)) {
+		perror("test_iopen() failed");
+		return EXIT_FAILURE;
+	}
+
+	printf("test_iopen() successful\n");
+
+	return EXIT_SUCCESS;
+}
+
 int main() {
 
 	init_id_generator();
@@ -452,6 +470,7 @@ int main() {
 	test_iread();
 	test_strsplt();
 	test_get_inodes();
+	test_iopen();
 
 	return EXIT_SUCCESS;
 }

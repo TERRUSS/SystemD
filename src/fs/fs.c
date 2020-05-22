@@ -640,9 +640,27 @@ void iwrite(struct inode *i, char *buf) {
  *
  * success : returns the inode
  */
-struct inode iopen(char *filename, const char *mode) {
-	struct inode i;
+struct inode iopen(struct inode *under_dir, char *filename, const char *mode) {
+	struct inode i, *inodes;
+	int len, z;
+	int done;
+	char *fn;
 
+	done = 0;
+	len = get_inodes(under_dir, &inodes);
+	z = 0;
+
+	while (!done && z != len) {
+		fn = get_filename_for_inode(inodes + z);
+		if (strcmp(fn, filename) == 0) {
+			i = inodes[z];
+			done = 1;
+		}
+		free(fn);
+		z++;
+	}
+
+	free(inodes);
 
 	return i;
 }

@@ -61,6 +61,7 @@ struct inode create_emptyfile(struct inode *under_dir, char *filename, filetype 
 void iwrite(struct inode *i, char *buf);
 char **list_files(struct inode *dir, int *filecount);
 int iread(struct inode *i, char *buf, size_t n);
+struct inode iopen(struct inode *under_dir, char *filename, const char *mode);
 
 struct inode create_directory(struct inode *under_dir, char *dirname);
 
