@@ -57,6 +57,7 @@ struct inode create_root();
 unsigned int get_filecount(struct inode *dir);
 void inode_count(unsigned int *in_store, unsigned int *deleted);
 struct inode get_inode_by_filename(struct inode *under_dir, char *filename);
+void disk_free(unsigned int *blocs_available, unsigned int *inodes_available, size_t *bytes_available);
 
 struct inode create_regularfile(struct inode *under_dir, char *filename, char *content);
 struct inode create_emptyfile(struct inode *under_dir, char *filename, filetype type, const char *mode);

@@ -134,14 +134,46 @@ int clean_disk() {
 	return remove(DISK);
 }
 
-/**
+/*
  * TODO
  * Get some info about the disk :
  * available blocs
  * available inodes
  * available memory (in bytes)
  */
-void disk_free(unsigned int *blocs_available, unsigned int *inodes_available, size_t bytes_available) {
+void disk_free(unsigned int *blocs_available, unsigned int *inodes_available, size_t *bytes_available) {
+	FILE *f;
+	int size;
+	int flag;
+	struct inode i;
+	struct bloc b;
+
+	size = 0;
+	*inodes_available = 0;
+	*blocs_available = 0;
+	f = fopen(DISK, "rb");
+
+	do {
+		size = fread(&flag, sizeof(const int), 1, f);
+
+		if (flag == INODE_FLAG) {
+			fread(&i, sizeof(struct inode), 1, f);
+			if (i.id == DELETED)
+				*inodes_available = *inodes_available + 1;
+		} else if (flag == BLOC_FLAG) {
+			fread(&b, sizeof(struct bloc), 1, f);
+			if (i.id == DELETED)
+				*blocs_available = *blocs_available + 1;
+		} else {
+			perror("Houston there's a problem with the disk");
+		}
+
+	} while (size != 0);
+
+	*bytes_available = (sizeof(struct bloc) * *blocs_available)
+		+ (sizeof(struct inode) * *inodes_available);
+
+	fclose(f);
 }
 
 /**
@@ -550,38 +582,6 @@ struct bloc add_inode_to_inode(struct inode *dir, struct inode *i) {
 	return b;
 }
 
-/**
- * Counts number of inodes used and deleted in the disk
- */
-void inode_count(unsigned int *in_store, unsigned int *deleted) {
-	FILE *f;
-	int size;
-	int flag;
-	struct inode i;
-	struct bloc b;
-
-	size = 0;
-	*in_store = 0;
-	*deleted = 0;
-	f = fopen(DISK, "r+b");
-
-	do {
-		size = fread(&flag, sizeof(const int), 1, f);
-
-		if (flag == INODE_FLAG) {
-			fread(&i, sizeof(struct inode), 1, f);
-			if (i.id == DELETED)
-				*deleted = *deleted +1;
-			else
-				*in_store = *in_store + 1;
-		} else {
-			fread(&b, sizeof(struct bloc), 1, f);
-		}
-
-	} while (size != 0);
-
-	fclose(f);
-}
 
 /* Primitives */
 
