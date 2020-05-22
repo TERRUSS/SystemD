@@ -206,39 +206,23 @@ int test_disk_free() {
 	// write inode
 	g_working_directory = create_disk();
 
-	// check number of inodes == 1
+	// check number of inodes == 0
 	disk_free(&blocs, &inodes, &bytes);
 	if (blocs != 0 && inodes != 0 && bytes != 0) {
-		/*printf("available %u deleted %u\n", available, deleted);*/
 		perror("test_disk_free() failed");
 		return EXIT_FAILURE;
 	}
 
-	// delete inode
+	// delete dir
 	create_directory(&g_working_directory, "dir");
 	remove_empty_directory(&g_working_directory, "dir");
 
-	// check number of inodes == 0
+	// check number of inodes == 1
 	disk_free(&blocs, &inodes, &bytes);
 	if (blocs != 1 && inodes != 1) {
-		/*printf("available %u deleted %u\n", available, deleted);*/
 		perror("test_disk_free() failed");
 		return 0;
 	}
-
-	/*
-	// write inode
-	i2 = new_inode(t, m, user, NULL);
-	write_inode(&i2);
-
-	// check number of inodes == 1
-	inode_count(&available, &deleted);
-	if (available != 1 && deleted != 0) {
-		printf("available %u deleted %u\n", available, deleted);
-		perror("test_inode_count() failed");
-		return 0;
-	}
-	*/
 
 	printf("test_disk_free() successful\n");
 

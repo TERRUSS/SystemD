@@ -135,7 +135,6 @@ int clean_disk() {
 }
 
 /*
- * TODO
  * Get some info about the disk :
  * available blocs
  * available inodes
