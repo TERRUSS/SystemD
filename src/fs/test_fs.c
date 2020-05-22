@@ -79,35 +79,6 @@ int test_create_disk() {
 	return EXIT_SUCCESS;
 }
 
-/*
-int test_update() {
-	struct bloc b;
-	filetype t = REGULAR_FILE;
-	mode_t m = S_IRWXU;
-	char user[10] = "Paul";
-	struct inode i;
-
-	clean_disk();
-	create_disk();
-	b = new_bloc("hello_world.c", "#include<stdio.h>\nint main(){printf(\"HelloWorld\n\");return 0;}");
-
-	i = new_inode(t, m, user, NULL);
-	write_inode(&i);
-	//write inodes to disk
-	//print disk
-	print_disk();
-	puts("");
-	//update inode or bloc
-	strcpy(i.user_name, "hello_world.cpp");
-	strcpy(i.group_name, "hello_wezfz");
-	update_inode(&i);
-	//print disk
-	puts("");
-	print_disk();
-
-	return 1;
-}
-*/
 
 int test_update_inode() {
 	struct inode i;
@@ -402,6 +373,30 @@ int test_get_filecount() {
 	return EXIT_SUCCESS;
 }
 
+int test_iread() {
+	char filename[FILENAME_COUNT] = "FILENAME";
+	char *content;
+	struct inode i;
+	char buf[121];
+
+	clean_disk();
+	g_working_directory = create_disk();
+	content = rd("README.md");
+	i = create_regularfile(&g_working_directory, filename, content);
+	free(content);
+	iread(&i, buf, 121);
+
+	if (buf == NULL || strlen(buf) != 120) {
+		perror("test_iread() failure");
+		return EXIT_FAILURE;
+	}
+	printf("%s\n%lu\n%u\n", buf, sizeof(buf), strlen(buf));
+
+	printf("test_iread() successful\n");
+
+	return EXIT_SUCCESS;
+}
+
 int main() {
 
 	init_id_generator();
@@ -423,14 +418,14 @@ int main() {
 	test_parse_ids();
 	test_inode_count();
 
-	//test_update();
 	test_strncut();
 	/*test_get_inode_blocs();*/
 	/*test_iwrite();*/
 	test_get_filename_for_inode();
 	test_list_files();
 	test_update_inode();
+	test_iread();
 
-	return 0;
+	return EXIT_SUCCESS;
 }
 

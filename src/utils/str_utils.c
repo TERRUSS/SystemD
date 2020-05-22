@@ -14,20 +14,16 @@ int strncut(char ***str_array, char *str, size_t n) {
 
 	if (str_size % n == 0) {
 		*str_array = init_str_array(blocs_count, n);
-		/**str_array = (char **) malloc(sizeof(char *) * (blocs_count));*/
 	} else {
 		*str_array = init_str_array(blocs_count + 1, n);
-		/**str_array = (char **) malloc(sizeof(char *) * (blocs_count + 1));*/
 	}
 	for (z = 0; z != blocs_count; z++) {
-		/**(*str_array + z) = (char *) malloc(n);*/
 		strncpy(*(*str_array + z), str + (n * z), n - 1);
-		strcat(*(*str_array + z), "\0");// adds a terminating null byte
+		strcat(*(*str_array + z), "\0");
 	}
 
 	if (z * n < str_size) {
 		strncpy(*(*str_array + z), str + (n * z), (str_size - (n * z)));
-		/*strncpy(*(*str_array + z), str + (n * z), (str_size - (n * z)));*/
 		z++;
 	}
 

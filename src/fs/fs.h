@@ -15,6 +15,7 @@
 
 #define PRINT_LINE printf("LINE %d\n", __LINE__)
 #define NO_FILE_ERROR_MESSAGE "File's NULL"
+#define BLOC_DELETED_MESSAGE "Bloc's deleted (id == 0)"
 
 #define DISK "rsc/disk"
 
@@ -60,6 +61,7 @@ void inode_count(unsigned int *in_store, unsigned int *deleted);
 
 void iwrite(struct inode *i, char *buf);
 char **list_files(struct inode *dir, int *filecount);
+int iread(struct inode *i, char *buf, size_t n);
 
 #endif
 
