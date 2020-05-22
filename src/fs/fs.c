@@ -97,7 +97,7 @@ int delete_bloc(struct bloc *b) {
 
 	new_bloc = *b;
 	new_bloc.id = DELETED;
-	rst = overwrite_bloc(&new_inode, b->id);
+	rst = overwrite_bloc(&new_bloc, b->id);
 	b->id = DELETED;
 
 	return rst;
