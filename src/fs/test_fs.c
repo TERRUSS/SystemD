@@ -417,6 +417,29 @@ int test_strsplt() {
 	return EXIT_SUCCESS;
 }
 
+int test_get_inodes() {
+	int len, z;
+	struct inode *inodes;
+
+	clean_disk();
+	g_working_directory = create_disk();
+	create_regularfile(&g_working_directory, "FILENAME", "TRUC");
+	create_directory(&g_working_directory, "home");
+	len = get_inodes(&g_working_directory, &inodes);
+
+	if (len != 2) {
+		perror("NON");
+		for (z = 0; z != len; z++)
+			print_inode(inodes + z);
+		free(inodes);
+		return EXIT_FAILURE;
+	}
+
+	free(inodes);
+	printf("test_get_inodes() successful\n");
+	return EXIT_SUCCESS;
+}
+
 int main() {
 
 	init_id_generator();
@@ -446,6 +469,7 @@ int main() {
 	test_update_inode();
 	test_iread();
 	test_strsplt();
+	test_get_inodes();
 
 	return EXIT_SUCCESS;
 }

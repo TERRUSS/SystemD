@@ -339,6 +339,12 @@ int print_disk() {
 	return fclose(f);
 }
 
+/*
+ * Gets all inodes under a directory
+ *
+ * note: don't forget to free the array of inodes
+ * on success: returns the length of the array of inodes
+ */
 int get_inodes(struct inode *under_dir, struct inode **inodes) {
 	int len;
 	struct bloc b;
@@ -352,6 +358,8 @@ int get_inodes(struct inode *under_dir, struct inode **inodes) {
 	for (z = 0; z != len; z++) {
 		(*inodes)[z] = get_inode_by_id((unsigned int) inode_ids[z]);
 	}
+
+	free(inode_ids);
 
 	return len;
 }

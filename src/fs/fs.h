@@ -49,6 +49,7 @@ int write_bloc(struct bloc *b);
 int write_inode(struct inode *i);
 struct bloc add_inode_to_inode(struct inode *dir, struct inode *i);
 struct inode get_inode_by_id(unsigned int inode_id);
+int get_inodes(struct inode *under_dir, struct inode **inodes);
 struct bloc get_bloc_by_id(unsigned int bloc_id);
 struct inode create_disk();
 struct inode create_root();

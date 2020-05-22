@@ -99,6 +99,10 @@ unsigned int *parse_ids(char *str) {
 	return ids;
 }
 
+/*
+ * Splits a string into ints, the integers being separated by sep
+ * note: don't forget to free the array of ints
+ */
 unsigned int strsplt(char *str_tosplit, int **ints, char sep) {
 	int i;
 	unsigned int filecount;
