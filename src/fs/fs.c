@@ -698,17 +698,18 @@ int iclose(struct inode *i) {
  */
 char **list_files(struct inode *dir, int *filecount) {
 	char **files, *filename;
-	unsigned int *inode_ids;
+	int *inode_ids;
 	int z;
 	struct inode i;
+	struct bloc b;
 
 	files = NULL;
-	*filecount = get_filecount(dir);
-	inode_ids = parse_ids(get_bloc_by_id(dir->bloc_ids[0]).content);
+	b = get_bloc_by_id(dir->bloc_ids[0]);
+	*filecount = strsplt(b.content, &inode_ids, ',');
 	files = init_str_array(*filecount, FILENAME_COUNT);
 
 	for (z = 0; z != *filecount; z++) {
-		i = get_inode_by_id(inode_ids[z]);
+		i = get_inode_by_id((unsigned int) inode_ids[z]);
 		filename = get_filename_for_inode(&i);
 		strncpy(files[z], filename, FILENAME_COUNT);
 		free(filename);

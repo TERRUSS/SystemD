@@ -1,8 +1,10 @@
 #include "utils/str_utils.h"
 
 /**
- * Slice a char* in a char**, n sized
- * Don't forget to free str_array
+ * Slice a char* in a char**, in chunks n-sized
+ *
+ * note: don't forget to free str_array
+ * returns: the length of the array of strings
  */
 int strncut(char ***str_array, char *str, size_t n) {
 	int z;
@@ -46,6 +48,9 @@ void free_str_array(char **str_array, int len) {
 
 /**
  * Counts the number of occurences in a char*
+ *
+ * excptions: str NULL, str == ""
+ * on failure: returns 0
  */
 unsigned int ocr(char *str, char c) {
 	int o;
@@ -77,30 +82,9 @@ int get_index(char *str, char chr) {
     return (int) (c - str);
 }
 
-/**
- * Parse inode ids in a bloc (directory)
- * Don't forget to free the array
- */
-unsigned int *parse_ids(char *str) {
-	int i;
-	unsigned int *ids;
-	unsigned int filecount;
-	int o;
-
-	filecount = ocr(str, ',');
-	ids = (unsigned int *) calloc(filecount, sizeof(unsigned int));
-	o = 0;
-
-	for (i = 0; i != filecount; i++) {
-		sscanf(str + o, "%u", &(ids[i]));
-		o = get_index(str + o, ',');
-	}
-
-	return ids;
-}
-
 /*
  * Splits a string into ints, the integers being separated by sep
+ *
  * note: don't forget to free the array of ints
  */
 unsigned int strsplt(char *str_tosplit, int **ints, char sep) {
@@ -120,7 +104,9 @@ unsigned int strsplt(char *str_tosplit, int **ints, char sep) {
 	return filecount;
 }
 
-
+/*
+ * Prints an array of string len-sized into the console
+ */
 void print_str_array(char **str_array, int len) {
 	int z;
 
@@ -132,6 +118,10 @@ void print_str_array(char **str_array, int len) {
 	puts("");
 }
 
+/*
+ * Initialize an array of strings, the array being len-sized
+ * and the strings size-sized xD
+ */
 char **init_str_array(unsigned int len, unsigned int size) {
 	char **str_array;
 	int z;
