@@ -647,6 +647,7 @@ struct inode iopen(struct inode *under_dir, char *filename, const char *mode) {
 	char *fn;
 
 	done = 0;
+	i = empty_inode();
 	len = get_inodes(under_dir, &inodes);
 	z = 0;
 

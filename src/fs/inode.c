@@ -85,6 +85,16 @@ void print_inode(struct inode *i) {
 
 }
 
+/*
+ * Initialize an empty inode
+ */
+struct inode empty_inode() {
+	struct inode i;
+	memset(&i, 0, sizeof(struct inode));
+	i.id = DELETED;
+	return i;
+}
+
 /**
  * Initialize the id generator (seed for random)
  * TODO put in rand_utils/c

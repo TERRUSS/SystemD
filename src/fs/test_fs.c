@@ -435,6 +435,11 @@ int test_iopen() {
 		perror("test_iopen() failed");
 		return EXIT_FAILURE;
 	}
+	j = iopen(&g_working_directory, "Croute", "a");
+	if (!j.id == DELETED) {
+		perror("test_iopen() failed");
+		return EXIT_FAILURE;
+	}
 
 	printf("test_iopen() successful\n");
 
