@@ -91,6 +91,18 @@ int write_inode(struct inode *i) {
 	return EXIT_SUCCESS;
 }
 
+int delete_bloc(struct bloc *b) {
+	struct bloc new_bloc;
+	int rst;
+
+	new_bloc = *b;
+	new_bloc.id = DELETED;
+	rst = overwrite_bloc(&new_inode, b->id);
+	b->id = DELETED;
+
+	return rst;
+}
+
 int delete_inode(struct inode *i) {
 	struct inode new_inode;
 	int rst;
@@ -548,7 +560,7 @@ void inode_count(unsigned int *in_store, unsigned int *deleted) {
 
 /* Primitives */
 
-/**
+/*
  * TODO not working, segfault
  */
 void iwrite(struct inode *i, char *buf) {
@@ -597,13 +609,15 @@ void iwrite(struct inode *i, char *buf) {
 	free(blocs);
 }
 
-/**
+/*
+ * TODO
  * Returns an inode of a file
  *
  * success : returns the inode
  */
 struct inode iopen(char *filename, const char *mode) {
 	struct inode i;
+
 
 	return i;
 }
@@ -651,7 +665,6 @@ int iclose(struct inode *i) {
 	return EXIT_FAILURE;
 }
 
-// TODO
 /**
  * List all files under a dir
  *
@@ -679,4 +692,12 @@ char **list_files(struct inode *dir, int *filecount) {
 
 	return files;
 }
+
+/*
+ * TODO
+ */
+int remove_empty_directory(char *dirname) {
+}
+
+
 

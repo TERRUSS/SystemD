@@ -47,13 +47,6 @@ struct bloc empty_bloc() {
 }
 
 /**
- * Deletes a bloc : set the id to DELETED (0)
- */
-void delete_bloc(struct bloc *b) {
-	b->id = DELETED;
-}
-
-/**
  * Prints a bloc to the terminal
  */
 void print_bloc(struct bloc *b) {

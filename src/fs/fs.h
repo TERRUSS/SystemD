@@ -38,6 +38,7 @@ struct file {
 
 char *get_filename_for_inode(struct inode *i);
 int clean_disk();
+int delete_bloc(struct bloc *b);
 int delete_inode(struct inode *i);
 int overwrite_bloc(struct bloc *new_bloc, unsigned int id);
 int overwrite_inode(struct inode *new_inode, unsigned int id);
@@ -51,7 +52,6 @@ struct bloc add_inode_to_inode(struct inode *dir, struct inode *i);
 struct bloc get_bloc_by_id(unsigned int bloc_id);
 struct inode create_disk();
 struct inode create_root();
-unsigned int get_bloc_id(char *filename);
 unsigned int get_filecount(struct inode *dir);
 void inode_count(unsigned int *in_store, unsigned int *deleted);
 
