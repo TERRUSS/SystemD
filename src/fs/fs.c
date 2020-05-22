@@ -396,7 +396,7 @@ int get_inodes(struct inode *under_dir, struct inode **inodes) {
 }
 
 /*
- * TODO
+ * Removes a file, any kind
  */
 int remove_file(struct inode *under_dir, char *filename, filetype ft) {
 	struct inode i;
@@ -812,42 +812,6 @@ int remove_inode_from_directory(struct inode *dir, unsigned int id) {
  * exception: directory is not empty, file's not a directory
  */
 int remove_empty_directory(struct inode *under_dir, char *dirname) {
-	/*
-	struct inode i;
-	struct bloc b;
-	unsigned int dir_id;
-	int *inode_ids;
-	int len;
-
-	if (under_dir->type != DIRECTORY) {
-		perror("Inout is not a directory");
-		return EXIT_FAILURE;
-	}
-
-	// first we remove the dir's inode and bloc
-	i = get_inode_by_filename(under_dir, dirname);
-
-	if (i.type != DIRECTORY) {
-		perror("Input is not a directory");
-		return EXIT_FAILURE;
-	}
-
-	dir_id = i.id;
-
-	if (get_filecount(&i) == 0) {
-		b = get_bloc_by_id(i.bloc_ids[0]);
-		delete_bloc(&b);
-		delete_inode(&i);
-	} else {
-		perror(DIRECTORY_NOT_EMPTY_MESSAGE);
-		return EXIT_FAILURE;
-	}
-
-	// then we remove the inode from the content in under_dir's bloc
-	remove_inode_from_directory(under_dir, dir_id);
-
-	return EXIT_SUCCESS;
-	*/
 	return remove_file(under_dir, dirname, DIRECTORY);
 }
 
