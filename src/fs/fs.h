@@ -62,7 +62,7 @@ void disk_free(unsigned int *blocs_available, unsigned int *inodes_available, si
 
 struct inode create_regularfile(struct inode *under_dir, char *filename, char *content);
 struct inode create_emptyfile(struct inode *under_dir, char *filename, filetype type, const char *mode);
-void iwrite(struct inode *i, char *buf);
+int iwrite(struct inode *i, char *buf, size_t n);
 char **list_files(struct inode *dir, int *filecount);
 int iread(struct inode *i, char *buf, size_t n);
 struct inode iopen(struct inode *under_dir, char *filename, const char *mode);

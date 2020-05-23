@@ -153,22 +153,31 @@ int test_iwrite() {
 	char filename[FILENAME_COUNT] = "FILENAME";
 	char *content;
 	struct inode i;
+	unsigned int blocs, inodes;
+	size_t bytes;
 
 	clean_disk();
 	g_working_directory = create_disk();
 	i = create_emptyfile(&g_working_directory, filename, REGULAR_FILE, "a");
 	content = rd("README.md");
 	if (content == NULL) {
-		perror("Test failed");
-		return 0;
-	} else {
-		print_disk();
-		iwrite(&i, content);
-		print_disk();
-		free(content);
+		perror("test_iwrite() failed");
+		return EXIT_FAILURE;
 	}
 
-	return 1;
+	iwrite(&i, content, 620);
+	print_disk();
+	iwrite(&i, content, 120);
+	print_disk();
+	disk_free(&blocs, &inodes, &bytes);
+	if (blocs != 1 && inodes != 0) {
+		perror("test_remove_file() failed");
+		return EXIT_FAILURE;
+	}
+	free(content);
+
+	printf("test_iwrite() successful\n");
+	return EXIT_SUCCESS;
 }
 
 int test_get_filename_for_inode() {
@@ -541,6 +550,7 @@ int main() {
 	test_strjoin();
 	test_disk_free();
 	test_remove_file();
+	test_iwrite();
 
 	return EXIT_SUCCESS;
 }

@@ -628,10 +628,79 @@ struct bloc add_inode_to_inode(struct inode *dir, struct inode *i) {
 
 /* Primitives */
 
+int iwrite(struct inode *i, char *buf, size_t n) {
+	int z;
+	int done;
+	int pos;
+	int new_bloc_count;
+	char *filename;
+	struct bloc b;
+
+	done = 0;
+	pos = 0;
+	filename = get_filename_for_inode(i);
+	z = 0;
+
+	while (!done && z != i->bloc_count) {
+		b = get_bloc_by_id(i->bloc_ids[z]);
+
+		if (n > BLOC_SIZE + 1) {
+			strncpy(b.content, buf + pos, BLOC_SIZE - 1);
+			pos += BLOC_SIZE - 1;
+			n -= BLOC_SIZE - 1;
+		} else {
+			strncpy(b.content, buf + pos, n - 1);
+			b.content[n] = '\0';
+			done = 1;
+		}
+
+		update_bloc(&b);
+		z++;
+	}
+
+	if (done) {
+		new_bloc_count = z;
+
+		for (; z != i->bloc_count; z++) {
+			b = get_bloc_by_id(i->bloc_ids[z]);
+			delete_bloc(&b);
+		}
+
+		i->bloc_count = new_bloc_count;
+	} else {
+		while (!done) {
+			if (n > BLOC_SIZE - 1) {
+				b = new_bloc(filename, "");
+				strncpy(b.content, buf + pos, BLOC_SIZE - 1);
+				pos += BLOC_SIZE - 1;
+				n -= BLOC_SIZE - 1;
+			} else {
+				b = new_bloc(filename, "");
+				strncpy(b.content, buf + pos, n - 1);
+				b.content[n] = '\0';
+				done = 1;
+			}
+
+			add_bloc(i, &b);
+			write_bloc(&b);
+		}
+	}
+
+	free(filename);
+	update_inode(i);
+
+	return EXIT_SUCCESS;
+}
+
+
+
+
+
+
 /*
  * TODO not working, segfault
  */
-void iwrite(struct inode *i, char *buf) {
+void iiwrite(struct inode *i, char *buf) {
 	struct bloc *blocs, b;
 	char **contents;
 	char *filename;
