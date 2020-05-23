@@ -31,3 +31,9 @@ A basic File Manager System implemented in C, accessible throught a cusom shell 
        
 
 
+### TODO
+
+
+- link / unlink
+- open / cloose with permissions
+
