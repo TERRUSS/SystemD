@@ -67,6 +67,7 @@ char **list_files(struct inode *dir, int *filecount);
 int iread(struct inode *i, char *buf, size_t n);
 struct inode iopen(struct inode *under_dir, char *filename, const char *mode);
 int move_file(struct inode *from, char *filename, struct inode *to);
+int copy_file(struct inode *from, char *filename, struct inode *to);
 
 struct inode create_directory(struct inode *under_dir, char *dirname);
 int remove_empty_directory(struct inode *under_dir, char *dirname);

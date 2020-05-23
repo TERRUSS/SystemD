@@ -852,6 +852,24 @@ int move_file(struct inode *from, char *filename, struct inode *to) {
 	return EXIT_SUCCESS;
 }
 
+/*
+ * Copies a file from an inode to another
+ */
+int copy_file(struct inode *from, char *filename, struct inode *to) {
+	struct inode i;
+	struct bloc to_update;
+
+	i = get_inode_by_filename(from, filename);
+
+	to_update = add_inode_to_inode(to, &i);
+	update_bloc(&to_update);
+
+	return EXIT_SUCCESS;
+}
+
+
+
+/* Other */
 
 
 /*
