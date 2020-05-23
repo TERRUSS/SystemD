@@ -628,6 +628,11 @@ struct bloc add_inode_to_inode(struct inode *dir, struct inode *i) {
 
 /* Primitives */
 
+/*
+ * Write buf into an inode blocs
+ * add new blocs if necessary
+ * delete blocs if necessary
+ */
 int iwrite(struct inode *i, char *buf, size_t n) {
 	int z;
 	int done;
@@ -696,55 +701,6 @@ int iwrite(struct inode *i, char *buf, size_t n) {
 
 
 
-
-/*
- * TODO not working, segfault
- */
-void iiwrite(struct inode *i, char *buf) {
-	struct bloc *blocs, b;
-	char **contents;
-	char *filename;
-	int len;
-	int z;
-
-	blocs = get_inode_blocs(i);
-	filename = blocs[0].filename;
-	len = strncut(&contents, buf, BLOC_SIZE);
-
-	if (i->bloc_count < len) {
-		printf("__LINE__ %d\n", __LINE__);
-		for (z = 0; z != i->bloc_count; z++) {
-			strncpy(blocs[z].content, contents[z], BLOC_SIZE);
-			printf("__LINE__ %d\n", __LINE__);
-			print_bloc(blocs + z);
-			printf("SIZE %lu\n", strlen(blocs[z].content));
-			update_bloc(blocs + z);// segfault
-		}
-
-		for (; z != len; z++) {
-			b = new_bloc(filename, contents[z]);
-			print_bloc(blocs + z);
-			write_bloc(&b);
-			add_bloc(i, &b);
-		}
-		TODO_PRINT;
-		free_str_array(contents, len);
-	} else {
-		printf("__LINE__ %d\n", __LINE__);
-		for (z = 0; z != len; z++) {
-			strncpy(blocs[z].content, contents[z], BLOC_SIZE);
-			update_bloc(blocs + z);
-		}
-		TODO_PRINT;
-
-		for (; z != i->bloc_count; z++) {
-		}
-		free_str_array(contents, i->bloc_count);
-	}
-
-	update_inode(i);
-	free(blocs);
-}
 
 /*
  * Returns an inode matching the filename
@@ -858,12 +814,17 @@ char **list_files(struct inode *dir, int *filecount) {
 	return files;
 }
 
+/*
+ * Remove an inode froma directory, that is,
+ * remove the inode id from the bloc content
+ * the ids are stored like that "12,432,4324,"
+ */
 int remove_inode_from_directory(struct inode *dir, unsigned int id) {
 	struct bloc b;
-	int len;
+	unsigned int len;
 	int *inode_ids;
 
-	b = get_bloc_by_id(dir->id);
+	b = get_bloc_by_id(dir->bloc_ids[0]);
 
 	len = strsplt(b.content, &inode_ids, ',');
 	remove_int(&inode_ids, &len, id);
@@ -885,6 +846,20 @@ int remove_empty_directory(struct inode *under_dir, char *dirname) {
 }
 
 
+int move_file(struct inode *from, char *filename, struct inode *to) {
+	struct inode i;
+	struct bloc to_update;
+
+	i = get_inode_by_filename(from, filename);
+	print_inode(&i);
+
+	remove_inode_from_directory(from, i.id);
+	to_update = add_inode_to_inode(to, &i);
+	update_bloc(&to_update);
+
+	return EXIT_SUCCESS;
+}
+
 
 
 /*
@@ -894,22 +869,38 @@ int remove_empty_directory(struct inode *under_dir, char *dirname) {
  *
  * exception: integer not found
  */
-int remove_int(int **int_array, int *len, int i) {
-	int z;
+int remove_int(int **int_array, unsigned int *len, int i) {
+	unsigned int z;
 	int remove;
+
+	if (*len == 0) {
+		perror("Length is 0");
+		return EXIT_FAILURE;
+	}
+	printf("%u\n", *len);
 
 	remove = 0;
 
-	for (z = 0; z != *len && !remove; z++)
-		if ((*int_array)[z] == i)
+	for (z = 0; z != *len && !remove; z++) {
+		printf("z %u\n", z);
+		if ((*int_array)[z] == i) {
+			printf("FROUND %u\n", z);
 			remove = 1;
+			z--;
+		}
+	}
 
 	if (remove) {
-		for (; z != *len; z++) {
+		printf("len %u\n", *len);
+		printf("z %u\n", z);
+
+		for (; z + 1 < *len; z++) {
+			printf("int[%u] = %d\n", z, (*int_array)[z]);
 			(*int_array)[z] = (*int_array)[z + 1];
 		}
-		*int_array = (int *) realloc(*int_array, sizeof(int) * *len - 1);
 		*len -= 1;
+
+		*int_array = (int *) realloc(*int_array, sizeof(int) * *len);
 		return EXIT_SUCCESS;
 	}
 

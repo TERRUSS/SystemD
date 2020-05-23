@@ -166,9 +166,7 @@ int test_iwrite() {
 	}
 
 	iwrite(&i, content, 620);
-	print_disk();
 	iwrite(&i, content, 120);
-	print_disk();
 	disk_free(&blocs, &inodes, &bytes);
 	if (blocs != 1 && inodes != 0) {
 		perror("test_remove_file() failed");
@@ -519,6 +517,32 @@ int test_remove_file() {
 	return EXIT_SUCCESS;
 }
 
+int test_move_file() {
+	struct inode to;
+
+	clean_disk();
+	g_working_directory = create_disk();
+	create_regularfile(&g_working_directory, "FILENAME", "TRUC");
+	to = create_directory(&g_working_directory, "home");
+
+	//print_disk();
+	move_file(&g_working_directory, "FILENAME", &to);
+	print_disk();
+
+	if (get_filecount(&g_working_directory) != 1) {
+		perror("test_move_file() failed");
+		return EXIT_FAILURE;
+	}
+	if (get_filecount(&to) != 1) {
+		perror("test_move_file() failed");
+		return EXIT_FAILURE;
+	}
+
+	printf("test_move_file() successful\n");
+
+	return EXIT_SUCCESS;
+}
+
 int main() {
 
 	init_id_generator();
@@ -551,6 +575,7 @@ int main() {
 	test_disk_free();
 	test_remove_file();
 	test_iwrite();
+	test_move_file();
 
 	return EXIT_SUCCESS;
 }
