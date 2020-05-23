@@ -93,8 +93,6 @@ unsigned int strsplt(char *str_tosplit, int **ints, char sep) {
 	int o;
 
 	filecount = ocr(str_tosplit, ',');
-	printf("str to split %s\n", str_tosplit);
-	printf("filecount %u\n", filecount);
 	*ints = (int *) calloc(filecount, sizeof(int));
 	o = 0;
 

@@ -851,7 +851,6 @@ int move_file(struct inode *from, char *filename, struct inode *to) {
 	struct bloc to_update;
 
 	i = get_inode_by_filename(from, filename);
-	print_inode(&i);
 
 	remove_inode_from_directory(from, i.id);
 	to_update = add_inode_to_inode(to, &i);
@@ -867,7 +866,7 @@ int move_file(struct inode *from, char *filename, struct inode *to) {
  * Removes an integer from an array of ints
  * Reallocates the array if the int is found (and removed)
  *
- * exception: integer not found
+ * exception: integer not found, length is 0
  */
 int remove_int(int **int_array, unsigned int *len, int i) {
 	unsigned int z;
@@ -877,25 +876,19 @@ int remove_int(int **int_array, unsigned int *len, int i) {
 		perror("Length is 0");
 		return EXIT_FAILURE;
 	}
-	printf("%u\n", *len);
 
 	remove = 0;
 
 	for (z = 0; z != *len && !remove; z++) {
-		printf("z %u\n", z);
 		if ((*int_array)[z] == i) {
-			printf("FROUND %u\n", z);
 			remove = 1;
 			z--;
 		}
 	}
 
 	if (remove) {
-		printf("len %u\n", *len);
-		printf("z %u\n", z);
 
 		for (; z + 1 < *len; z++) {
-			printf("int[%u] = %d\n", z, (*int_array)[z]);
 			(*int_array)[z] = (*int_array)[z + 1];
 		}
 		*len -= 1;

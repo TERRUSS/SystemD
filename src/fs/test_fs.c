@@ -525,9 +525,7 @@ int test_move_file() {
 	create_regularfile(&g_working_directory, "FILENAME", "TRUC");
 	to = create_directory(&g_working_directory, "home");
 
-	//print_disk();
 	move_file(&g_working_directory, "FILENAME", &to);
-	print_disk();
 
 	if (get_filecount(&g_working_directory) != 1) {
 		perror("test_move_file() failed");
