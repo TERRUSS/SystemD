@@ -846,6 +846,9 @@ int remove_empty_directory(struct inode *under_dir, char *dirname) {
 }
 
 
+/*
+ * Moves a file from an inode to another inode
+ */
 int move_file(struct inode *from, char *filename, struct inode *to) {
 	struct inode i;
 	struct bloc to_update;
