@@ -91,6 +91,9 @@ int write_inode(struct inode *i) {
 	return EXIT_SUCCESS;
 }
 
+/*
+ * Deletes a bloc
+ */
 int delete_bloc(struct bloc *b) {
 	struct bloc new_bloc;
 	int rst;
@@ -103,6 +106,9 @@ int delete_bloc(struct bloc *b) {
 	return rst;
 }
 
+/*
+ * Deletes an inode
+ */
 int delete_inode(struct inode *i) {
 	struct inode new_inode;
 	int rst;
@@ -460,7 +466,7 @@ struct inode create_directory(struct inode *under_dir, char *dirname) {
 }
 
 /**
- * Created a file in the filesystem
+ * Creates a file in the filesystem
  * and returns the inode created
  *
  * filename must not be NULL
@@ -579,21 +585,6 @@ struct bloc get_bloc_by_id(unsigned int bloc_id) {
 	fclose(f);
 
 	return b;
-}
-
-/**
- */
-struct bloc *get_inode_blocs(struct inode *i) {
-	int z;
-	struct bloc *blocs;
-
-	blocs = (struct bloc *) calloc(i->bloc_count, sizeof(struct bloc));
-
-	for (z = 0; z != i->bloc_count; z++) {
-		blocs[z] = get_bloc_by_id(i->bloc_ids[z]);
-	}
-
-	return blocs;
 }
 
 /**
@@ -732,7 +723,6 @@ struct inode get_inode_by_filename(struct inode *under_dir, char *filename) {
 }
 
 /*
- * TODO
  * Returns an inode of a file
  *
  * success : returns the inode
