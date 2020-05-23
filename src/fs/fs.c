@@ -911,3 +911,32 @@ int remove_int(int **int_array, unsigned int *len, int i) {
 	return EXIT_FAILURE;
 }
 
+int link_inode(struct inode *from_dir, char *filename, struct inode *to_dir, char *linkname) {
+	struct inode link, i;
+	struct bloc to_update;
+	int z;
+
+	i = get_inode_by_filename(from_dir, filename);
+	link = new_inode(i.type, i.permissions, i.user_name, i.group_name);
+
+	for (z = 0; z != i.bloc_count; z++) {
+		link.bloc_ids[z] = i.bloc_ids[z];
+	}
+
+	link.bloc_count = i.bloc_count;
+	write_inode(&link);
+
+	to_update = add_inode_to_inode(to_dir, &link);
+	update_bloc(&to_update);
+
+	return EXIT_SUCCESS;
+}
+
+int unlink_inode(struct inode *from_dir, char *linkname) {
+	struct inode link;
+
+	link = get_inode_by_filename(from_dir, linkname);
+	remove_inode_from_directory(from_dir, link.id);
+
+	return EXIT_SUCCESS;
+}

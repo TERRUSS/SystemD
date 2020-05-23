@@ -68,6 +68,8 @@ int iread(struct inode *i, char *buf, size_t n);
 struct inode iopen(struct inode *under_dir, char *filename, const char *mode);
 int move_file(struct inode *from, char *filename, struct inode *to);
 int copy_file(struct inode *from, char *filename, struct inode *to);
+int unlink_inode(struct inode *from_dir, char *linkname);
+int link_inode(struct inode *from_dir, char *filename, struct inode *to_dir, char *linkname);
 
 struct inode create_directory(struct inode *under_dir, char *dirname);
 int remove_empty_directory(struct inode *under_dir, char *dirname);
