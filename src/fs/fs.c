@@ -11,8 +11,6 @@ char g_username[USERNAME_COUNT];
 
 /* Current working directory */
 struct inode g_working_directory;
-/* Contains the filetree TODO will be used ? */
-struct file g_filetree;
 
 /**
  * Gets the filename of a file/inode
@@ -302,9 +300,10 @@ int update_bloc(struct bloc *new_bloc) {
 	return overwrite_bloc(new_bloc, new_bloc->id);
 }
 
-struct inode create_regularfile(struct inode *under_dir, char *filename, char *content) {
+struct file create_regularfile(struct inode *under_dir, char *filename, char *content, int flags) {
 	struct inode i;
 	struct bloc b, to_update;
+	struct file f;
 	int z, len;
 	char **blocs_contents;
 
@@ -325,7 +324,9 @@ struct inode create_regularfile(struct inode *under_dir, char *filename, char *c
 
 	free_str_array(blocs_contents, len);
 
-	return i;
+	f = new_file(&i, flags);
+
+	return f;
 }
 
 /**
@@ -478,9 +479,10 @@ struct inode create_directory(struct inode *under_dir, char *dirname) {
  * TODO what's the mode for ? how do you use it,
  * since you only return an inode
  */
-struct inode create_emptyfile(struct inode *under_dir, char *filename, enum filetype type, const char *mode) {
+struct file create_emptyfile(struct inode *under_dir, char *filename, enum filetype type) {
 	struct bloc b, to_update;
 	struct inode i;
+	struct file f;
 
 	b = new_bloc(filename, "");
 	i = new_inode(type, DEFAULT_PERMISSIONS, g_username, g_username);
@@ -492,7 +494,9 @@ struct inode create_emptyfile(struct inode *under_dir, char *filename, enum file
 	write_bloc(&b);
 	update_bloc(&to_update);
 
-	return i;
+	f = new_file(&i, O_CREAT | O_WRONLY | O_TRUNC);
+
+	return f;
 }
 
 /**
@@ -629,7 +633,7 @@ struct bloc add_inode_to_inode(struct inode *dir, struct inode *i) {
  * add new blocs if necessary
  * delete blocs if necessary
  */
-int iwrite(struct inode *i, char *buf, size_t n) {
+int iwrite(struct file *f, char *buf, size_t n) {
 	int z;
 	int done;
 	int pos;
@@ -637,7 +641,16 @@ int iwrite(struct inode *i, char *buf, size_t n) {
 	char *filename;
 	struct bloc b;
 	time_t t;
+	struct inode *i;
 
+	if (!((f->flags & O_WRONLY) == O_WRONLY
+			|| (f->flags & O_RDWR) == O_RDWR)) {
+
+		fprintf(stderr, "Access denied, wrong mode\n");
+		return EXIT_FAILURE;
+	}
+
+	i = &(f->inode);
 	t = time(NULL);
 	done = 0;
 	pos = 0;
@@ -734,6 +747,10 @@ int create_dotdot_dir(struct inode *parent, struct inode *dir) {
 
 /*
  * Returns an inode matching the filename
+ *
+ * exception: file not found
+ * on failure: returns an empty inode
+ * on success: returns the inode found
  */
 struct inode get_inode_by_filename(struct inode *under_dir, char *filename) {
 	struct inode i, *inodes;
@@ -766,27 +783,48 @@ struct inode get_inode_by_filename(struct inode *under_dir, char *filename) {
  *
  * success : returns the inode
  */
-struct inode iopen(struct inode *under_dir, char *filename, const char *mode) {
-	return get_inode_by_filename(under_dir, filename);
+struct file iopen(struct inode *under_dir, char *filename, int flags) {
+	struct file f;
+	struct inode i;
+
+	i = get_inode_by_filename(under_dir, filename);
+
+	if (i.id == DELETED && (flags & O_CREAT) == O_CREAT) {
+		f = create_emptyfile(under_dir, filename, REGULAR_FILE);
+		f.flags = flags;
+	} else {
+		f = new_file(&i, flags);
+	}
+
+	return f;
 }
 
 /*
  * Reads n bytes of files pointed by inode i; the content
  * is stored in buf
  */
-int iread(struct inode *i, char *buf, size_t n) {
+int iread(struct file *f, char *buf, size_t n) {
 	int z;
 	int done;
 	struct bloc b;
 	int pos;
+	struct inode i;
 
+	if (!((f->flags & O_RDONLY) == O_RDONLY
+			|| (f->flags & O_RDWR) == O_RDWR)) {
+
+		fprintf(stderr, "Access denied, wrong mode\n");
+		return EXIT_FAILURE;
+	}
+
+	i = f->inode;
 	done = 0;
 	z = 0;
 	pos = 0;
 	strcpy(buf, "");
 
-	while (!done && z != i->bloc_count) {
-		b = get_bloc_by_id(i->bloc_ids[z]);
+	while (!done && z != i.bloc_count) {
+		b = get_bloc_by_id(i.bloc_ids[z]);
 
 		if (b.id == DELETED) {
 			perror(BLOC_DELETED_MESSAGE);
@@ -986,21 +1024,35 @@ int unlink_inode(struct inode *from_dir, char *linkname) {
 
 /*
  * Initialize a new file
+ * TODO do append flag, extremlly difficult
  */
-struct file new_file(struct inode *i, mode_t m) {
+struct file new_file(struct inode *i, int flags) {
 	struct file f;
 
 	memset(&f, 0, sizeof(struct file));
 	f.inode = *i;
-	f.mode = m;
+	f.flags = flags;
+
+	if ((flags & O_APPEND) == O_APPEND) {
+		f.current_pos = get_total_strlen(i);
+	} else {
+		f.current_pos = 0;
+	}
 
 	return f;
 }
 
 /*
- * Checks if the mode is right for the file
+ * Returns the total length of a file
+ * pointed by an inode
  */
-int right_mode(struct file *f, mode_t mode) {
-	return (f->mode & mode) == mode;
+size_t get_total_strlen(struct inode *i) {
+	struct bloc b;
+	int bloc_count;
+
+	bloc_count = i->bloc_count;
+	b = get_bloc_by_id(i->bloc_ids[bloc_count - 1]);
+
+	return (bloc_count - 1) * (BLOC_SIZE - 1) + strlen(b.content);
 }
 

@@ -81,14 +81,14 @@ int test_create_disk() {
 
 
 int test_update_inode() {
-	struct inode i;
+	struct file f;
 
 	clean_disk();
 	g_working_directory = create_disk();
 
-	i = create_regularfile(&g_working_directory, "FILENAME", "TRUC");
-	strcpy(i.user_name, "Pauli");
-	if (update_inode(&i) == EXIT_FAILURE) {
+	f = create_regularfile(&g_working_directory, "FILENAME", "TRUC", O_RDONLY);
+	strcpy(f.inode.user_name, "Pauli");
+	if (update_inode(&(f.inode)) == EXIT_FAILURE) {
 		perror("test_update_inode() failed");
 		return EXIT_FAILURE;
 	}
@@ -127,7 +127,7 @@ int test_create_regularfile() {
 		perror("test_create_regularfile() failed");
 		return EXIT_FAILURE;
 	}
-	create_regularfile(&g_working_directory, filename, content);
+	create_regularfile(&g_working_directory, filename, content, O_RDONLY);
 	if (get_filecount(&g_working_directory) != 1) {
 		perror("test_create_regularfile() failed");
 		return EXIT_FAILURE;
@@ -148,21 +148,21 @@ int test_get_inode_blocs() {
 int test_iwrite() {
 	char filename[FILENAME_COUNT] = "FILENAME";
 	char *content;
-	struct inode i;
+	struct file f;
 	unsigned int blocs, inodes;
 	size_t bytes;
 
 	clean_disk();
 	g_working_directory = create_disk();
-	i = create_emptyfile(&g_working_directory, filename, REGULAR_FILE, "a");
+	f = create_emptyfile(&g_working_directory, filename, REGULAR_FILE);
 	content = rd("README.md");
 	if (content == NULL) {
 		perror("test_iwrite() failed");
 		return EXIT_FAILURE;
 	}
 
-	iwrite(&i, content, 620);
-	iwrite(&i, content, 120);
+	iwrite(&f, content, 620);
+	iwrite(&f, content, 120);
 	disk_free(&blocs, &inodes, &bytes);
 	if (blocs != 1 && inodes != 0) {
 		perror("test_remove_file() failed");
@@ -178,12 +178,12 @@ int test_get_filename_for_inode() {
 	char filename[FILENAME_COUNT] = "FILENAME";
 	char content[] = "TRUC";
 	char *rst;
-	struct inode i;
+	struct file f;
 
 	clean_disk();
 	g_working_directory = create_disk();
-	i = create_regularfile(&g_working_directory, filename, content);
-	rst = get_filename_for_inode(&i);
+	f = create_regularfile(&g_working_directory, filename, content, O_RDONLY);
+	rst = get_filename_for_inode(&(f.inode));
 	if (rst == NULL) {
 		perror("Ah !");
 		return EXIT_FAILURE;
@@ -298,13 +298,13 @@ int test_create_directory() {
 }
 
 int test_create_emptyfile() {
-	struct inode i;
+	struct file f;
 
 	clean_disk();
 	g_working_directory = create_disk();
-	i = create_emptyfile(&g_working_directory, "hello.py", REGULAR_FILE, "a+");
+	f = create_emptyfile(&g_working_directory, "hello.py", REGULAR_FILE);
 
-	if (i.bloc_count != 1) {
+	if (f.inode.bloc_count != 1) {
 		perror("test_create_emptyfile() failed");
 		return EXIT_FAILURE;
 	}
@@ -329,7 +329,7 @@ int test_list_files() {
 	print_str_array(files, filecount);
 	free_str_array(files, filecount);
 
-	create_regularfile(&g_working_directory, "hey.txt", "OwO");
+	create_regularfile(&g_working_directory, "hey.txt", "OwO", O_RDONLY);
 	files = list_files(&g_working_directory, &filecount);
 	print_str_array(files, filecount);
 	free_str_array(files, filecount);
@@ -351,18 +351,18 @@ int test_get_filecount() {
 }
 
 int test_iread() {
-	char filename[FILENAME_COUNT] = "FILENAME";
 	char *content;
-	struct inode i;
 	char buf[121];
+	char filename[FILENAME_COUNT] = "FILENAME";
 	size_t n = 120;
+	struct file f;
 
 	clean_disk();
 	g_working_directory = create_disk();
 	content = rd("README.md");
-	i = create_regularfile(&g_working_directory, filename, content);
+	f = create_regularfile(&g_working_directory, filename, content, O_RDONLY);
 	free(content);
-	iread(&i, buf, n);
+	iread(&f, buf, n);
 
 	if (buf == NULL) {
 		perror("test_iread() failure");
@@ -399,7 +399,7 @@ int test_get_inodes() {
 
 	clean_disk();
 	g_working_directory = create_disk();
-	create_regularfile(&g_working_directory, "FILENAME", "TRUC");
+	create_regularfile(&g_working_directory, "FILENAME", "TRUC", O_RDONLY);
 	create_directory(&g_working_directory, "home");
 	len = get_inodes(&g_working_directory, &inodes);
 
@@ -417,19 +417,19 @@ int test_get_inodes() {
 }
 
 int test_iopen() {
-	struct inode i, j;
+	struct file f1, f2;
 
 	clean_disk();
 	g_working_directory = create_disk();
 
-	i = create_regularfile(&g_working_directory, "Bidsouf", "Yahoo");
-	j = iopen(&g_working_directory, "Bidsouf", "a");
-	if (!inode_equals(i, j)) {
+	f1 = create_regularfile(&g_working_directory, "Bidsouf", "Yahoo", O_RDONLY);
+	f2 = iopen(&g_working_directory, "Bidsouf", O_RDONLY);
+	if (!inode_equals(f1.inode, f2.inode)) {
 		perror("test_iopen() failed");
 		return EXIT_FAILURE;
 	}
-	j = iopen(&g_working_directory, "Croute", "a");
-	if (!j.id == DELETED) {
+	f1 = iopen(&g_working_directory, "Croute", O_RDONLY);
+	if (!f1.inode.id == DELETED) {
 		perror("test_iopen() failed");
 		return EXIT_FAILURE;
 	}
@@ -444,23 +444,23 @@ int test_remove_empty_directory() {
 	clean_disk();
 	g_working_directory = create_disk();
 
-	create_regularfile(&g_working_directory, "FILENAME", "TRUC");
+	create_regularfile(&g_working_directory, "FILENAME", "TRUC", O_RDONLY);
 	create_directory(&g_working_directory, "home");
 
 	if (remove_empty_directory(&g_working_directory, "FILENAME") != EXIT_FAILURE
 			&& get_filecount(&g_working_directory) != 2) {
-		perror("Wrong1");
+		perror("test_remove_empty_directory() failed");
 		return EXIT_FAILURE;
 	}
 	if (remove_empty_directory(&g_working_directory, "home") != EXIT_SUCCESS && get_filecount(&g_working_directory) != 1) {
-		perror("Wrong2");
+		perror("test_remove_empty_directory() failed");
 		return EXIT_FAILURE;
 	}
 
 	create_directory(&g_working_directory, "usr");
-	create_regularfile(&g_working_directory, "user_file.sh", "echo 'je suis une loutre'");
+	create_regularfile(&g_working_directory, "user_file.sh", "echo 'je suis une loutre'", O_RDONLY);
 	if (remove_empty_directory(&g_working_directory, "usr") != EXIT_FAILURE && get_filecount(&g_working_directory) != 3) {
-		perror("Wrong3");
+		perror("test_remove_empty_directory() failed");
 		return EXIT_FAILURE;
 	}
 
@@ -489,7 +489,7 @@ int test_remove_file() {
 
 	clean_disk();
 	g_working_directory = create_disk();
-	create_regularfile(&g_working_directory, "FILENAME", "TRUC");
+	create_regularfile(&g_working_directory, "FILENAME", "TRUC", O_RDONLY);
 	create_directory(&g_working_directory, "home");
 
 	if (remove_file(&g_working_directory, "home", REGULAR_FILE) != EXIT_FAILURE) {
@@ -522,7 +522,7 @@ int test_move_file() {
 
 	clean_disk();
 	g_working_directory = create_disk();
-	create_regularfile(&g_working_directory, "FILENAME", "TRUC");
+	create_regularfile(&g_working_directory, "FILENAME", "TRUC", O_RDONLY);
 	to = create_directory(&g_working_directory, "home");
 
 	move_file(&g_working_directory, "FILENAME", &to);
