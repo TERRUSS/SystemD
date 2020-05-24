@@ -426,7 +426,8 @@ int remove_file(struct inode *under_dir, char *filename, filetype ft) {
 	file_id = i.id;
 
 	if (ft == DIRECTORY) {
-		if (get_filecount(&i) != 0) {
+		/* A directory has at least the . and the .. directories */
+		if (get_filecount(&i) != 2) {
 			perror(DIRECTORY_NOT_EMPTY_MESSAGE);
 			return EXIT_FAILURE;
 		}
@@ -461,6 +462,10 @@ struct inode create_directory(struct inode *under_dir, char *dirname) {
 	write_inode(&i);
 	write_bloc(&b);
 	update_bloc(&to_update);
+
+	// we add the .. dir
+	create_dotdot_dir(under_dir, &i);
+	create_dot_dir(&i);
 
 	return i;
 }
@@ -633,7 +638,7 @@ int iwrite(struct inode *i, char *buf, size_t n) {
 	struct bloc b;
 	time_t t;
 
-	time(NULL);
+	t = time(NULL);
 	done = 0;
 	pos = 0;
 	filename = get_filename_for_inode(i);
@@ -693,6 +698,37 @@ int iwrite(struct inode *i, char *buf, size_t n) {
 
 
 
+int create_dot_dir(struct inode *dir) {
+	struct bloc b, to_update;
+	struct inode dot_dir;
+
+	b = get_bloc_by_id(dir->bloc_ids[0]);
+	dot_dir = *dir;
+	dot_dir.id = rand();
+	b = new_bloc(".", b.content);
+	write_bloc(&b);
+	to_update = add_inode_to_inode(dir, &dot_dir);
+	update_bloc(&to_update);
+	write_inode(&dot_dir);
+
+	return EXIT_SUCCESS;
+}
+
+int create_dotdot_dir(struct inode *parent, struct inode *dir) {
+	struct bloc b, to_update;
+	struct inode dotdot_dir;
+
+	b = get_bloc_by_id(parent->bloc_ids[0]);
+	dotdot_dir = *parent;
+	dotdot_dir.id = rand();
+	b = new_bloc("..", b.content);
+	write_bloc(&b);
+	to_update = add_inode_to_inode(dir, &dotdot_dir);
+	update_bloc(&to_update);
+	write_inode(&dotdot_dir);
+
+	return EXIT_SUCCESS;
+}
 
 
 

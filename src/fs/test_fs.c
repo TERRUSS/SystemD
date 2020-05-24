@@ -102,16 +102,12 @@ int test_strncut() {
 	char **str_array;
 	char str[] = "Hello world !";
 	int len;
-	int i;
 
 	str_array = NULL;
 	len = strncut(&str_array, str, 2);
 	if (len != 7) {
 		perror("test_strncut() failed");
 		return EXIT_FAILURE;
-	}
-	for (i = 0; i != len; i++) {
-		printf("[%d] %lu %s\n", i, strlen(str_array[i]), str_array[i]);
 	}
 	free_str_array(str_array, len);
 
@@ -275,6 +271,8 @@ int test_add_inode_to_inode() {
 
 int test_create_directory() {
 	struct inode dir;
+	int filecount;
+	char **files;
 
 	clean_disk();
 	g_working_directory = create_disk();
@@ -284,10 +282,15 @@ int test_create_directory() {
 		perror("test_create_directory() failed");
 		return EXIT_FAILURE;
 	}
-	if (get_filecount(&dir) != 0) {
+	if (get_filecount(&dir) != 2) {
 		perror("test_create_directory() failed");
 		return EXIT_FAILURE;
 	}
+	files = list_files(&dir, &filecount);
+	printf("files[0] %s\n", files[0]);
+	print_str_array(files, filecount);
+	free_str_array(files, filecount);
+	print_disk();
 
 	printf("test_create_directory() successful\n");
 
@@ -365,7 +368,6 @@ int test_iread() {
 		perror("test_iread() failure");
 		return EXIT_FAILURE;
 	}
-	printf("%s\n%lu\n%lu\n", buf, sizeof(buf), strlen(buf));
 
 	printf("test_iread() successful\n");
 
@@ -444,7 +446,6 @@ int test_remove_empty_directory() {
 
 	create_regularfile(&g_working_directory, "FILENAME", "TRUC");
 	create_directory(&g_working_directory, "home");
-	print_disk();
 
 	if (remove_empty_directory(&g_working_directory, "FILENAME") != EXIT_FAILURE
 			&& get_filecount(&g_working_directory) != 2) {
@@ -462,7 +463,6 @@ int test_remove_empty_directory() {
 		perror("Wrong3");
 		return EXIT_FAILURE;
 	}
-	print_disk();
 
 	printf("test_remove_empty_directory() successful\n");
 	return EXIT_SUCCESS;
