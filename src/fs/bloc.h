@@ -15,9 +15,9 @@ struct bloc {
 };
 
 int add_bloc(struct inode *i, struct bloc *b);
+struct bloc empty_bloc();
 struct bloc new_bloc(const char *filename, const char *content);
 void print_bloc(struct bloc *b);
-struct bloc empty_bloc();
 
 #endif
 
