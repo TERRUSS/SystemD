@@ -33,5 +33,6 @@ A basic File Manager System implemented in C, accessible throught a cusom shell 
 
 ### TODO
 
-- open / cloose with permissions
+- open / close with permissions (two flags left: O\_TRUNC and O\_APPEND)
+- use primitives in the shell
 
