@@ -979,3 +979,28 @@ int unlink_inode(struct inode *from_dir, char *linkname) {
 
 	return EXIT_SUCCESS;
 }
+
+
+/* File */
+
+
+/*
+ * Initialize a new file
+ */
+struct file new_file(struct inode *i, mode_t m) {
+	struct file f;
+
+	memset(&f, 0, sizeof(struct file));
+	f.inode = *i;
+	f.mode = m;
+
+	return f;
+}
+
+/*
+ * Checks if the mode is right for the file
+ */
+int right_mode(struct file *f, mode_t mode) {
+	return (f->mode & mode) == mode;
+}
+

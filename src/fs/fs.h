@@ -30,8 +30,8 @@ extern char g_username[USERNAME_COUNT];
 extern struct inode g_working_directory;
 
 struct file {
-	const struct inode inode;
-	const mode_t mode;
+	struct inode inode;
+	mode_t mode;
 };
 
 char *get_filename_for_inode(struct inode *i);
