@@ -287,7 +287,6 @@ int test_create_directory() {
 		return EXIT_FAILURE;
 	}
 	files = list_files(&dir, &filecount);
-	printf("files[0] %s\n", files[0]);
 	print_str_array(files, filecount);
 	free_str_array(files, filecount);
 	print_disk();
