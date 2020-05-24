@@ -631,7 +631,9 @@ int iwrite(struct inode *i, char *buf, size_t n) {
 	int new_bloc_count;
 	char *filename;
 	struct bloc b;
+	time_t t;
 
+	time(NULL);
 	done = 0;
 	pos = 0;
 	filename = get_filename_for_inode(i);
@@ -683,6 +685,7 @@ int iwrite(struct inode *i, char *buf, size_t n) {
 	}
 
 	free(filename);
+	i->updated_at = localtime(&t);
 	update_inode(i);
 
 	return EXIT_SUCCESS;
