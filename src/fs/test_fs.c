@@ -541,6 +541,55 @@ int test_move_file() {
 	return EXIT_SUCCESS;
 }
 
+int test_mode() {
+	struct file f;
+	char buf[20];
+
+	clean_disk();
+	g_working_directory = create_disk();
+
+	// rdonly and iwrite (expect failure)
+	f = create_regularfile(&g_working_directory, "FILENAME", "TzegzgezegzezgRUC", O_RDONLY);
+
+	printf("FLAGS %d\n", f.flags);
+	if (iwrite(&f, "tototototototototototo", 10) != EXIT_FAILURE) {
+		fprintf(stderr, "test_mode() failed\n");
+		PRINT_LINE;
+		return EXIT_FAILURE;
+	}
+
+	// wronly and iread (expect failure)
+	f = iopen(&g_working_directory, "FILENAME", O_WRONLY);
+	printf("FLAGS %d\n", f.flags);
+	if (iread(&f, buf, 10) != EXIT_FAILURE) {
+		fprintf(stderr, "test_mode() failed\n");
+		PRINT_LINE;
+		return EXIT_FAILURE;
+	}
+
+	// rdwr and iread and iwrite (expect success)
+	f = iopen(&g_working_directory, "FILENAME", O_RDWR);
+	if (iread(&f, buf, 10) != EXIT_SUCCESS &&
+			iwrite(&f, "encorecnoreencore", 10) != EXIT_SUCCESS) {
+		fprintf(stderr, "test_mode() failed\n");
+		PRINT_LINE;
+		return EXIT_FAILURE;
+	}
+
+	// o_creat and iread (expect failure) and iwrite (expect success)
+	f = iopen(&g_working_directory, "FILENAME", O_RDWR);
+	if (iread(&f, buf, 10) != EXIT_FAILURE &&
+			iwrite(&f, "encorecnoreencore", 10) != EXIT_FAILURE) {
+
+		fprintf(stderr, "test_mode() failed\n");
+		PRINT_LINE;
+		return EXIT_FAILURE;
+	}
+
+	printf("test_mode() successful\n");
+	return EXIT_SUCCESS;
+}
+
 int main() {
 
 	init_id_generator();
@@ -574,6 +623,7 @@ int main() {
 	test_remove_file();
 	test_iwrite();
 	test_move_file();
+	test_mode();
 
 	return EXIT_SUCCESS;
 }

@@ -643,10 +643,9 @@ int iwrite(struct file *f, char *buf, size_t n) {
 	time_t t;
 	struct inode *i;
 
-	if (!((f->flags & O_WRONLY) == O_WRONLY
-			|| (f->flags & O_RDWR) == O_RDWR)) {
+	if (!((f->flags & O_WRONLY) || (f->flags & O_RDWR))) {
 
-		fprintf(stderr, "Access denied, wrong mode\n");
+		fprintf(stderr, "Access denied, wrong mode %d\n", __LINE__);
 		return EXIT_FAILURE;
 	}
 
@@ -789,7 +788,7 @@ struct file iopen(struct inode *under_dir, char *filename, int flags) {
 
 	i = get_inode_by_filename(under_dir, filename);
 
-	if (i.id == DELETED && (flags & O_CREAT) == O_CREAT) {
+	if (i.id == DELETED && (flags & O_CREAT)) {
 		f = create_emptyfile(under_dir, filename, REGULAR_FILE);
 		f.flags = flags;
 	} else {
@@ -810,10 +809,9 @@ int iread(struct file *f, char *buf, size_t n) {
 	int pos;
 	struct inode i;
 
-	if (!((f->flags & O_RDONLY) == O_RDONLY
-			|| (f->flags & O_RDWR) == O_RDWR)) {
+	if (!((f->flags & O_RDONLY) || (f->flags & O_RDWR))) {
 
-		fprintf(stderr, "Access denied, wrong mode\n");
+		fprintf(stderr, "Access denied, wrong mode %d\n", __LINE__);
 		return EXIT_FAILURE;
 	}
 
@@ -1033,7 +1031,7 @@ struct file new_file(struct inode *i, int flags) {
 	f.inode = *i;
 	f.flags = flags;
 
-	if ((flags & O_APPEND) == O_APPEND) {
+	if (flags & O_APPEND) {
 		f.current_pos = get_total_strlen(i);
 	} else {
 		f.current_pos = 0;
