@@ -28,13 +28,10 @@ extern const char ROOT[USERNAME_COUNT];
 extern const mode_t ROOT_PERMISSIONS;
 extern char g_username[USERNAME_COUNT];
 extern struct inode g_working_directory;
-extern struct file g_filetree;
 
 struct file {
-	struct inode i;
-	struct bloc b;
-	struct file *files;
-	int files_count;
+	const struct inode inode;
+	const mode_t mode;
 };
 
 char *get_filename_for_inode(struct inode *i);
@@ -63,7 +60,7 @@ int create_dotdot_dir(struct inode *parent, struct inode *dir);
 int create_dot_dir(struct inode *dir);
 
 struct inode create_regularfile(struct inode *under_dir, char *filename, char *content);
-struct inode create_emptyfile(struct inode *under_dir, char *filename, filetype type, const char *mode);
+struct inode create_emptyfile(struct inode *under_dir, char *filename, enum filetype type, const char *mode);
 int iwrite(struct inode *i, char *buf, size_t n);
 char **list_files(struct inode *dir, int *filecount);
 int iread(struct inode *i, char *buf, size_t n);
@@ -75,7 +72,7 @@ int link_inode(struct inode *from_dir, char *filename, struct inode *to_dir, cha
 
 struct inode create_directory(struct inode *under_dir, char *dirname);
 int remove_empty_directory(struct inode *under_dir, char *dirname);
-int remove_file(struct inode *under_dir, char *filename, filetype ft);
+int remove_file(struct inode *under_dir, char *filename, enum filetype ft);
 
 int remove_int(int **int_array, unsigned int *len, int i);
 

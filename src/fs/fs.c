@@ -404,7 +404,7 @@ int get_inodes(struct inode *under_dir, struct inode **inodes) {
 /*
  * Removes a file, any kind
  */
-int remove_file(struct inode *under_dir, char *filename, filetype ft) {
+int remove_file(struct inode *under_dir, char *filename, enum filetype ft) {
 	struct inode i;
 	struct bloc b;
 	unsigned int file_id;
@@ -478,7 +478,7 @@ struct inode create_directory(struct inode *under_dir, char *dirname) {
  * TODO what's the mode for ? how do you use it,
  * since you only return an inode
  */
-struct inode create_emptyfile(struct inode *under_dir, char *filename, filetype type, const char *mode) {
+struct inode create_emptyfile(struct inode *under_dir, char *filename, enum filetype type, const char *mode) {
 	struct bloc b, to_update;
 	struct inode i;
 

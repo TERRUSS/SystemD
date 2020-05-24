@@ -2,7 +2,7 @@
 #include "fs/fs.h"
 
 int test_new_inode() {
-	filetype t = REGULAR_FILE;
+	enum filetype t = REGULAR_FILE;
 	mode_t m = S_IRWXU;
 	char user[10] = "Paul";
 
@@ -15,7 +15,7 @@ int test_new_inode() {
 }
 
 int test_print_inode() {
-	filetype t = REGULAR_FILE;
+	enum filetype t = REGULAR_FILE;
 	mode_t m = S_IRWXU;
 	char user[10] = "Paul";
 
@@ -27,7 +27,7 @@ int test_print_inode() {
 }
 
 int test_write_inode() {
-	filetype t = REGULAR_FILE;
+	enum filetype t = REGULAR_FILE;
 	mode_t m = S_IRWXU;
 	char user[10] = "Paul";
 	struct inode i;
@@ -531,7 +531,7 @@ int test_move_file() {
 		perror("test_move_file() failed");
 		return EXIT_FAILURE;
 	}
-	if (get_filecount(&to) != 1) {
+	if (get_filecount(&to) != 3) {
 		perror("test_move_file() failed");
 		return EXIT_FAILURE;
 	}

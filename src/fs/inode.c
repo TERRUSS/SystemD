@@ -9,7 +9,7 @@
  * on success : returns inode
  * on failure : TODO
  */
-struct inode new_inode(filetype type, mode_t perms, const char *user, const char *group) {
+struct inode new_inode(enum filetype type, mode_t perms, const char *user, const char *group) {
 
 	struct inode i;
 	time_t t;
