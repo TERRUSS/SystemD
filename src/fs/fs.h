@@ -78,7 +78,7 @@ char **list_files(struct inode *dir, int *filecount);
 int copy_file(struct inode *from, char *filename, char *to);
 int iread(struct file *f, char *buf, size_t n);
 int iwrite(struct file *f, char *buf, size_t n);
-int link_inode(struct inode *from_dir, char *filename, char *to_dir, char *linkname);
+int link_inode(struct inode *from_dir, char *filename, char *linkname);
 int move_file(struct inode *from, char *filename, struct inode *to);
 int unlink_inode(struct inode *from_dir, char *linkname);
 struct file create_emptyfile(struct inode *under_dir, char *filename, enum filetype type);
