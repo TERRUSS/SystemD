@@ -416,7 +416,7 @@ int remove_file(struct inode *under_dir, char *filename, enum filetype ft) {
 		return EXIT_FAILURE;
 	}
 
-	// first we remove the dir's inode and bloc
+	/* first we remove the dir's inode and bloc */
 	i = get_inode_by_filename(under_dir, filename);
 
 	if (i.type != ft) {
@@ -433,7 +433,7 @@ int remove_file(struct inode *under_dir, char *filename, enum filetype ft) {
 			return EXIT_FAILURE;
 		}
 	}
-	// remove all blocs
+	/* remove all blocs */
 	for (z = 0; z != i.bloc_count; z++) {
 		b = get_bloc_by_id(i.bloc_ids[0]);
 		delete_bloc(&b);
@@ -441,7 +441,7 @@ int remove_file(struct inode *under_dir, char *filename, enum filetype ft) {
 
 	delete_inode(&i);
 
-	// then we remove the inode from the content in under_dir's bloc
+	/* then we remove the inode from the content in under_dir's bloc */
 	remove_inode_from_directory(under_dir, file_id);
 
 	return EXIT_SUCCESS;
@@ -464,7 +464,7 @@ struct inode create_directory(struct inode *under_dir, char *dirname) {
 	write_bloc(&b);
 	update_bloc(&to_update);
 
-	// we add the .. dir
+	/* we add the .. dir */
 	create_dotdot_dir(under_dir, &i);
 	create_dot_dir(&i);
 
@@ -601,8 +601,10 @@ struct bloc get_bloc_by_id(unsigned int bloc_id) {
  */
 unsigned int get_filecount(struct inode *dir) {
 	char str[BLOC_SIZE];
+	struct bloc b;
 
-	strcpy(str, get_bloc_by_id(dir->bloc_ids[0]).content);
+	b = get_bloc_by_id(dir->bloc_ids[0]);
+	strcpy(str, b.content);
 	return ocr(str, ',');
 }
 
@@ -845,8 +847,11 @@ int iread(struct file *f, char *buf, size_t n) {
 }
 
 
-// TODO
-int iclose(struct inode *i) {
+/*
+ * TODO
+ */
+int iclose(struct file *f) {
+	(void) f;
 	return EXIT_FAILURE;
 }
 
@@ -987,12 +992,14 @@ int remove_int(int **int_array, unsigned int *len, int i) {
 	return EXIT_FAILURE;
 }
 
-int link_inode(struct inode *from_dir, char *filename, char *to_dir, char *linkname) {
-	struct inode link, i, to_dir_inode;
+/*
+ * TODO
+ */
+int link_inode(struct inode *from_dir, char *filename, char *linkname) {
+	struct inode link, i;
 	struct bloc to_update;
 	int z;
 
-	to_dir_inode = get_inode_by_filename(from_dir, to_dir);
 	i = get_inode_by_filename(from_dir, filename);
 	link = new_inode(i.type, i.permissions, i.user_name, i.group_name);
 
@@ -1003,12 +1010,15 @@ int link_inode(struct inode *from_dir, char *filename, char *to_dir, char *linkn
 	link.bloc_count = i.bloc_count;
 	write_inode(&link);
 
-	to_update = add_inode_to_inode(&to_dir_inode, &link);
+	to_update = add_inode_to_inode(from_dir, &link);
 	update_bloc(&to_update);
 
 	return EXIT_SUCCESS;
 }
 
+/*
+ * TODO
+ */
 int unlink_inode(struct inode *from_dir, char *linkname) {
 	struct inode link;
 

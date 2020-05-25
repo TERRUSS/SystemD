@@ -206,21 +206,21 @@ int test_disk_free() {
 
 	clean_disk();
 
-	// write inode
+	/* write inode */
 	g_working_directory = create_disk();
 
-	// check number of inodes == 0
+	/* check number of inodes == 0 */
 	disk_free(&blocs, &inodes, &bytes);
 	if (blocs != 0 && inodes != 0 && bytes != 0) {
 		perror("test_disk_free() failed");
 		return EXIT_FAILURE;
 	}
 
-	// delete dir
+	/* delete dir */
 	create_directory(&g_working_directory, "dir");
 	remove_empty_directory(&g_working_directory, "dir");
 
-	// check number of inodes == 1
+	/* check number of inodes == 1 */
 	disk_free(&blocs, &inodes, &bytes);
 	if (blocs != 1 && inodes != 1) {
 		perror("test_disk_free() failed");
@@ -244,13 +244,13 @@ int test_add_inode_to_inode() {
 	add_bloc(&i, &b);
 	write_inode(&i);
 
-	// check filecount == 0
+	/* check filecount == 0 */
 	if (get_filecount(&i) != 0) {
 		fprintf(stderr, "test_add_inode_to_inode() failed\n");
 		return EXIT_FAILURE;
 	}
 
-	// add inode/file to dir
+	/* add inode/file to dir */
 	b = new_bloc("file.py", "print('Hello World')\\n");
 	i2 = new_inode(REGULAR_FILE, DEFAULT_PERMISSIONS, g_username, g_username);
 	write_inode(&i2);
@@ -259,7 +259,7 @@ int test_add_inode_to_inode() {
 
 	b = add_inode_to_inode(&i, &i2);
 	update_bloc(&b);
-	// check filecount == 1
+	/* check filecount == 1 */
 	if (get_filecount(&i) != 1) {
 		fprintf(stderr, "test_add_inode_to_inode() failed\n");
 		return EXIT_FAILURE;
@@ -547,7 +547,7 @@ int test_mode() {
 	clean_disk();
 	g_working_directory = create_disk();
 
-	// rdonly and iwrite (expect failure)
+	/* rdonly and iwrite (expect failure) */
 	f = create_regularfile(&g_working_directory, "FILENAME", "TzegzgezegzezgRUC", O_RDONLY);
 
 	printf("FLAGS %d\n", f.flags);
@@ -557,7 +557,7 @@ int test_mode() {
 		return EXIT_FAILURE;
 	}
 
-	// wronly and iread (expect failure)
+	/* wronly and iread (expect failure) */
 	f = iopen(&g_working_directory, "FILENAME", O_WRONLY);
 	printf("FLAGS %d\n", f.flags);
 	if (iread(&f, buf, 10) != EXIT_FAILURE) {
@@ -566,7 +566,7 @@ int test_mode() {
 		return EXIT_FAILURE;
 	}
 
-	// rdwr and iread and iwrite (expect success)
+	/* rdwr and iread and iwrite (expect success) */
 	f = iopen(&g_working_directory, "FILENAME", O_RDWR);
 	if (iread(&f, buf, 10) != EXIT_SUCCESS &&
 			iwrite(&f, "encorecnoreencore", 10) != EXIT_SUCCESS) {
@@ -575,7 +575,7 @@ int test_mode() {
 		return EXIT_FAILURE;
 	}
 
-	// o_creat and iread (expect failure) and iwrite (expect success)
+	/* o_creat and iread (expect failure) and iwrite (expect success) */
 	f = iopen(&g_working_directory, "FILENAME", O_RDWR);
 	if (iread(&f, buf, 10) != EXIT_FAILURE &&
 			iwrite(&f, "encorecnoreencore", 10) != EXIT_FAILURE) {
