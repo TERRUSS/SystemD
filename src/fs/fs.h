@@ -73,13 +73,12 @@ struct inode get_inode_by_filename(struct inode *under_dir, char *filename);
 struct inode get_inode_by_id(unsigned int inode_id);
 unsigned int get_filecount(struct inode *dir);
 void disk_free(unsigned int *blocs_available, unsigned int *inodes_available, size_t *bytes_available);
-void inode_count(unsigned int *in_store, unsigned int *deleted);
 
 char **list_files(struct inode *dir, int *filecount);
 int copy_file(struct inode *from, char *filename, char *to);
 int iread(struct file *f, char *buf, size_t n);
 int iwrite(struct file *f, char *buf, size_t n);
-int link_inode(struct inode *from_dir, char *filename, struct inode *to_dir, char *linkname);
+int link_inode(struct inode *from_dir, char *filename, char *to_dir, char *linkname);
 int move_file(struct inode *from, char *filename, struct inode *to);
 int unlink_inode(struct inode *from_dir, char *linkname);
 struct file create_emptyfile(struct inode *under_dir, char *filename, enum filetype type);

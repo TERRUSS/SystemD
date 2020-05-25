@@ -987,11 +987,12 @@ int remove_int(int **int_array, unsigned int *len, int i) {
 	return EXIT_FAILURE;
 }
 
-int link_inode(struct inode *from_dir, char *filename, struct inode *to_dir, char *linkname) {
-	struct inode link, i;
+int link_inode(struct inode *from_dir, char *filename, char *to_dir, char *linkname) {
+	struct inode link, i, to_dir_inode;
 	struct bloc to_update;
 	int z;
 
+	to_dir_inode = get_inode_by_filename(from_dir, to_dir);
 	i = get_inode_by_filename(from_dir, filename);
 	link = new_inode(i.type, i.permissions, i.user_name, i.group_name);
 
@@ -1002,7 +1003,7 @@ int link_inode(struct inode *from_dir, char *filename, struct inode *to_dir, cha
 	link.bloc_count = i.bloc_count;
 	write_inode(&link);
 
-	to_update = add_inode_to_inode(to_dir, &link);
+	to_update = add_inode_to_inode(&to_dir_inode, &link);
 	update_bloc(&to_update);
 
 	return EXIT_SUCCESS;
