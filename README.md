@@ -4,7 +4,7 @@ A basic File Manager System implemented in C, accessible throught a cusom shell 
 
 
 
-## Abscract
+## Abstract
 
 1) ### The Shell
    
@@ -30,4 +30,9 @@ A basic File Manager System implemented in C, accessible throught a cusom shell 
    
        
 
+
+### TODO
+
+- open / close with permissions (two flags left: O\_TRUNC and O\_APPEND)
+- use primitives in the shell
 

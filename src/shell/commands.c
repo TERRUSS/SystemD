@@ -12,6 +12,7 @@ int execute(int argc, char ** argv) {
 	char * path = NULL;
 
 	path = getexecpath(path, "./src/bin/", argv[0]);
+	char ** env = genEnv()
 
 	if (DEBUG)
 		printf("Executing : %s\n", path);
@@ -21,7 +22,7 @@ int execute(int argc, char ** argv) {
 
 	if (pid == 0) {
 		// Execute binary form /root/src/bin
-		if (execvp( path, argv) == -1) {
+		if (execvp( path, argv, env) == -1) {
 			printf(" ✗ - sdsh : %s: command not found\n", argv[0]);
 			if (DEBUG) {
 				perror("Err");
@@ -55,4 +56,18 @@ char * getexecpath (char * path, char * root, char * name) {
 	strcat(&path[strlen(root)], name);
 
 	return path;
+}
+
+
+char ** getEnv(){
+	char* env[] = {"SYSD_CURDIR=", NULL};
+
+	char * curdir = getenv("SYSD_CURDIR");
+
+	unsigned char buff[sizeof(curdir)];
+	memcpy(&buff, curdir, sizeof(curdir));
+
+	memcpy(env[0][sizeof(env[0])], buff, sizeof(buff));
+
+	return env;
 }
