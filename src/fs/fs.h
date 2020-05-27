@@ -1,22 +1,3 @@
-<<<<<<< HEAD
-#pragma once
-
-#include <stdio.h>
-#include <stdlib.h>
-#include "../utils/globals.h"
-
-typedef struct disk disk;
-struct disk {
-	FILE * file; // disc file
-
-	inode root; // root inode
-};
-
-typedef struct inode inode;
-struct inode {
-	
-};
-=======
 #ifndef FS_H
 #define FS_H
 
@@ -112,4 +93,3 @@ int remove_int(int **int_array, unsigned int *len, int i);
 
 #endif
 
->>>>>>> perms
