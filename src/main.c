@@ -29,10 +29,15 @@ int main(int argc, char const *argv[]) {
 
 	//---------
 	// init File System
-	clean_disk();
 	init_id_generator();
 	strcpy(g_username, "user");
-	g_working_directory = create_disk();
+	
+	struct stat buffer;   
+	if (stat (DISK, &buffer) == 0)
+		g_working_directory = get_inode_by_id(ROOT_ID);
+	else
+		g_working_directory = create_disk();
+	ch_dir(ROOT_ID);
 
 	if(DEBUG)
 		printf("FS created : root @ %s", get_filename_for_inode(&g_working_directory));
@@ -48,7 +53,6 @@ int main(int argc, char const *argv[]) {
 	clear();
 
 	do {
-
 		sd_argv = prompt(&sd_argc, cmd_status, &g_working_directory);
 
 		if (DEBUG) {
@@ -62,7 +66,6 @@ int main(int argc, char const *argv[]) {
 			cmd_status = execute(sd_argc, sd_argv);
 
 		free(sd_argv);
-
 	} while ( cmd_status != 254 );
 
 	return 0;

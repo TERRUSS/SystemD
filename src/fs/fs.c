@@ -36,6 +36,7 @@ char * get_filename_for_inode(struct inode *i) {
 
 	filename = (char*) malloc(FILENAME_COUNT);
 	strcpy(filename, b.filename);
+
 	return filename;
 }
 
@@ -132,8 +133,6 @@ struct inode create_disk() {
 	struct inode root;
 	root = create_root();
 
-	ch_dir(&root);
-
 	return root;
 }
 
@@ -174,7 +173,7 @@ void disk_free(unsigned int *blocs_available, unsigned int *inodes_available, si
 			if (i.id == DELETED)
 				*blocs_available = *blocs_available + 1;
 		} else {
-			perror("Houston there's a problem with the disk");
+			perror("Houston there's a problem with the <disk>");
 		}
 
 	} while (size != 0);
@@ -378,7 +377,7 @@ int print_disk() {
 
 	} while (size != 0);
 
-	printf("<<<<<<<<<<      >>>>>>>>>>\n");
+	printf("\n<<<<<<<<<<   EOF  >>>>>>>>>>\n");
 
 	return fclose(f);
 }
@@ -1072,10 +1071,19 @@ size_t get_total_strlen(struct inode *i) {
 	return (bloc_count - 1) * (BLOC_SIZE - 1) + strlen(b.content);
 }
 
+void ch_dir(unsigned int inodeid){
 
-
-void ch_dir(struct inode * inode){
-	char buff[sizeof(struct inode)];
-	memcpy(buff, inode, sizeof(*inode));
+	char * buff = malloc(sizeof(char) * 100);
+	sprintf(buff, "%u", inodeid);
+	
 	setenv("SYSD_CURDIR", buff, 1); //1 is for overwrite
+}
+
+char * get_filename_for_inodeID(unsigned int id) {
+	struct inode i = get_inode_by_id(id);
+	printf("DBG %s\n", i.user_name);
+	char * fn = get_filename_for_inode( &i );
+	printf("DBG %s", fn);
+
+	return fn;
 }

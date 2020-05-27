@@ -90,6 +90,6 @@ int remove_empty_directory(struct inode *under_dir, char *dirname);
 int remove_file(struct inode *under_dir, char *filename, enum filetype ft);
 
 int remove_int(int **int_array, unsigned int *len, int i);
-void ch_dir(struct inode * inode);
+void ch_dir(unsigned int inodeid);
 #endif
 

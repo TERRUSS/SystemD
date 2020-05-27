@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-
+#include "../fs/fs.h"
 
 char * handleArgs(int argc, char const *argv[]) {
 	if (argc == 1) {
@@ -16,6 +16,13 @@ char * handleArgs(int argc, char const *argv[]) {
 	}
 }
 
+struct inode * get_wd(){
+	void * cur = malloc(sizeof(struct inode *));
+	memcpy(cur, getenv("SYSD_CURDIR"), sizeof(getenv("SYSD_CURDIR")));
+
+	return cur;
+}
+
 
 int main(int argc, char const *argv[]) {
 
@@ -24,6 +31,14 @@ int main(int argc, char const *argv[]) {
 	path = handleArgs(argc, argv);
 
 	printf("Wanna list %s ?\n", path);
+
+	int filecount;
+	char ** files;
+	struct inode * wd = get_wd();
+
+	files = list_files(wd, &filecount);
+	print_str_array(files, filecount);
+	free_str_array(files, filecount);
 
 	return 0;
 }
