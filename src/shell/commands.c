@@ -11,8 +11,11 @@ int execute(int argc, char ** argv) {
 	int status = 0;
 	char * path = NULL;
 
+	if (DEBUG)
+		printf("Collecting command path & env\n");
+
 	path = getexecpath(path, "./src/bin/", argv[0]);
-	char ** env = genEnv()
+	char ** env = getEnv();
 
 	if (DEBUG)
 		printf("Executing : %s\n", path);
@@ -22,7 +25,7 @@ int execute(int argc, char ** argv) {
 
 	if (pid == 0) {
 		// Execute binary form /root/src/bin
-		if (execvp( path, argv, env) == -1) {
+		if (execve( path, argv, env) == -1) {
 			printf(" ✗ - sdsh : %s: command not found\n", argv[0]);
 			if (DEBUG) {
 				perror("Err");
@@ -60,14 +63,30 @@ char * getexecpath (char * path, char * root, char * name) {
 
 
 char ** getEnv(){
-	char* env[] = {"SYSD_CURDIR=", NULL};
+	char ** env = malloc(2 * sizeof( char * ));
+
+	char* SYSD_CURDIR = "SYSD_CURDIR=";
 
 	char * curdir = getenv("SYSD_CURDIR");
 
-	unsigned char buff[sizeof(curdir)];
-	memcpy(&buff, curdir, sizeof(curdir));
+	if (DEBUG)
+		printf("	%s : %s\n", SYSD_CURDIR, curdir);
 
-	memcpy(env[0][sizeof(env[0])], buff, sizeof(buff));
+	if (curdir) {
+		env[0] = malloc( (sizeof(char) * strlen(SYSD_CURDIR)) + sizeof(curdir));
+		strcat(env[0], SYSD_CURDIR);
+		memcpy(&env[0][strlen(SYSD_CURDIR)], curdir, sizeof(curdir));
+	}
+	else {
+		printf("ERROR : $SYSD_CURDIR not defined. Exiting...\n");
+		exit(-1);
+	}
+	
+
+	env[1] = NULL;
+
+	if (DEBUG)
+		printf("ENV\n	%s\n", env[0]);
 
 	return env;
 }

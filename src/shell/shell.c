@@ -1,15 +1,14 @@
 #include "shell.h"
 
-
-char ** prompt( int * argc, int cmd_status ) {
+char ** prompt( int * argc, int cmd_status, struct inode * pwd ) {
 	char * input = 0;
 	char ** argv = 0;
 
 	if(cmd_status == 0 ) {
-		printf("\033[1;35m┌─[\033[1;36muser\033[0;35m@\033[1;36mSYSTEMD\033[1;35m]─[/]\n└──╼ \033[0;35m$\033[0m ");
+		printf("\033[1;35m┌─[\033[1;36muser\033[0;35m@\033[1;36mSYSTEMD\033[1;35m]─[%s]\n└──╼ \033[0;35m$\033[0m ", get_filename_for_inode(pwd));
 	}
 	else {
-		printf("\033[1;35m┌─[✗]─[\033[1;36muser\033[0;35m@\033[1;36mSYSTEMD\033[1;35m]─[/]\n└──╼ \033[0;35m$\033[0m ");
+		printf("\033[1;35m┌─[✗]─[\033[1;36muser\033[0;35m@\033[1;36mSYSTEMD\033[1;35m]─[%s]\n└──╼ \033[0;35m$\033[0m ",  get_filename_for_inode(pwd));
 	}
 
 	input = readInput();

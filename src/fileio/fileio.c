@@ -1,4 +1,4 @@
-#include "fileio/fileio.h"
+#include "./fileio.h"
 
 /*
  * Reads a file and returns a string containing all the content of the file

@@ -1,4 +1,4 @@
-#include "fs/fs.h"
+#include "./fs.h"
 
 const int INODE_FLAG = 1;
 const int BLOC_FLAG = 2;
@@ -19,7 +19,7 @@ struct inode g_working_directory;
  * on success: returns the filename
  * on failure: returns NULL
  */
-char *get_filename_for_inode(struct inode *i) {
+char * get_filename_for_inode(struct inode *i) {
 	struct bloc b;
 	char *filename;
 
@@ -50,7 +50,7 @@ struct inode create_root() {
 	struct bloc b;
 
 	i = new_inode(DIRECTORY, ROOT_PERMISSIONS, ROOT, ROOT);
-	b = new_bloc("", "");
+	b = new_bloc("/", "");
 	i.id = ROOT_ID;
 
 	add_bloc(&i, &b);
@@ -128,7 +128,13 @@ struct inode create_disk() {
 
 	f = fopen(DISK, "ab+");
 	fclose(f);
-	return create_root();
+
+	struct inode root;
+	root = create_root();
+
+	ch_dir(&root);
+
+	return root;
 }
 
 /**
@@ -1066,3 +1072,10 @@ size_t get_total_strlen(struct inode *i) {
 	return (bloc_count - 1) * (BLOC_SIZE - 1) + strlen(b.content);
 }
 
+
+
+void ch_dir(struct inode * inode){
+	char buff[sizeof(struct inode)];
+	memcpy(buff, inode, sizeof(*inode));
+	setenv("SYSD_CURDIR", buff, 1); //1 is for overwrite
+}

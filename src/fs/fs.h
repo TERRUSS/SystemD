@@ -10,9 +10,9 @@
 #include <sys/types.h>
 #include <time.h>
 #include <unistd.h>
-#include "utils/str_utils.h"
-#include "fs/inode.h"
-#include "fs/bloc.h"
+#include "../utils/str_utils.h"
+#include "./inode.h"
+#include "./bloc.h"
 
 #define PRINT_LINE printf("LINE %d\n", __LINE__)
 #define NO_FILE_ERROR_MESSAGE "File's NULL"
@@ -50,7 +50,7 @@ struct file {
 struct file new_file(struct inode *i, int flags);
 size_t get_total_strlen(struct inode *i);
 
-char *get_filename_for_inode(struct inode *i);
+char * get_filename_for_inode(struct inode *i);
 int clean_disk();
 int create_dot_dir(struct inode *dir);
 int create_dotdot_dir(struct inode *parent, struct inode *dir);
@@ -90,6 +90,6 @@ int remove_empty_directory(struct inode *under_dir, char *dirname);
 int remove_file(struct inode *under_dir, char *filename, enum filetype ft);
 
 int remove_int(int **int_array, unsigned int *len, int i);
-
+void ch_dir(struct inode * inode);
 #endif
 

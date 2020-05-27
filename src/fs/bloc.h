@@ -1,7 +1,7 @@
 #ifndef BLOC_H
 #define BLOC_H
 
-#include "fs/inode.h"
+#include "inode.h"
 
 #define BLOC_SIZE (512)
 #define FILENAME_COUNT (15)

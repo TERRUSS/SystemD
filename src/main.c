@@ -20,10 +20,23 @@
  */
 
 #include "main.h"
+#include "fileio/fileio.h"
+#include "fs/fs.h"
 
 int DEBUG = 0;
 
 int main(int argc, char const *argv[]) {
+
+	//---------
+	// init File System
+	clean_disk();
+	init_id_generator();
+	strcpy(g_username, "user");
+	g_working_directory = create_disk();
+
+	if(DEBUG)
+		printf("FS created : root @ %s", get_filename_for_inode(&g_working_directory));
+	//---------
 
 	handleArgs(argc, argv);
 
@@ -36,7 +49,7 @@ int main(int argc, char const *argv[]) {
 
 	do {
 
-		sd_argv = prompt(&sd_argc, cmd_status);
+		sd_argv = prompt(&sd_argc, cmd_status, &g_working_directory);
 
 		if (DEBUG) {
 			printf("[SD LOG] %s : %d parameters\n", sd_argv[0], sd_argc -1);
