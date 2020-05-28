@@ -38,8 +38,12 @@ int main(int argc, char const *argv[]) {
 	struct inode wd = get_inode_by_id(get_pwd_id());
 
 	files = list_files(&wd, &filecount);
-	print_str_array(files, filecount);
-	free_str_array(files, filecount);
+	for (int i = 0; i < filecount; i++){
+		printf("%s	", files[i]);
+		free(files[i]);
+	}
+	printf("\n");
+	free(files);
 
 	return 0;
 }
