@@ -1,4 +1,4 @@
-#include "fs/bloc.h"
+#include "./bloc.h"
 
 /**
  * Adds a bloc id to an inode

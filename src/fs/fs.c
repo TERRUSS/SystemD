@@ -1,4 +1,4 @@
-#include "fs/fs.h"
+#include "./fs.h"
 
 const int INODE_FLAG = 1;
 const int BLOC_FLAG = 2;
@@ -19,7 +19,7 @@ struct inode g_working_directory;
  * on success: returns the filename
  * on failure: returns NULL
  */
-char *get_filename_for_inode(struct inode *i) {
+char * get_filename_for_inode(struct inode *i) {
 	struct bloc b;
 	char *filename;
 
@@ -36,6 +36,7 @@ char *get_filename_for_inode(struct inode *i) {
 
 	filename = (char*) malloc(FILENAME_COUNT);
 	strcpy(filename, b.filename);
+
 	return filename;
 }
 
@@ -50,7 +51,7 @@ struct inode create_root() {
 	struct bloc b;
 
 	i = new_inode(DIRECTORY, ROOT_PERMISSIONS, ROOT, ROOT);
-	b = new_bloc("", "");
+	b = new_bloc("/", "");
 	i.id = ROOT_ID;
 
 	add_bloc(&i, &b);
@@ -128,7 +129,11 @@ struct inode create_disk() {
 
 	f = fopen(DISK, "ab+");
 	fclose(f);
-	return create_root();
+
+	struct inode root;
+	root = create_root();
+
+	return root;
 }
 
 /**
@@ -168,7 +173,7 @@ void disk_free(unsigned int *blocs_available, unsigned int *inodes_available, si
 			if (i.id == DELETED)
 				*blocs_available = *blocs_available + 1;
 		} else {
-			perror("Houston there's a problem with the disk");
+			perror("Houston there's a problem with the <disk>");
 		}
 
 	} while (size != 0);
@@ -372,7 +377,7 @@ int print_disk() {
 
 	} while (size != 0);
 
-	printf("<<<<<<<<<<      >>>>>>>>>>\n");
+	printf("\n<<<<<<<<<<   EOF  >>>>>>>>>>\n");
 
 	return fclose(f);
 }
@@ -1080,5 +1085,19 @@ size_t get_total_strlen(struct inode *i) {
 	b = get_bloc_by_id(i->bloc_ids[bloc_count - 1]);
 
 	return (bloc_count - 1) * (BLOC_SIZE - 1) + strlen(b.content);
+}
+
+void ch_dir(unsigned int inodeid){
+
+	char * buff = malloc(sizeof(char) * 100);
+	sprintf(buff, "%u", inodeid);
+
+	setenv("SYSD_CURDIR", buff, 1);/* 1 is for overwrite */
+}
+
+char * get_filename_for_inodeID(unsigned int id) {
+	struct inode i = get_inode_by_id(id);
+	char * fn = get_filename_for_inode( &i );
+	return fn;
 }
 

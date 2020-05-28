@@ -20,23 +20,40 @@
  */
 
 #include "main.h"
+#include "fileio/fileio.h"
+#include "fs/fs.h"
 
 int DEBUG = 0;
 
 int main(int argc, char const *argv[]) {
+
+	//---------
+	// init File System
+	init_id_generator();
+	strcpy(g_username, "user");
+	
+	struct stat buffer;   
+	if (stat (DISK, &buffer) == 0)
+		g_working_directory = get_inode_by_id(ROOT_ID);
+	else
+		g_working_directory = create_disk();
+	ch_dir(ROOT_ID);
+
+	if(DEBUG)
+		printf("FS created : root @ %s", get_filename_for_inode(&g_working_directory));
+	//---------
 
 	handleArgs(argc, argv);
 
 	char ** sd_argv = 0;
 	int sd_argc = 0;
 
-	int res = 0;
+	int cmd_status = 0;
 
 	clear();
 
 	do {
-
-		sd_argv = prompt(&sd_argc);
+		sd_argv = prompt(&sd_argc, cmd_status, &g_working_directory);
 
 		if (DEBUG) {
 			printf("[SD LOG] %s : %d parameters\n", sd_argv[0], sd_argc -1);
@@ -46,11 +63,10 @@ int main(int argc, char const *argv[]) {
 		}
 
 		if (sd_argc > 0)
-			res = execute(sd_argc, sd_argv);
+			cmd_status = execute(sd_argc, sd_argv);
 
 		free(sd_argv);
-
-	} while ( res != -1 );
+	} while ( cmd_status != 254 );
 
 	return 0;
 }

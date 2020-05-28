@@ -1,4 +1,4 @@
-#include "fs/inode.h"
+#include "./inode.h"
 
 /**
  * Returns an inode

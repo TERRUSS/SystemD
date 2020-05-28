@@ -1,4 +1,4 @@
-#include "utils/str_utils.h"
+#include "./str_utils.h"
 
 /**
  * Slice a char* in a char**, in chunks n-sized

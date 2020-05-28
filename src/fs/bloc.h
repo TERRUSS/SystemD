@@ -1,10 +1,10 @@
 #ifndef BLOC_H
 #define BLOC_H
 
-#include "fs/inode.h"
+#include "inode.h"
 
 #define BLOC_SIZE (512)
-#define FILENAME_COUNT (15)
+#define FILENAME_COUNT (sizeof(char)*15)
 
 struct bloc {
 	unsigned int id;
