@@ -27,10 +27,7 @@ int DEBUG = 0;
 
 int main(int argc, char const *argv[]) {
 
-	//---------
-	// init File System
-	init_id_generator();
-	strcpy(g_username, "user");
+	//--------
 	
 	struct stat buffer;   
 	if (stat (DISK, &buffer) == 0)

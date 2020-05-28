@@ -50,6 +50,7 @@ struct file {
 struct file new_file(struct inode *i, int flags);
 size_t get_total_strlen(struct inode *i);
 
+void initFS();
 char * get_filename_for_inode(struct inode *i);
 int clean_disk();
 int create_dot_dir(struct inode *dir);

@@ -19,6 +19,13 @@ struct inode g_working_directory;
  * on success: returns the filename
  * on failure: returns NULL
  */
+
+void initFS(){
+	// init File System
+	init_id_generator();
+	strcpy(g_username, "user");
+}
+
 char * get_filename_for_inode(struct inode *i) {
 	struct bloc b;
 	char *filename;
@@ -893,10 +900,11 @@ char **list_files(struct inode *dir, int *filecount) {
 	*filecount = strsplt(b.content, &inode_ids, ',');
 	files = init_str_array(*filecount, FILENAME_COUNT);
 
-	for (z = 0; z != *filecount; z++) {
-		i = get_inode_by_id((unsigned int) inode_ids[z]);
-		filename = get_filename_for_inode(&i);
+	for (z = 0; z < *filecount; z++) {
+		i = get_inode_by_id(inode_ids[z]);
+		filename = get_filename_for_inode(&i);		
 		strncpy(files[z], filename, FILENAME_COUNT);
+		
 		free(filename);
 	}
 

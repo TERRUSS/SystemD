@@ -87,6 +87,7 @@ int get_index(char *str, char chr) {
  *
  * note: don't forget to free the array of ints
  */
+
 unsigned int strsplt(char *str_tosplit, int **ints, char sep) {
 	int i;
 	unsigned int filecount;
@@ -96,9 +97,10 @@ unsigned int strsplt(char *str_tosplit, int **ints, char sep) {
 	*ints = (int *) calloc(filecount, sizeof(int));
 	o = 0;
 
-	for (i = 0; i != filecount; i++) {
-		sscanf(str_tosplit + o, "%d", *(ints) + i);
-		o = get_index(str_tosplit + o, sep);
+	for (i = 0; i < filecount; i++) {
+		sscanf(str_tosplit + sizeof(char)*o, "%d", *(ints) + i);
+		//printf("file %d/%u : %d, o = %d \n", i, filecount, *(*(ints) + i), o);
+		o += get_index(str_tosplit + o, sep)+1;
 	}
 
 	return filecount;
