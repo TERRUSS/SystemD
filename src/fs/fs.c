@@ -403,13 +403,30 @@ int get_inodes(struct inode *under_dir, struct inode **inodes) {
 }
 
 /*
+ * Remove an inode and his block
+ */
+int remove_databloc(struct inode *from_dir, char *name) {
+	struct inode i;
+	struct bloc b;
+	int z;
+
+	i = get_inode_by_filename(from_dir, name);
+	for (z = 0; z != i.bloc_count; z++) {
+		b = get_bloc_by_id(i.bloc_ids[z]);
+		delete_bloc(&b);
+	}
+
+	delete_inode(&i);
+
+	return EXIT_SUCCESS;
+}
+
+/*
  * Removes a file, any kind
  */
 int remove_file(struct inode *under_dir, char *filename, enum filetype ft) {
 	struct inode i;
-	struct bloc b;
 	unsigned int file_id;
-	int z;
 
 	if (under_dir->type != DIRECTORY) {
 		perror("Input is not a directory");
@@ -431,15 +448,12 @@ int remove_file(struct inode *under_dir, char *filename, enum filetype ft) {
 		if (get_filecount(&i) != 2) {
 			perror(DIRECTORY_NOT_EMPTY_MESSAGE);
 			return EXIT_FAILURE;
+		} else {
+			remove_databloc(&i, "..");
+			remove_databloc(&i, ".");
 		}
 	}
-	/* remove all blocs */
-	for (z = 0; z != i.bloc_count; z++) {
-		b = get_bloc_by_id(i.bloc_ids[0]);
-		delete_bloc(&b);
-	}
-
-	delete_inode(&i);
+	remove_databloc(under_dir, filename);
 
 	/* then we remove the inode from the content in under_dir's bloc */
 	remove_inode_from_directory(under_dir, file_id);
@@ -661,7 +675,7 @@ int iwrite(struct file *f, char *buf, size_t n) {
 	while (!done && z != i->bloc_count) {
 		b = get_bloc_by_id(i->bloc_ids[z]);
 
-		if (n > BLOC_SIZE + 1) {
+		if (n > BLOC_SIZE - 1) {
 			strncpy(b.content, buf + pos, BLOC_SIZE - 1);
 			pos += BLOC_SIZE - 1;
 			n -= BLOC_SIZE - 1;
@@ -686,7 +700,7 @@ int iwrite(struct file *f, char *buf, size_t n) {
 		i->bloc_count = new_bloc_count;
 	} else {
 		while (!done) {
-			if (n > BLOC_SIZE - 1) {
+			if (n > strlen(b.content)) {
 				b = new_bloc(filename, "");
 				strncpy(b.content, buf + pos, BLOC_SIZE - 1);
 				pos += BLOC_SIZE - 1;

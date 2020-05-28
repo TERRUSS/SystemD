@@ -157,7 +157,7 @@ int test_iwrite() {
 	f = create_emptyfile(&g_working_directory, filename, REGULAR_FILE);
 	content = rd("README.md");
 	if (content == NULL) {
-		perror("test_iwrite() failed");
+		perror("test_remove_file() failed");
 		return EXIT_FAILURE;
 	}
 
@@ -170,7 +170,7 @@ int test_iwrite() {
 	}
 	free(content);
 
-	printf("test_iwrite() successful\n");
+	printf("test_remove_file() successful\n");
 	return EXIT_SUCCESS;
 }
 
@@ -289,6 +289,8 @@ int test_create_directory() {
 	files = list_files(&dir, &filecount);
 	print_str_array(files, filecount);
 	free_str_array(files, filecount);
+	print_disk();
+	remove_empty_directory(&g_working_directory, "home");
 	print_disk();
 
 	printf("test_create_directory() successful\n");
