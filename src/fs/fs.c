@@ -1081,9 +1081,6 @@ void ch_dir(unsigned int inodeid){
 
 char * get_filename_for_inodeID(unsigned int id) {
 	struct inode i = get_inode_by_id(id);
-	printf("DBG %s\n", i.user_name);
 	char * fn = get_filename_for_inode( &i );
-	printf("DBG %s", fn);
-
 	return fn;
 }
