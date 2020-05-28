@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "../fs/fs.h"
 
-char * handleArgs(int argc, char const *argv[]) {
+char ** handleArgs(int argc, char const *argv[]) {
 	if (argc >= 2) {
 		return ++argv;
 	}
@@ -21,6 +21,8 @@ unsigned int  get_pwd_id(){
 }
 
 int main(int argc, char const *argv[]) {
+
+	initFS();
 
 	char ** files_list = NULL;
 	files_list = handleArgs(argc, argv);

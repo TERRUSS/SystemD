@@ -16,7 +16,7 @@ char * handleArgs(int argc, char const *argv[]) {
 	}
 }
 
-unsigned int  get_pwd_id(){
+unsigned int get_pwd_id(){
 	//void * cur = malloc(sizeof(unsigned int));
 	unsigned int cur;
 	char tmp[100];
@@ -30,8 +30,6 @@ int main(int argc, char const *argv[]) {
 	char * path = NULL;
 
 	path = handleArgs(argc, argv);
-
-	printf("Wanna list %s ?\n", path);
 
 	int filecount;
 	char ** files;
