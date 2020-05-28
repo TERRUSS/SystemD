@@ -40,7 +40,7 @@ int main(int argc, char const *argv[]) {
 	files = list_files(&wd, &filecount);
 	for (int i = 0; i < filecount; i++){
 		printf("%s	", files[i]);
-		free(files[i]);
+		//free(files[i]);
 	}
 	printf("\n");
 	free(files);

@@ -32,7 +32,7 @@ clean:
 
 .PHONY: fs_test
 fs_test:
-	gcc -O2 -Wall -ansi -Wextra -pedantic -g -Isrc src/utils/str_utils.c src/fileio/fileio.c src/fs/inode.c src/fs/bloc.c src/fs/fs.c src/fs/test_fs.c 
+	gcc -Isrc src/utils/str_utils.c src/fileio/fileio.c src/fs/inode.c src/fs/bloc.c src/fs/fs.c src/fs/test_fs.c 
 
 .PHONY: clean_disk
 clean_disk:
