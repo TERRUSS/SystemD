@@ -15,7 +15,6 @@ int execute(int argc, char ** argv) {
 		printf("Collecting command path & env\n");
 
 	path = getexecpath(path, "./src/bin/", argv[0]);
-	char ** env = getEnv();
 
 	if (DEBUG)
 		printf("Executing : %s\n", path);
@@ -25,7 +24,7 @@ int execute(int argc, char ** argv) {
 
 	if (pid == 0) {
 		// Execute binary form /root/src/bin
-		if (execve( path, argv, env) == -1) {
+		if (execv( path, argv) == -1) {
 			printf(" ✗ - sdsh : %s: command not found\n", argv[0]);
 			if (DEBUG) {
 				perror("Err");

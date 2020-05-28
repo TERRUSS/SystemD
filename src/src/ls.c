@@ -16,9 +16,11 @@ char * handleArgs(int argc, char const *argv[]) {
 	}
 }
 
-struct inode * get_wd(){
-	void * cur = malloc(sizeof(struct inode *));
-	memcpy(cur, getenv("SYSD_CURDIR"), sizeof(getenv("SYSD_CURDIR")));
+struct inode * get_pwd_id(){
+	//void * cur = malloc(sizeof(unsigned int));
+	struct inode * cur;
+	char tmp[100];
+	sscanf(getenv("SYSD_CURDIR"), "%p %*s", &cur, tmp);
 
 	return cur;
 }
@@ -34,7 +36,7 @@ int main(int argc, char const *argv[]) {
 
 	int filecount;
 	char ** files;
-	struct inode * wd = get_wd();
+	struct inode * wd = get_pwd_id();
 
 	files = list_files(wd, &filecount);
 	print_str_array(files, filecount);

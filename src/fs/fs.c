@@ -37,6 +37,8 @@ char * get_filename_for_inode(struct inode *i) {
 	filename = (char*) malloc(FILENAME_COUNT);
 	strcpy(filename, b.filename);
 
+printf("wooo %s\n", filename);
+
 	return filename;
 }
 
@@ -1071,10 +1073,13 @@ size_t get_total_strlen(struct inode *i) {
 	return (bloc_count - 1) * (BLOC_SIZE - 1) + strlen(b.content);
 }
 
-void ch_dir(unsigned int inodeid){
+void ch_dir(struct inode *i){
 
 	char * buff = malloc(sizeof(char) * 100);
-	sprintf(buff, "%u", inodeid);
+	sprintf(buff, "%p", i);
+
+	printf("%s\n", buff);
+	
 	
 	setenv("SYSD_CURDIR", buff, 1); //1 is for overwrite
 }

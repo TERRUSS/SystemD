@@ -1,5 +1,5 @@
 #include <stdlib.h>
 
 int main(int argc, char const *argv[]) {
-	exit(666);
+	exit(-1);
 }

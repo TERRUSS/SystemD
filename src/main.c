@@ -37,10 +37,10 @@ int main(int argc, char const *argv[]) {
 		g_working_directory = get_inode_by_id(ROOT_ID);
 	else
 		g_working_directory = create_disk();
-	ch_dir(ROOT_ID);
+	ch_dir(&g_working_directory);
 
-	if(DEBUG)
-		printf("FS created : root @ %s", get_filename_for_inode(&g_working_directory));
+	//if(DEBUG)
+		printf("FS created : root @ %p : %s\n", &g_working_directory, get_filename_for_inode(&g_working_directory));
 	//---------
 
 	handleArgs(argc, argv);

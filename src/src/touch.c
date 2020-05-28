@@ -7,13 +7,16 @@ char * handleArgs(int argc, char const *argv[]) {
 		return ++argv;
 	}
 	else {
+		printf("Missing argument, check the man page for more informations.\n");
 		exit(-1);
 	}
 }
 
-struct inode * get_wd(){
-	void * cur = malloc(sizeof(struct inode *));
-	memcpy(cur, getenv("SYSD_CURDIR"), sizeof(getenv("SYSD_CURDIR")));
+struct inode * get_pwd_id(){
+	//void * cur = malloc(sizeof(unsigned int));
+	struct inode * cur;
+	char tmp[100];
+	sscanf(getenv("SYSD_CURDIR"), "%p %*s", &cur, tmp);
 
 	return cur;
 }
@@ -25,7 +28,7 @@ int main(int argc, char const *argv[]) {
 
 	printf("Creating files :\n");
 
-	struct inode * cur_dir = get_wd();
+	struct inode * cur_dir = get_pwd_id();
 
 	for (int i = 0; i < argc-1; i++) {
 		printf("%s", files_list[i]);
