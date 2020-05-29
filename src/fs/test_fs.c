@@ -445,7 +445,7 @@ int test_iopen() {
 int test_remove_empty_directory() {
 	int filecount;
 	char **files;
-	struct inode dir;
+	struct inode dir, usr_dir;
 
 	clean_disk();
 	g_working_directory = create_disk();
@@ -455,7 +455,6 @@ int test_remove_empty_directory() {
 	files = list_files(&dir, &filecount);
 	print_str_array(files, filecount);
 	free_str_array(files, filecount);
-	print_disk();
 
 	if (get_filecount(&dir) != 2) {
 		perror("test_remove_empty_directory() failed");
@@ -468,9 +467,9 @@ int test_remove_empty_directory() {
 		return EXIT_FAILURE;
 	}
 
-	create_directory(&g_working_directory, "usr");
-	create_regularfile(&g_working_directory, "user_file.sh", "echo 'je suis une loutre'", O_RDONLY);
-	if (remove_empty_directory(&g_working_directory, "usr") != EXIT_FAILURE && get_filecount(&g_working_directory) != 3) {
+	usr_dir = create_directory(&g_working_directory, "usr");
+	create_regularfile(&usr_dir, "user_file.sh", "echo 'je suis une loutre'", O_RDONLY);
+	if (remove_empty_directory(&g_working_directory, "usr") != EXIT_FAILURE && get_filecount(&usr_dir) != 3) {
 		perror("test_remove_empty_directory() failed");
 		return EXIT_FAILURE;
 	}
