@@ -965,7 +965,6 @@ char **list_files(struct inode *dir, int *filecount) {
 		sscanf(b.content + sizeof(char)*offset, "%s", name);
 		*c = ',';
 		offset += get_index(b.content + offset, ',') + 1;
-		printf("name %s\n", name);
 
 		strncpy(files[z], name, FILENAME_COUNT);
 		z++;
