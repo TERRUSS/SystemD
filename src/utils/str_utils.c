@@ -144,15 +144,16 @@ int strjoin(char *str, int *int_array, int len, char sep) {
 	int z;
 	size_t offset;
 	char tmp[10];
+	int i;
 
 	for (z = 0, offset = 0; z != len; z++, offset++) {
 		sprintf(tmp, "%d", int_array[z]);
 		strcat(str + offset, tmp);
 		offset += strlen(tmp);
 		str[offset] = sep;
+		/* Add after loop */
+		str[offset + 1] = '\0';
 	}
-
-	str[offset] = '\0';
 
 	return EXIT_SUCCESS;
 }

@@ -73,10 +73,12 @@ void print_inode(struct inode *i) {
 	printf(" permissions:%d", i->permissions);
 	printf(" user:%s", i->user_name);
 	printf(" group:%s", i->group_name);
-	//assert(strftime(s, 64, "%c", i->created_at));
-	//assert(strftime(s2, 64, "%c", i->updated_at));
+	/*
+	assert(strftime(s, 64, "%c", i->created_at));
+	assert(strftime(s2, 64, "%c", i->updated_at));
 	printf(" created at:%s", s);
 	printf(" updated at:%s", s2);
+	*/
 
 	puts("");
 	for (j = 0; j != i->bloc_count; j++) {
