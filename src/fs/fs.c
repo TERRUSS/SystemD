@@ -12,20 +12,15 @@ char g_username[USERNAME_COUNT];
 /* Current working directory */
 struct inode g_working_directory;
 
-/**
- * Gets the filename of a file/inode
- *
- * note: don't forget to free the char
- * on success: returns the filename
- * on failure: returns NULL
- */
-
 void initFS(){
 	// init File System
 	init_id_generator();
 	strcpy(g_username, "user");
 }
 
+/*
+ * Gets the name of a directory by the inode id
+ */
 char *get_dirname_by_id(unsigned int id) {
 	struct inode i;
 
@@ -35,6 +30,8 @@ char *get_dirname_by_id(unsigned int id) {
 }
 
 /*
+ * Gets the name of a directory by the inode
+ *
  * note: Root folder doesn't have a name
  * appends / to the name
  */
@@ -56,8 +53,8 @@ char *get_dirname(struct inode *dir) {
 }
 
 /*
- * TODO
- * add / to directories
+ * Gets the name of a regular file
+ *
  * note: don't forget to free the char*
  */
 char *get_filename_for_inode(struct inode *under_dir, struct inode *i) {
@@ -300,6 +297,10 @@ int overwrite_inode(struct inode *new_inode, unsigned int id) {
 	}
 }
 
+/*
+ * Overwrites a bloc
+ * exception: file not found
+ */
 int overwrite_bloc(struct bloc *new_bloc, unsigned int id) {
 	FILE *f;
 	int size;
@@ -365,6 +366,9 @@ int update_bloc(struct bloc *new_bloc) {
 	return overwrite_bloc(new_bloc, new_bloc->id);
 }
 
+/*
+ * Creates a regular file under a directory
+ */
 struct file create_regularfile(struct inode *under_dir, char *filename, char *content, int flags) {
 	struct inode i;
 	struct bloc b, to_update;
@@ -442,32 +446,6 @@ int print_disk() {
 	return fclose(f);
 }
 
-/*
- * Gets all inodes under a directory
- *
- * note: don't forget to free the array of inodes
- * on success: returns the length of the array of inodes
- */
-/*
-int get_inodes(struct inode *under_dir, struct inode **inodes) {
-	int len;
-	struct bloc b;
-	int z;
-	int *inode_ids;
-
-	b = get_bloc_by_id(under_dir->bloc_ids[0]);
-	len = strsplt(b.content, &inode_ids, ',');
-	*inodes = (struct inode *) malloc(len * sizeof(struct inode));
-
-	for (z = 0; z != len; z++) {
-		(*inodes)[z] = get_inode_by_id((unsigned int) inode_ids[z]);
-	}
-
-	free(inode_ids);
-
-	return len;
-}
-*/
 
 /*
  * Remove an inode and his block
@@ -556,8 +534,6 @@ struct inode create_directory(struct inode *under_dir, char *dirname) {
  * and returns the inode created
  *
  * filename must not be NULL
- * TODO what's the mode for ? how do you use it,
- * since you only return an inode
  */
 struct file create_emptyfile(struct inode *under_dir, char *filename, enum filetype type) {
 	struct bloc b, to_update;
@@ -790,7 +766,9 @@ int iwrite(struct file *f, char *buf, size_t n) {
 }
 
 
-
+/*
+ * Creates the . dir
+ */
 int create_dot_dir(struct inode *dir) {
 	struct bloc to_update;
 
@@ -800,6 +778,9 @@ int create_dot_dir(struct inode *dir) {
 	return EXIT_SUCCESS;
 }
 
+/*
+ * Creates the .. dir
+ */
 int create_dotdot_dir(struct inode *parent, struct inode *dir) {
 	struct bloc to_update;
 
@@ -860,7 +841,7 @@ struct inode get_inode_by_filename(struct inode *under_dir, char *filename) {
 }
 
 /*
- * Returns an inode of a file
+ * Returns a file
  *
  * success : returns the inode
  */
@@ -927,7 +908,7 @@ int iread(struct file *f, char *buf, size_t n) {
 
 
 /*
- * TODO
+ * TODO what's it for ?
  */
 int iclose(struct file *f) {
 	(void) f;
@@ -976,9 +957,11 @@ char **list_files(struct inode *dir, int *filecount) {
 }
 
 /*
- * Remove an inode froma directory, that is,
+ * Remove an inode from a directory, that is,
  * remove the inode id from the bloc content
  * the ids are stored like that "12,432,4324,"
+ *
+ * returns the bloc to be updated
  */
 struct bloc remove_inode_from_directory(struct inode *dir, unsigned int id) {
 	struct bloc b;
@@ -1168,7 +1151,7 @@ int unlink_inode(struct inode *from_dir, char *linkname) {
 
 /*
  * Initialize a new file
- * TODO do append flag, extremlly difficult
+ * TODO O_APPEND O_TRUNC flags
  */
 struct file new_file(struct inode *i, int flags) {
 	struct file f;
@@ -1224,11 +1207,12 @@ unsigned int get_pwd_id(){
 
 void update_path(unsigned int inodeid){
 	key_t key = ftok("systemd",65);
-    int shmid = shmget(key,1024,0666|IPC_CREAT);
-    char *shared = (char*) shmat(shmid,(void*)0,0);
+	int shmid = shmget(key,1024,0666|IPC_CREAT);
+	char *shared = (char*) shmat(shmid,(void*)0,0);
 
-    sprintf(shared, "%u", inodeid);
+	sprintf(shared, "%u", inodeid);
 
-    shmdt(shared);
-    shmctl(shmid,IPC_RMID,NULL);
+	shmdt(shared);
+	shmctl(shmid,IPC_RMID,NULL);
 }
+
