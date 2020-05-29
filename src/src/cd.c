@@ -25,9 +25,10 @@ int main(int argc, char const *argv[]) {
 	else {
 		struct inode cur_dir = get_inode_by_id(get_pwd_id());
 		struct inode target = get_inode_by_filename(&cur_dir, arg[0]);
-		update_path(target.id);
-
-		printf("chdir to %s (%u)\n", arg[0], target.id	);
+		if (target.type == DIRECTORY || target.type == SYMBOLIC_LINK)
+			update_path(target.id);
+		else
+			printf("cd : %s is not a directory\n", arg[0]);
 	}
 
 	return 0;
