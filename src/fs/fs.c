@@ -493,6 +493,7 @@ int remove_databloc(struct inode *from_dir, char *name) {
  */
 int remove_file(struct inode *under_dir, char *filename, enum filetype ft) {
 	struct inode i;
+	struct bloc to_update;
 	unsigned int file_id;
 
 	if (under_dir->type != DIRECTORY) {
@@ -520,7 +521,8 @@ int remove_file(struct inode *under_dir, char *filename, enum filetype ft) {
 	remove_databloc(under_dir, filename);
 
 	/* then we remove the inode from the content in under_dir's bloc */
-	remove_inode_from_directory(under_dir, file_id);
+	to_update = remove_inode_from_directory(under_dir, file_id);
+	update_bloc(&to_update);
 
 	return EXIT_SUCCESS;
 }
@@ -978,7 +980,7 @@ char **list_files(struct inode *dir, int *filecount) {
  * remove the inode id from the bloc content
  * the ids are stored like that "12,432,4324,"
  */
-int remove_inode_from_directory(struct inode *dir, unsigned int id) {
+struct bloc remove_inode_from_directory(struct inode *dir, unsigned int id) {
 	struct bloc b;
 	int found;
 	unsigned int linkcount;
@@ -1022,14 +1024,18 @@ int remove_inode_from_directory(struct inode *dir, unsigned int id) {
 	}
 
 	if (found) {
-		offset = initial_offset;
+		printf("FOUND\nID %u", id);
 		while (b.content[offset] != '\0') {
-			b.content[offset] = b.content[offset + 1];
+			b.content[initial_offset] = b.content[offset];
 			offset++;
+			initial_offset++;
+			/*printf("b %s\n", b.content);*/
 		}
+		b.content[initial_offset] = '\0';
 	}
+	print_bloc(&b);
 
-	return EXIT_SUCCESS;
+	return b;
 }
 
 /*
@@ -1051,7 +1057,8 @@ int move_file(struct inode *from, char *filename, struct inode *to) {
 
 	i = get_inode_by_filename(from, filename);
 
-	remove_inode_from_directory(from, i.id);
+	to_update = remove_inode_from_directory(from, i.id);
+	update_bloc(&to_update);
 	to_update = add_inode_to_inode(to, &i, filename);
 	update_bloc(&to_update);
 

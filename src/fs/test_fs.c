@@ -538,10 +538,12 @@ int test_move_file() {
 
 	move_file(&g_working_directory, "FILENAME", &to);
 
+	print_disk();
 	if (get_filecount(&g_working_directory) != 1) {
 		perror("test_move_file() failed");
 		return EXIT_FAILURE;
 	}
+	print_disk();
 	if (get_filecount(&to) != 3) {
 		perror("test_move_file() failed");
 		return EXIT_FAILURE;

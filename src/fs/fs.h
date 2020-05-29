@@ -63,7 +63,7 @@ int get_inodes(struct inode *under_dir, struct inode **inodes);
 int overwrite_bloc(struct bloc *new_bloc, unsigned int id);
 int overwrite_inode(struct inode *new_inode, unsigned int id);
 int print_disk();
-int remove_inode_from_directory(struct inode *dir, unsigned int id);
+struct bloc remove_inode_from_directory(struct inode *dir, unsigned int id);
 int update_bloc(struct bloc *new_bloc);
 int update_inode(struct inode *new_inode);
 int write_bloc(struct bloc *b);
