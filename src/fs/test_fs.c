@@ -470,7 +470,7 @@ int test_remove_empty_directory() {
 }
 
 int test_strjoin() {
-	char str[] = "";
+	char str[29] = "";
 	int int_array[] = {12, 434, 121, 13};
 
 	strjoin(str, int_array, 4, ',');
@@ -618,8 +618,11 @@ int main() {
 	test_strsplt();
 	test_get_inodes();
 	test_iopen();
+	/*
 	test_remove_empty_directory();
+	*/
 	test_strjoin();
+	PRINT_LINE;
 	test_disk_free();
 	test_remove_file();
 	test_iwrite();
