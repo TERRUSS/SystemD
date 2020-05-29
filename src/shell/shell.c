@@ -45,6 +45,8 @@ char ** parseInput( char * line, int * argc ) {
 
 	while(ptr != NULL) {
 
+		//handle "strings of multiple words"
+
 		argv = realloc(argv, (*argc+1) * sizeof(char *));
 		argv[*argc] = malloc(sizeof(char) * strlen(ptr));
 		strcpy(argv[*argc], ptr);

@@ -839,8 +839,7 @@ int iread(struct file *f, char *buf, size_t n) {
 	int pos;
 	struct inode i;
 
-	if (!((f->flags & O_RDONLY) & (f->flags & O_RDWR))) {
-
+	if ( ( (f->flags & O_RDONLY) & (f->flags & O_RDWR) ) ) {
 		fprintf(stderr, "Access denied, wrong mode %d\n", __LINE__);
 		return EXIT_FAILURE;
 	}
@@ -864,7 +863,7 @@ int iread(struct file *f, char *buf, size_t n) {
 			n -= strlen(b.content);
 			pos += strlen(b.content);
 		} else {
-			strncat(buf + pos, b.content, n - 1);
+			strncat(buf + pos, b.content, n);
 			strcat(buf, "\0");
 			done = 1;
 		}
