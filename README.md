@@ -2,7 +2,9 @@
 
 A basic File Manager System implemented in C, accessible throught a cusom shell interpreter. [School Project]
 
+## Compile and execute
 
+make && ./systemd
 
 ## Abstract
 
