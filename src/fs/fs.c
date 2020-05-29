@@ -938,26 +938,30 @@ int iclose(struct file *f) {
  * note: don't forget to free the array
  */
 char **list_files(struct inode *dir, int *filecount) {
-	char **files, *filename;
-	int *inode_ids;
-	int z;
-	struct inode i;
+	char **files;
 	struct bloc b;
+	unsigned int inode_id;
+	char name[FILENAME_COUNT];
+	int offset;
+	int z;
 
-	files = NULL;
 	b = get_bloc_by_id(dir->bloc_ids[0]);
-	*filecount = strsplt(b.content, &inode_ids, ',');
+	*filecount = ocr(b.content, ',');
+	offset = 0;
+	z = 0;
+	files = NULL;
 	files = init_str_array(*filecount, FILENAME_COUNT);
 
-	for (z = 0; z < *filecount; z++) {
-		i = get_inode_by_id(inode_ids[z]);
-		filename = get_filename_for_inode(dir, &i);
-		strncpy(files[z], filename, FILENAME_COUNT);
+	while (z != *filecount) {
 
-		free(filename);
+		sscanf(b.content + sizeof(char)*offset, "%u", &inode_id);
+		offset += get_index(b.content + offset, ':') + 1;
+		sscanf(b.content + sizeof(char)*offset, "%s", name);
+		offset += get_index(b.content + offset, ',') + 1;
+
+		strncpy(files[z], name, FILENAME_COUNT);
+		z++;
 	}
-
-	free(inode_ids);
 
 	return files;
 }
