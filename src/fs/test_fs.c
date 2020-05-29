@@ -289,9 +289,7 @@ int test_create_directory() {
 	files = list_files(&dir, &filecount);
 	print_str_array(files, filecount);
 	free_str_array(files, filecount);
-	print_disk();
-	remove_empty_directory(&g_working_directory, "home");
-	print_disk();
+
 
 	printf("test_create_directory() successful\n");
 
@@ -395,6 +393,7 @@ int test_strsplt() {
 }
 
 int test_get_inodes() {
+	/*
 	int len, z;
 	struct inode *inodes;
 
@@ -414,6 +413,7 @@ int test_get_inodes() {
 
 	free(inodes);
 	printf("test_get_inodes() successful\n");
+	*/
 	return EXIT_SUCCESS;
 }
 
@@ -427,11 +427,14 @@ int test_iopen() {
 	f2 = iopen(&g_working_directory, "Bidsouf", O_RDONLY);
 	if (!inode_equals(f1.inode, f2.inode)) {
 		perror("test_iopen() failed");
+		printf("F1 %u F2 %u \n", f1.inode.id, f2.inode.id);
+		print_disk();
 		return EXIT_FAILURE;
 	}
 	f1 = iopen(&g_working_directory, "Croute", O_RDONLY);
-	if (!f1.inode.id == DELETED) {
+	if (f1.inode.id != DELETED) {
 		perror("test_iopen() failed");
+		PRINT_LINE;
 		return EXIT_FAILURE;
 	}
 
@@ -599,6 +602,25 @@ int test_mode() {
 	return EXIT_SUCCESS;
 }
 
+int test_get_inode_by_filename() {
+	struct inode i;
+	struct file f1;
+	clean_disk();
+	g_working_directory = create_disk();
+
+	f1 = create_regularfile(&g_working_directory, "Bidsouf", "Yahoo", O_RDONLY);
+
+	i = get_inode_by_filename(&g_working_directory, "Bidsouf");
+	if (i.id != f1.inode.id) {
+		perror("test_get_inode_by_filename() failed");
+		printf("i %u f1 %u\n", i.id, f1.inode.id);
+		return EXIT_FAILURE;
+	}
+
+	printf("test_get_inode_by_filename() successful\n");
+	return EXIT_SUCCESS;
+}
+
 int main() {
 
 	init_id_generator();
@@ -616,6 +638,7 @@ int main() {
 	test_add_inode_to_inode();
 	test_create_regularfile();
 	test_create_emptyfile();
+	test_get_inode_by_filename();
 	test_create_directory();
 
 	test_strncut();

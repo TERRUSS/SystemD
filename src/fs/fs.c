@@ -68,8 +68,10 @@ char *get_filename_for_inode(struct inode *under_dir, struct inode *i) {
 	char *name;
 	int offset;
 	int z;
+	char *c;
 
 	name = (char *) calloc(FILENAME_COUNT, sizeof(char));
+
 	found = 0;
 	b = get_bloc_by_id(under_dir->bloc_ids[0]);
 	linkcount = ocr(b.content, ',');
@@ -78,12 +80,18 @@ char *get_filename_for_inode(struct inode *under_dir, struct inode *i) {
 
 	while (!found && z != linkcount) {
 
+		c = strchr(b.content + sizeof(char)*offset, ':');
+		*c = '\0';
 		sscanf(b.content + sizeof(char)*offset, "%u", &inode_id);
+		*c = ':';
 		offset += get_index(b.content + offset, ':') + 1;
+		c = strchr(b.content + sizeof(char)*offset, ',');
+		*c = '\0';
 		sscanf(b.content + sizeof(char)*offset, "%s", name);
+		*c = ',';
 		offset += get_index(b.content + offset, ',') + 1;
 
-		if (inode_id == i->id) {
+		if (i->id == inode_id) {
 			found = 1;
 		}
 		z++;
@@ -440,6 +448,7 @@ int print_disk() {
  * note: don't forget to free the array of inodes
  * on success: returns the length of the array of inodes
  */
+/*
 int get_inodes(struct inode *under_dir, struct inode **inodes) {
 	int len;
 	struct bloc b;
@@ -458,6 +467,7 @@ int get_inodes(struct inode *under_dir, struct inode **inodes) {
 
 	return len;
 }
+*/
 
 /*
  * Remove an inode and his block
@@ -492,6 +502,7 @@ int remove_file(struct inode *under_dir, char *filename, enum filetype ft) {
 
 	/* first we remove the dir's inode and bloc */
 	i = get_inode_by_filename(under_dir, filename);
+	PRINT_LINE;
 
 	if (i.type != ft) {
 		perror("Wrong file type");
@@ -499,6 +510,7 @@ int remove_file(struct inode *under_dir, char *filename, enum filetype ft) {
 	}
 
 	file_id = i.id;
+	PRINT_LINE;
 
 	if (ft == DIRECTORY) {
 		/* A directory has at least the . and the .. directories */
@@ -506,10 +518,13 @@ int remove_file(struct inode *under_dir, char *filename, enum filetype ft) {
 			perror(DIRECTORY_NOT_EMPTY_MESSAGE);
 			return EXIT_FAILURE;
 		}
+	PRINT_LINE;
 	}
+	PRINT_LINE;
 	remove_databloc(under_dir, filename);
 
 	/* then we remove the inode from the content in under_dir's bloc */
+	PRINT_LINE;
 	remove_inode_from_directory(under_dir, file_id);
 
 	return EXIT_SUCCESS;
@@ -815,6 +830,7 @@ struct inode get_inode_by_filename(struct inode *under_dir, char *filename) {
 	char name[FILENAME_COUNT];
 	int offset;
 	int z;
+	char *c;
 
 	found = 0;
 	i = empty_inode();
@@ -823,11 +839,19 @@ struct inode get_inode_by_filename(struct inode *under_dir, char *filename) {
 	offset = 0;
 	z = 0;
 
+	printf("linkcount %u\n", linkcount);
+	printf("%s\n", b.content);
 	while (!found && z != linkcount) {
 
+		c = strchr(b.content + sizeof(char)*offset, ':');
+		*c = '\0';
 		sscanf(b.content + sizeof(char)*offset, "%u", &inode_id);
+		*c = ':';
 		offset += get_index(b.content + offset, ':') + 1;
+		c = strchr(b.content + sizeof(char)*offset, ',');
+		*c = '\0';
 		sscanf(b.content + sizeof(char)*offset, "%s", name);
+		*c = ',';
 		offset += get_index(b.content + offset, ',') + 1;
 
 		if (strcmp(name, filename) == 0) {
@@ -837,23 +861,7 @@ struct inode get_inode_by_filename(struct inode *under_dir, char *filename) {
 		z++;
 	}
 
-	/*
-	len = get_inodes(under_dir, &inodes);
-	z = 0;
-
-	while (!done && z != len) {
-		fn = get_filename_for_inode(inodes + z);
-		if (strcmp(fn, filename) == 0) {
-			i = inodes[z];
-			done = 1;
-		}
-		free(fn);
-		z++;
-	}
-
-	free(inodes);
-	*/
-
+	print_inode(&i);
 	return i;
 }
 
@@ -868,7 +876,7 @@ struct file iopen(struct inode *under_dir, char *filename, int flags) {
 
 	i = get_inode_by_filename(under_dir, filename);
 
-	if (i.id == DELETED && (flags & O_CREAT)) {
+	if (i.id == DELETED && (flags & O_CREAT) != 0) {
 		f = create_emptyfile(under_dir, filename, REGULAR_FILE);
 		f.flags = flags;
 	} else {
@@ -986,6 +994,7 @@ int remove_inode_from_directory(struct inode *dir, unsigned int id) {
 	unsigned int inode_id;
 	char name[FILENAME_COUNT];
 	int offset, initial_offset = 0;
+	char *c;
 
 	found = 0;
 	b = get_bloc_by_id(dir->bloc_ids[0]);
@@ -997,9 +1006,15 @@ int remove_inode_from_directory(struct inode *dir, unsigned int id) {
 	while (!found && z != linkcount) {
 		initial_offset = offset;
 
+		c = strchr(b.content + sizeof(char)*offset, ':');
+		*c = '\0';
 		sscanf(b.content + sizeof(char)*offset, "%u", &inode_id);
+		*c = ':';
 		offset += get_index(b.content + offset, ':') + 1;
+		c = strchr(b.content + sizeof(char)*offset, ',');
+		*c = '\0';
 		sscanf(b.content + sizeof(char)*offset, "%s", name);
+		*c = ',';
 		offset += get_index(b.content + offset, ',') + 1;
 
 		if (inode_id == id) {
@@ -1016,7 +1031,7 @@ int remove_inode_from_directory(struct inode *dir, unsigned int id) {
 
 	if (found) {
 		offset = initial_offset;
-		while (b.content != '\0') {
+		while (b.content[offset] != '\0') {
 			b.content[offset] = b.content[offset + 1];
 			offset++;
 		}
