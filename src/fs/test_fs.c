@@ -434,7 +434,6 @@ int test_iopen() {
 	f1 = iopen(&g_working_directory, "Croute", O_RDONLY);
 	if (f1.inode.id != DELETED) {
 		perror("test_iopen() failed");
-		PRINT_LINE;
 		return EXIT_FAILURE;
 	}
 
@@ -566,7 +565,6 @@ int test_mode() {
 	printf("FLAGS %d\n", f.flags);
 	if (iwrite(&f, "tototototototototototo", 10) != EXIT_FAILURE) {
 		fprintf(stderr, "test_mode() failed\n");
-		PRINT_LINE;
 		return EXIT_FAILURE;
 	}
 
@@ -575,7 +573,6 @@ int test_mode() {
 	printf("FLAGS %d\n", f.flags);
 	if (iread(&f, buf, 10) != EXIT_FAILURE) {
 		fprintf(stderr, "test_mode() failed\n");
-		PRINT_LINE;
 		return EXIT_FAILURE;
 	}
 
@@ -584,7 +581,6 @@ int test_mode() {
 	if (iread(&f, buf, 10) != EXIT_SUCCESS &&
 			iwrite(&f, "encorecnoreencore", 10) != EXIT_SUCCESS) {
 		fprintf(stderr, "test_mode() failed\n");
-		PRINT_LINE;
 		return EXIT_FAILURE;
 	}
 
@@ -594,7 +590,6 @@ int test_mode() {
 			iwrite(&f, "encorecnoreencore", 10) != EXIT_SUCCESS) {
 
 		fprintf(stderr, "test_mode() failed\n");
-		PRINT_LINE;
 		return EXIT_FAILURE;
 	}
 

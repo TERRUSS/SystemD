@@ -502,7 +502,6 @@ int remove_file(struct inode *under_dir, char *filename, enum filetype ft) {
 
 	/* first we remove the dir's inode and bloc */
 	i = get_inode_by_filename(under_dir, filename);
-	PRINT_LINE;
 
 	if (i.type != ft) {
 		perror("Wrong file type");
@@ -510,7 +509,6 @@ int remove_file(struct inode *under_dir, char *filename, enum filetype ft) {
 	}
 
 	file_id = i.id;
-	PRINT_LINE;
 
 	if (ft == DIRECTORY) {
 		/* A directory has at least the . and the .. directories */
@@ -518,13 +516,10 @@ int remove_file(struct inode *under_dir, char *filename, enum filetype ft) {
 			perror(DIRECTORY_NOT_EMPTY_MESSAGE);
 			return EXIT_FAILURE;
 		}
-	PRINT_LINE;
 	}
-	PRINT_LINE;
 	remove_databloc(under_dir, filename);
 
 	/* then we remove the inode from the content in under_dir's bloc */
-	PRINT_LINE;
 	remove_inode_from_directory(under_dir, file_id);
 
 	return EXIT_SUCCESS;
@@ -839,8 +834,6 @@ struct inode get_inode_by_filename(struct inode *under_dir, char *filename) {
 	offset = 0;
 	z = 0;
 
-	printf("linkcount %u\n", linkcount);
-	printf("%s\n", b.content);
 	while (!found && z != linkcount) {
 
 		c = strchr(b.content + sizeof(char)*offset, ':');
@@ -861,7 +854,6 @@ struct inode get_inode_by_filename(struct inode *under_dir, char *filename) {
 		z++;
 	}
 
-	print_inode(&i);
 	return i;
 }
 
@@ -1036,16 +1028,6 @@ int remove_inode_from_directory(struct inode *dir, unsigned int id) {
 			offset++;
 		}
 	}
-	/*
-	b = get_bloc_by_id(dir->bloc_ids[0]);
-
-	len = strsplt(b.content, &inode_ids, ',');
-	remove_int(&inode_ids, &len, id);
-	strjoin(b.content, inode_ids, len, ',');
-	update_bloc(&b);
-
-	free(inode_ids);
-	*/
 
 	return EXIT_SUCCESS;
 }
