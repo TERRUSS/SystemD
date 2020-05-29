@@ -617,6 +617,7 @@ int main() {
 	test_create_regularfile();
 	test_create_emptyfile();
 	test_create_directory();
+	/*
 
 	test_strncut();
 	test_get_filename_for_inode();
@@ -633,6 +634,7 @@ int main() {
 	test_move_file();
 	test_mode();
 	test_remove_empty_directory();
+	*/
 
 	return EXIT_SUCCESS;
 }

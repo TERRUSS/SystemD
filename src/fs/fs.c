@@ -779,14 +779,16 @@ struct inode get_inode_by_filename(struct inode *under_dir, char *filename) {
 	unsigned int inode_id;
 	char name[FILENAME_COUNT];
 	int offset;
+	int z;
 
 	found = 0;
 	i = empty_inode();
 	b = get_bloc_by_id(under_dir->bloc_ids[0]);
 	linkcount = ocr(b.content, ',');
 	offset = 0;
+	z = 0;
 
-	while (!found) {
+	while (!found && z != linkcount) {
 
 		sscanf(b.content + sizeof(char)*offset, "%u", &inode_id);
 		offset += get_index(b.content + offset, ':') + 1;
@@ -797,6 +799,7 @@ struct inode get_inode_by_filename(struct inode *under_dir, char *filename) {
 			i = get_inode_by_id(inode_id);
 			found = 1;
 		}
+		z++;
 	}
 
 	/*
@@ -931,9 +934,48 @@ char **list_files(struct inode *dir, int *filecount) {
  */
 int remove_inode_from_directory(struct inode *dir, unsigned int id) {
 	struct bloc b;
-	unsigned int len;
-	int *inode_ids;
+	int found;
+	unsigned int linkcount;
+	int z;
+	unsigned int inode_id;
+	char name[FILENAME_COUNT];
+	int offset, initial_offset = 0;
 
+	found = 0;
+	b = get_bloc_by_id(dir->bloc_ids[0]);
+	linkcount = ocr(b.content, ',');
+	offset = 0;
+	initial_offset = 0;
+	z = 0;
+
+	while (!found && z != linkcount) {
+		initial_offset = offset;
+
+		sscanf(b.content + sizeof(char)*offset, "%u", &inode_id);
+		offset += get_index(b.content + offset, ':') + 1;
+		sscanf(b.content + sizeof(char)*offset, "%s", name);
+		offset += get_index(b.content + offset, ',') + 1;
+
+		if (inode_id == id) {
+			found = 1;
+		}
+		/*
+		if (strcmp(name, filename) == 0) {
+			found = 1;
+		}
+
+		 */
+		z++;
+	}
+
+	if (found) {
+		offset = initial_offset;
+		while (b.content != '\0') {
+			b.content[offset] = b.content[offset + 1];
+			offset++;
+		}
+	}
+	/*
 	b = get_bloc_by_id(dir->bloc_ids[0]);
 
 	len = strsplt(b.content, &inode_ids, ',');
@@ -942,6 +984,7 @@ int remove_inode_from_directory(struct inode *dir, unsigned int id) {
 	update_bloc(&b);
 
 	free(inode_ids);
+	*/
 
 	return EXIT_SUCCESS;
 }
