@@ -1024,16 +1024,13 @@ struct bloc remove_inode_from_directory(struct inode *dir, unsigned int id) {
 	}
 
 	if (found) {
-		printf("FOUND\nID %u", id);
 		while (b.content[offset] != '\0') {
 			b.content[initial_offset] = b.content[offset];
 			offset++;
 			initial_offset++;
-			/*printf("b %s\n", b.content);*/
 		}
 		b.content[initial_offset] = '\0';
 	}
-	print_bloc(&b);
 
 	return b;
 }
