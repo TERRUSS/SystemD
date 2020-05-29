@@ -53,7 +53,7 @@ struct file new_file(struct inode *i, int flags);
 size_t get_total_strlen(struct inode *i);
 
 void initFS();
-char * get_filename_for_inode(struct inode *i);
+char *get_filename_for_inode(struct inode *under_dir, struct inode *i);
 int clean_disk();
 int create_dot_dir(struct inode *dir);
 int create_dotdot_dir(struct inode *parent, struct inode *dir);
@@ -75,6 +75,8 @@ struct inode create_root();
 struct inode get_inode_by_filename(struct inode *under_dir, char *filename);
 struct inode get_inode_by_id(unsigned int inode_id);
 unsigned int get_filecount(struct inode *dir);
+char *get_dirname_by_id(unsigned int id);
+char *get_dirname(struct inode *dir);
 void disk_free(unsigned int *blocs_available, unsigned int *inodes_available, size_t *bytes_available);
 
 char **list_files(struct inode *dir, int *filecount);
@@ -94,7 +96,7 @@ int remove_file(struct inode *under_dir, char *filename, enum filetype ft);
 
 int remove_int(int **int_array, unsigned int *len, int i);
 void ch_dir(unsigned int inodeid);
-char * get_filename_for_inodeID(unsigned int id);
+char * get_filename_for_inodeID(struct inode *under_dir, unsigned int id);
 unsigned int get_pwd_id();
 void update_path(unsigned int inodeid);
 #endif

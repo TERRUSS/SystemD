@@ -26,13 +26,70 @@ void initFS(){
 	strcpy(g_username, "user");
 }
 
-char *get_filename_for_inode(struct inode *i) {
-	struct bloc b;
-	char *filename;
-	filename = (char *) malloc(sizeof(char) * FILENAME_COUNT);
-	filename[0] = '\0';
+char *get_dirname_by_id(unsigned int id) {
+	struct inode i;
 
-	return filename;
+	i = get_inode_by_id(id);
+
+	return get_dirname(&i);
+}
+
+/*
+ * note: Root folder doesn't have a name
+ * appends / to the name
+ */
+char *get_dirname(struct inode *dir) {
+	char *name;
+	struct inode parent_inode;
+
+	name = (char *) calloc(FILENAME_COUNT, sizeof(char));
+	parent_inode = get_inode_by_filename(dir, "..");
+	if (parent_inode.id == DELETED) {
+		strcpy(name, "");
+	} else {
+		name = get_filename_for_inode(&parent_inode, dir);
+	}
+
+	strcat(name, "/");
+	return name;
+
+}
+
+/*
+ * TODO
+ * add / to directories
+ * note: don't forget to free the char*
+ */
+char *get_filename_for_inode(struct inode *under_dir, struct inode *i) {
+	struct bloc b;
+	int linkcount;
+	int found;
+	unsigned int inode_id;
+	char *name;
+	int offset;
+	int z;
+
+	name = (char *) calloc(FILENAME_COUNT, sizeof(char));
+	found = 0;
+	b = get_bloc_by_id(under_dir->bloc_ids[0]);
+	linkcount = ocr(b.content, ',');
+	offset = 0;
+	z = 0;
+
+	while (!found && z != linkcount) {
+
+		sscanf(b.content + sizeof(char)*offset, "%u", &inode_id);
+		offset += get_index(b.content + offset, ':') + 1;
+		sscanf(b.content + sizeof(char)*offset, "%s", name);
+		offset += get_index(b.content + offset, ',') + 1;
+
+		if (inode_id == i->id) {
+			found = 1;
+		}
+		z++;
+	}
+
+	return name;
 }
 
 /**
@@ -448,9 +505,6 @@ int remove_file(struct inode *under_dir, char *filename, enum filetype ft) {
 		if (get_filecount(&i) != 2) {
 			perror(DIRECTORY_NOT_EMPTY_MESSAGE);
 			return EXIT_FAILURE;
-		} else {
-			remove_databloc(&i, "..");
-			remove_databloc(&i, ".");
 		}
 	}
 	remove_databloc(under_dir, filename);
@@ -656,7 +710,6 @@ int iwrite(struct file *f, char *buf, size_t n) {
 	int done;
 	int pos;
 	int new_bloc_count;
-	char *filename;
 	struct bloc b;
 	time_t t;
 	struct inode *i;
@@ -671,7 +724,6 @@ int iwrite(struct file *f, char *buf, size_t n) {
 	t = time(NULL);
 	done = 0;
 	pos = 0;
-	filename = get_filename_for_inode(i);
 	z = 0;
 
 	while (!done && z != i->bloc_count) {
@@ -719,7 +771,6 @@ int iwrite(struct file *f, char *buf, size_t n) {
 		}
 	}
 
-	free(filename);
 	i->updated_at = localtime(&t);
 	update_inode(i);
 
@@ -729,8 +780,7 @@ int iwrite(struct file *f, char *buf, size_t n) {
 
 
 int create_dot_dir(struct inode *dir) {
-	struct bloc b, to_update;
-	struct inode dot_dir;
+	struct bloc to_update;
 
 	to_update = add_inode_to_inode(dir, dir, ".");
 	update_bloc(&to_update);
@@ -739,8 +789,7 @@ int create_dot_dir(struct inode *dir) {
 }
 
 int create_dotdot_dir(struct inode *parent, struct inode *dir) {
-	struct bloc b, to_update;
-	struct inode dotdot_dir;
+	struct bloc to_update;
 
 	to_update = add_inode_to_inode(dir, parent, "..");
 	update_bloc(&to_update);
@@ -902,7 +951,7 @@ char **list_files(struct inode *dir, int *filecount) {
 
 	for (z = 0; z < *filecount; z++) {
 		i = get_inode_by_id(inode_ids[z]);
-		filename = get_filename_for_inode(&i);
+		filename = get_filename_for_inode(dir, &i);
 		strncpy(files[z], filename, FILENAME_COUNT);
 
 		free(filename);
@@ -1147,9 +1196,9 @@ void ch_dir(unsigned int inodeid){
 	setenv("SYSD_CURDIR", buff, 1);/* 1 is for overwrite */
 }
 
-char * get_filename_for_inodeID(unsigned int id) {
+char * get_filename_for_inodeID(struct inode *under_dir, unsigned int id) {
 	struct inode i = get_inode_by_id(id);
-	char * fn = get_filename_for_inode( &i );
+	char * fn = get_filename_for_inode(under_dir, &i );
 	return fn;
 }
 
