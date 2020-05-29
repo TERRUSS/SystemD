@@ -944,6 +944,7 @@ char **list_files(struct inode *dir, int *filecount) {
 	char name[FILENAME_COUNT];
 	int offset;
 	int z;
+	char *c;
 
 	b = get_bloc_by_id(dir->bloc_ids[0]);
 	*filecount = ocr(b.content, ',');
@@ -954,10 +955,17 @@ char **list_files(struct inode *dir, int *filecount) {
 
 	while (z != *filecount) {
 
+		c = strchr(b.content + sizeof(char)*offset, ':');
+		*c = '\0';
 		sscanf(b.content + sizeof(char)*offset, "%u", &inode_id);
+		*c = ':';
 		offset += get_index(b.content + offset, ':') + 1;
+		c = strchr(b.content + sizeof(char)*offset, ',');
+		*c = '\0';
 		sscanf(b.content + sizeof(char)*offset, "%s", name);
+		*c = ',';
 		offset += get_index(b.content + offset, ',') + 1;
+		printf("name %s\n", name);
 
 		strncpy(files[z], name, FILENAME_COUNT);
 		z++;
