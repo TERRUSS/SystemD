@@ -13,8 +13,8 @@
 #include "../utils/str_utils.h"
 #include "./inode.h"
 #include "./bloc.h"
-#include <sys/ipc.h> 
-#include <sys/shm.h> 
+#include <sys/ipc.h>
+#include <sys/shm.h>
 
 #define PRINT_LINE printf("LINE %d\n", __LINE__)
 #define NO_FILE_ERROR_MESSAGE "File's NULL"
@@ -68,7 +68,7 @@ int update_bloc(struct bloc *new_bloc);
 int update_inode(struct inode *new_inode);
 int write_bloc(struct bloc *b);
 int write_inode(struct inode *i);
-struct bloc add_inode_to_inode(struct inode *dir, struct inode *i);
+struct bloc add_inode_to_inode(struct inode *dir, struct inode *i, char *name);
 struct bloc get_bloc_by_id(unsigned int bloc_id);
 struct inode create_disk();
 struct inode create_root();

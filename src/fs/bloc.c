@@ -23,13 +23,11 @@ int add_bloc(struct inode *i, struct bloc *b) {
  * filename must not be NULL (except for root)
  * content can be NULL
  */
-struct bloc new_bloc(const char *filename, const char *content) {
+struct bloc new_bloc(const char *content) {
 	struct bloc b;
 
 	memset(&b, 0, sizeof(struct bloc));
 	b.id = rand();
-
-	strncpy(b.filename, filename, FILENAME_COUNT);
 
 	if (content == NULL) {
 		strcpy(b.content, "");
@@ -51,7 +49,6 @@ struct bloc empty_bloc() {
  */
 void print_bloc(struct bloc *b) {
 	printf("<BLOC> id:%d", b->id);
-	printf(" filename:%s", b->filename);
 	printf(" content:%s", b->content);
 	puts("");
 }

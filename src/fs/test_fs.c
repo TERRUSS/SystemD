@@ -43,7 +43,7 @@ int test_write_inode() {
 int test_new_bloc() {
 	struct bloc b;
 
-	b = new_bloc("hello_world.c", "#include<stdio.h>\nint main(){printf(\"HelloWorld\n\");return 0;}");
+	b = new_bloc("#include<stdio.h>\nint main(){printf(\"HelloWorld\n\");return 0;}");
 	printf("test_new_bloc() successful\n");
 	(void) b;
 
@@ -53,7 +53,7 @@ int test_new_bloc() {
 int test_write_bloc() {
 	struct bloc b;
 
-	b = new_bloc("hello_world.c", "#include<stdio.h>\nint main(){printf(\"HelloWorld\n\");return 0;}");
+	b = new_bloc("#include<stdio.h>\nint main(){printf(\"HelloWorld\n\");return 0;}");
 	if (write_bloc(&b) != EXIT_SUCCESS)
 		perror("test_write_bloc() failure");
 
@@ -238,7 +238,7 @@ int test_add_inode_to_inode() {
 
 	clean_disk();
 	create_disk();
-	b = new_bloc("dir", "");
+	b = new_bloc("");
 	i = new_inode(DIRECTORY, DEFAULT_PERMISSIONS, g_username, g_username);
 	write_bloc(&b);
 	add_bloc(&i, &b);
@@ -251,13 +251,13 @@ int test_add_inode_to_inode() {
 	}
 
 	/* add inode/file to dir */
-	b = new_bloc("file.py", "print('Hello World')\\n");
+	b = new_bloc("print('Hello World')\\n");
 	i2 = new_inode(REGULAR_FILE, DEFAULT_PERMISSIONS, g_username, g_username);
 	write_inode(&i2);
 	write_bloc(&b);
 	add_bloc(&i2, &b);
 
-	b = add_inode_to_inode(&i, &i2);
+	b = add_inode_to_inode(&i, &i2, "file.py");
 	update_bloc(&b);
 	/* check filecount == 1 */
 	if (get_filecount(&i) != 1) {
@@ -441,19 +441,27 @@ int test_iopen() {
 }
 
 int test_remove_empty_directory() {
+	int filecount;
+	char **files;
+	struct inode dir;
 
 	clean_disk();
 	g_working_directory = create_disk();
 
-	create_regularfile(&g_working_directory, "FILENAME", "TRUC", O_RDONLY);
-	create_directory(&g_working_directory, "home");
+	dir = create_directory(&g_working_directory, "home");
 
-	if (remove_empty_directory(&g_working_directory, "FILENAME") != EXIT_FAILURE
-			&& get_filecount(&g_working_directory) != 2) {
+	files = list_files(&dir, &filecount);
+	print_str_array(files, filecount);
+	free_str_array(files, filecount);
+	print_disk();
+
+	if (get_filecount(&dir) != 2) {
 		perror("test_remove_empty_directory() failed");
 		return EXIT_FAILURE;
 	}
-	if (remove_empty_directory(&g_working_directory, "home") != EXIT_SUCCESS && get_filecount(&g_working_directory) != 1) {
+
+	if (remove_empty_directory(&g_working_directory, "home") != EXIT_SUCCESS
+			&& get_filecount(&g_working_directory) != 1) {
 		perror("test_remove_empty_directory() failed");
 		return EXIT_FAILURE;
 	}
@@ -618,15 +626,13 @@ int main() {
 	test_strsplt();
 	test_get_inodes();
 	test_iopen();
-	/*
-	test_remove_empty_directory();
-	*/
 	test_strjoin();
 	test_disk_free();
 	test_remove_file();
 	test_iwrite();
 	test_move_file();
 	test_mode();
+	test_remove_empty_directory();
 
 	return EXIT_SUCCESS;
 }

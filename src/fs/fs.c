@@ -26,23 +26,11 @@ void initFS(){
 	strcpy(g_username, "user");
 }
 
-char * get_filename_for_inode(struct inode *i) {
+char *get_filename_for_inode(struct inode *i) {
 	struct bloc b;
 	char *filename;
-
-	if (i->bloc_count == 0) {
-		perror("The inode has no blocs");
-		return NULL;
-	}
-
-	b = get_bloc_by_id(i->bloc_ids[0]);
-	if (b.id == DELETED) {
-		perror("No bloc found");
-		return NULL;
-	}
-
-	filename = (char*) malloc(FILENAME_COUNT);
-	strcpy(filename, b.filename);
+	filename = (char *) malloc(sizeof(char) * FILENAME_COUNT);
+	filename[0] = '\0';
 
 	return filename;
 }
@@ -58,7 +46,7 @@ struct inode create_root() {
 	struct bloc b;
 
 	i = new_inode(DIRECTORY, ROOT_PERMISSIONS, ROOT, ROOT);
-	b = new_bloc("/", "");
+	b = new_bloc("");
 	i.id = ROOT_ID;
 
 	add_bloc(&i, &b);
@@ -323,10 +311,10 @@ struct file create_regularfile(struct inode *under_dir, char *filename, char *co
 	len = strncut(&blocs_contents, content, BLOC_SIZE);
 
 	i = new_inode(REGULAR_FILE, DEFAULT_PERMISSIONS, g_username, g_username);
-	to_update = add_inode_to_inode(under_dir, &i);
+	to_update = add_inode_to_inode(under_dir, &i, filename);
 
 	for (z = 0; z != len; z++) {
-		b = new_bloc(filename, blocs_contents[z]);
+		b = new_bloc(blocs_contents[z]);
 		add_bloc(&i, &b);
 		write_bloc(&b);
 	}
@@ -481,18 +469,18 @@ struct inode create_directory(struct inode *under_dir, char *dirname) {
 	struct bloc b, to_update;
 
 	i = new_inode(DIRECTORY, DEFAULT_PERMISSIONS, g_username, g_username);
-	b = new_bloc(dirname, "");
+	b = new_bloc("");
 
 	add_bloc(&i, &b);
-	to_update = add_inode_to_inode(under_dir, &i);
+	to_update = add_inode_to_inode(under_dir, &i, dirname);
 
 	write_inode(&i);
 	write_bloc(&b);
 	update_bloc(&to_update);
 
 	/* we add the .. dir */
-	create_dotdot_dir(under_dir, &i);
 	create_dot_dir(&i);
+	create_dotdot_dir(under_dir, &i);
 
 	return i;
 }
@@ -510,11 +498,11 @@ struct file create_emptyfile(struct inode *under_dir, char *filename, enum filet
 	struct inode i;
 	struct file f;
 
-	b = new_bloc(filename, "");
+	b = new_bloc("");
 	i = new_inode(type, DEFAULT_PERMISSIONS, g_username, g_username);
 
 	add_bloc(&i, &b);
-	to_update = add_inode_to_inode(under_dir, &i);
+	to_update = add_inode_to_inode(under_dir, &i, filename);
 
 	write_inode(&i);
 	write_bloc(&b);
@@ -638,7 +626,7 @@ unsigned int get_filecount(struct inode *dir) {
  * Link inode to other inode (directory)
  * Returns the bloc to update (in the disk)
  */
-struct bloc add_inode_to_inode(struct inode *dir, struct inode *i) {
+struct bloc add_inode_to_inode(struct inode *dir, struct inode *i, char *name) {
 	/* TODO out of bound */
 	char str_id[15];
 	struct bloc b;
@@ -648,6 +636,8 @@ struct bloc add_inode_to_inode(struct inode *dir, struct inode *i) {
 	b = get_bloc_by_id(dir->bloc_ids[0]);
 	sprintf(str_id, "%d", i->id);
 	strcat(b.content, str_id);
+	strcat(b.content, ":");
+	strcat(b.content, name);
 	strcat(b.content, ",");
 
 	return b;
@@ -713,12 +703,12 @@ int iwrite(struct file *f, char *buf, size_t n) {
 	} else {
 		while (!done) {
 			if (n > strlen(b.content)) {
-				b = new_bloc(filename, "");
+				b = new_bloc("");
 				strncpy(b.content, buf + pos, BLOC_SIZE - 1);
 				pos += BLOC_SIZE - 1;
 				n -= BLOC_SIZE - 1;
 			} else {
-				b = new_bloc(filename, "");
+				b = new_bloc("");
 				strncpy(b.content, buf + pos, n - 1);
 				b.content[n] = '\0';
 				done = 1;
@@ -745,10 +735,10 @@ int create_dot_dir(struct inode *dir) {
 	b = get_bloc_by_id(dir->bloc_ids[0]);
 	dot_dir = *dir;
 	dot_dir.id = rand();
-	b = new_bloc(".", b.content);
+	b = new_bloc(b.content);
 	dot_dir.bloc_ids[0] = b.id;
 	write_bloc(&b);
-	to_update = add_inode_to_inode(dir, &dot_dir);
+	to_update = add_inode_to_inode(dir, &dot_dir, ".");
 	update_bloc(&to_update);
 	write_inode(&dot_dir);
 
@@ -762,10 +752,10 @@ int create_dotdot_dir(struct inode *parent, struct inode *dir) {
 	b = get_bloc_by_id(parent->bloc_ids[0]);
 	dotdot_dir = *parent;
 	dotdot_dir.id = rand();
-	b = new_bloc("..", b.content);
+	b = new_bloc(b.content);
 	dotdot_dir.bloc_ids[0] = b.id;
 	write_bloc(&b);
-	to_update = add_inode_to_inode(dir, &dotdot_dir);
+	to_update = add_inode_to_inode(dir, &dotdot_dir, "..");
 	update_bloc(&to_update);
 	write_inode(&dotdot_dir);
 
@@ -954,7 +944,7 @@ int move_file(struct inode *from, char *filename, struct inode *to) {
 	i = get_inode_by_filename(from, filename);
 
 	remove_inode_from_directory(from, i.id);
-	to_update = add_inode_to_inode(to, &i);
+	to_update = add_inode_to_inode(to, &i, filename);
 	update_bloc(&to_update);
 
 	return EXIT_SUCCESS;
@@ -970,7 +960,7 @@ int copy_file(struct inode *from, char *filename, char *to) {
 	i = get_inode_by_filename(from, filename);
 
 	to_dir = get_inode_by_filename(from, to);
-	to_update = add_inode_to_inode(&to_dir, &i);
+	to_update = add_inode_to_inode(&to_dir, &i, filename);
 	update_bloc(&to_update);
 
 	return EXIT_SUCCESS;
@@ -1023,6 +1013,7 @@ int remove_int(int **int_array, unsigned int *len, int i) {
 /*
  * TODO
  */
+/*
 int link_inode(struct inode *from_dir, char *filename, char *linkname) {
 	struct inode link, i;
 	struct bloc to_update;
@@ -1038,15 +1029,17 @@ int link_inode(struct inode *from_dir, char *filename, char *linkname) {
 	link.bloc_count = i.bloc_count;
 	write_inode(&link);
 
-	to_update = add_inode_to_inode(from_dir, &link);
+	to_update = add_inode_to_inode(from_dir, &link, filename);
 	update_bloc(&to_update);
 
 	return EXIT_SUCCESS;
 }
+*/
 
 /*
  * TODO
  */
+/*
 int unlink_inode(struct inode *from_dir, char *linkname) {
 	struct inode link;
 
@@ -1055,6 +1048,7 @@ int unlink_inode(struct inode *from_dir, char *linkname) {
 
 	return EXIT_SUCCESS;
 }
+*/
 
 
 /* File */
