@@ -4,18 +4,22 @@
 char ** prompt( int * argc, int cmd_status, struct inode * pwd ) {
 	char * input = 0;
 	char ** argv = 0;
+	char *filename;
+
+	filename = get_dirname(pwd);
 
 	if(cmd_status == 0 ) {
-		printf("\033[1;35m┌─[\033[1;36muser\033[0;35m@\033[1;36mSYSTEMD\033[1;35m]─[%s]\n└──╼ \033[0;35m$\033[0m ", get_filename_for_inode(pwd));
+		printf("\033[1;35m┌─[\033[1;36muser\033[0;35m@\033[1;36mSYSTEMD\033[1;35m]─[%s]\n└──╼ \033[0;35m$\033[0m ", filename);
 	}
 	else {
-		printf("\033[1;35m┌─[✗]─[\033[1;36muser\033[0;35m@\033[1;36mSYSTEMD\033[1;35m]─[%s]\n└──╼ \033[0;35m$\033[0m ",  get_filename_for_inode(pwd));
+		printf("\033[1;35m┌─[✗]─[\033[1;36muser\033[0;35m@\033[1;36mSYSTEMD\033[1;35m]─[%s]\n└──╼ \033[0;35m$\033[0m ",  filename);
 	}
 
 	input = readInput();
 	argv = parseInput(input, argc);
 
 	free(input);
+	free(filename);
 
 	return argv;
 }

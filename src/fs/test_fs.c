@@ -43,7 +43,7 @@ int test_write_inode() {
 int test_new_bloc() {
 	struct bloc b;
 
-	b = new_bloc("hello_world.c", "#include<stdio.h>\nint main(){printf(\"HelloWorld\n\");return 0;}");
+	b = new_bloc("#include<stdio.h>\nint main(){printf(\"HelloWorld\n\");return 0;}");
 	printf("test_new_bloc() successful\n");
 	(void) b;
 
@@ -53,7 +53,7 @@ int test_new_bloc() {
 int test_write_bloc() {
 	struct bloc b;
 
-	b = new_bloc("hello_world.c", "#include<stdio.h>\nint main(){printf(\"HelloWorld\n\");return 0;}");
+	b = new_bloc("#include<stdio.h>\nint main(){printf(\"HelloWorld\n\");return 0;}");
 	if (write_bloc(&b) != EXIT_SUCCESS)
 		perror("test_write_bloc() failure");
 
@@ -183,7 +183,7 @@ int test_get_filename_for_inode() {
 	clean_disk();
 	g_working_directory = create_disk();
 	f = create_regularfile(&g_working_directory, filename, content, O_RDONLY);
-	rst = get_filename_for_inode(&(f.inode));
+	rst = get_filename_for_inode(&g_working_directory, &(f.inode));
 	if (rst == NULL) {
 		perror("Ah !");
 		return EXIT_FAILURE;
@@ -238,7 +238,7 @@ int test_add_inode_to_inode() {
 
 	clean_disk();
 	create_disk();
-	b = new_bloc("dir", "");
+	b = new_bloc("");
 	i = new_inode(DIRECTORY, DEFAULT_PERMISSIONS, g_username, g_username);
 	write_bloc(&b);
 	add_bloc(&i, &b);
@@ -251,13 +251,13 @@ int test_add_inode_to_inode() {
 	}
 
 	/* add inode/file to dir */
-	b = new_bloc("file.py", "print('Hello World')\\n");
+	b = new_bloc("print('Hello World')\\n");
 	i2 = new_inode(REGULAR_FILE, DEFAULT_PERMISSIONS, g_username, g_username);
 	write_inode(&i2);
 	write_bloc(&b);
 	add_bloc(&i2, &b);
 
-	b = add_inode_to_inode(&i, &i2);
+	b = add_inode_to_inode(&i, &i2, "file.py");
 	update_bloc(&b);
 	/* check filecount == 1 */
 	if (get_filecount(&i) != 1) {
@@ -289,9 +289,7 @@ int test_create_directory() {
 	files = list_files(&dir, &filecount);
 	print_str_array(files, filecount);
 	free_str_array(files, filecount);
-	print_disk();
-	remove_empty_directory(&g_working_directory, "home");
-	print_disk();
+
 
 	printf("test_create_directory() successful\n");
 
@@ -395,6 +393,7 @@ int test_strsplt() {
 }
 
 int test_get_inodes() {
+	/*
 	int len, z;
 	struct inode *inodes;
 
@@ -414,6 +413,7 @@ int test_get_inodes() {
 
 	free(inodes);
 	printf("test_get_inodes() successful\n");
+	*/
 	return EXIT_SUCCESS;
 }
 
@@ -427,10 +427,12 @@ int test_iopen() {
 	f2 = iopen(&g_working_directory, "Bidsouf", O_RDONLY);
 	if (!inode_equals(f1.inode, f2.inode)) {
 		perror("test_iopen() failed");
+		printf("F1 %u F2 %u \n", f1.inode.id, f2.inode.id);
+		print_disk();
 		return EXIT_FAILURE;
 	}
 	f1 = iopen(&g_working_directory, "Croute", O_RDONLY);
-	if (!f1.inode.id == DELETED) {
+	if (f1.inode.id != DELETED) {
 		perror("test_iopen() failed");
 		return EXIT_FAILURE;
 	}
@@ -441,26 +443,33 @@ int test_iopen() {
 }
 
 int test_remove_empty_directory() {
+	int filecount;
+	char **files;
+	struct inode dir, usr_dir;
 
 	clean_disk();
 	g_working_directory = create_disk();
 
-	create_regularfile(&g_working_directory, "FILENAME", "TRUC", O_RDONLY);
-	create_directory(&g_working_directory, "home");
+	dir = create_directory(&g_working_directory, "home");
 
-	if (remove_empty_directory(&g_working_directory, "FILENAME") != EXIT_FAILURE
-			&& get_filecount(&g_working_directory) != 2) {
-		perror("test_remove_empty_directory() failed");
-		return EXIT_FAILURE;
-	}
-	if (remove_empty_directory(&g_working_directory, "home") != EXIT_SUCCESS && get_filecount(&g_working_directory) != 1) {
+	files = list_files(&dir, &filecount);
+	print_str_array(files, filecount);
+	free_str_array(files, filecount);
+
+	if (get_filecount(&dir) != 2) {
 		perror("test_remove_empty_directory() failed");
 		return EXIT_FAILURE;
 	}
 
-	create_directory(&g_working_directory, "usr");
-	create_regularfile(&g_working_directory, "user_file.sh", "echo 'je suis une loutre'", O_RDONLY);
-	if (remove_empty_directory(&g_working_directory, "usr") != EXIT_FAILURE && get_filecount(&g_working_directory) != 3) {
+	if (remove_empty_directory(&g_working_directory, "home") != EXIT_SUCCESS
+			&& get_filecount(&g_working_directory) != 1) {
+		perror("test_remove_empty_directory() failed");
+		return EXIT_FAILURE;
+	}
+
+	usr_dir = create_directory(&g_working_directory, "usr");
+	create_regularfile(&usr_dir, "user_file.sh", "echo 'je suis une loutre'", O_RDONLY);
+	if (remove_empty_directory(&g_working_directory, "usr") != EXIT_FAILURE && get_filecount(&usr_dir) != 3) {
 		perror("test_remove_empty_directory() failed");
 		return EXIT_FAILURE;
 	}
@@ -528,10 +537,12 @@ int test_move_file() {
 
 	move_file(&g_working_directory, "FILENAME", &to);
 
+	print_disk();
 	if (get_filecount(&g_working_directory) != 1) {
 		perror("test_move_file() failed");
 		return EXIT_FAILURE;
 	}
+	print_disk();
 	if (get_filecount(&to) != 3) {
 		perror("test_move_file() failed");
 		return EXIT_FAILURE;
@@ -555,7 +566,6 @@ int test_mode() {
 	printf("FLAGS %d\n", f.flags);
 	if (iwrite(&f, "tototototototototototo", 10) != EXIT_FAILURE) {
 		fprintf(stderr, "test_mode() failed\n");
-		PRINT_LINE;
 		return EXIT_FAILURE;
 	}
 
@@ -564,7 +574,6 @@ int test_mode() {
 	printf("FLAGS %d\n", f.flags);
 	if (iread(&f, buf, 10) != EXIT_FAILURE) {
 		fprintf(stderr, "test_mode() failed\n");
-		PRINT_LINE;
 		return EXIT_FAILURE;
 	}
 
@@ -573,7 +582,6 @@ int test_mode() {
 	if (iread(&f, buf, 10) != EXIT_SUCCESS &&
 			iwrite(&f, "encorecnoreencore", 10) != EXIT_SUCCESS) {
 		fprintf(stderr, "test_mode() failed\n");
-		PRINT_LINE;
 		return EXIT_FAILURE;
 	}
 
@@ -583,11 +591,29 @@ int test_mode() {
 			iwrite(&f, "encorecnoreencore", 10) != EXIT_SUCCESS) {
 
 		fprintf(stderr, "test_mode() failed\n");
-		PRINT_LINE;
 		return EXIT_FAILURE;
 	}
 
 	printf("test_mode() successful\n");
+	return EXIT_SUCCESS;
+}
+
+int test_get_inode_by_filename() {
+	struct inode i;
+	struct file f1;
+	clean_disk();
+	g_working_directory = create_disk();
+
+	f1 = create_regularfile(&g_working_directory, "Bidsouf", "Yahoo", O_RDONLY);
+
+	i = get_inode_by_filename(&g_working_directory, "Bidsouf");
+	if (i.id != f1.inode.id) {
+		perror("test_get_inode_by_filename() failed");
+		printf("i %u f1 %u\n", i.id, f1.inode.id);
+		return EXIT_FAILURE;
+	}
+
+	printf("test_get_inode_by_filename() successful\n");
 	return EXIT_SUCCESS;
 }
 
@@ -608,6 +634,7 @@ int main() {
 	test_add_inode_to_inode();
 	test_create_regularfile();
 	test_create_emptyfile();
+	test_get_inode_by_filename();
 	test_create_directory();
 
 	test_strncut();
@@ -618,15 +645,13 @@ int main() {
 	test_strsplt();
 	test_get_inodes();
 	test_iopen();
-	/*
-	test_remove_empty_directory();
-	*/
 	test_strjoin();
 	test_disk_free();
 	test_remove_file();
 	test_iwrite();
 	test_move_file();
 	test_mode();
+	test_remove_empty_directory();
 
 	return EXIT_SUCCESS;
 }

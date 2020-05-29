@@ -14,8 +14,8 @@
 #include "../utils/str_utils.h"
 #include "./inode.h"
 #include "./bloc.h"
-#include <sys/ipc.h> 
-#include <sys/shm.h> 
+#include <sys/ipc.h>
+#include <sys/shm.h>
 
 #define PRINT_LINE printf("LINE %d\n", __LINE__)
 #define NO_FILE_ERROR_MESSAGE "File's NULL"
@@ -54,7 +54,7 @@ struct file new_file(struct inode *i, int flags);
 size_t get_total_strlen(struct inode *i);
 
 void initFS();
-char * get_filename_for_inode(struct inode *i);
+char *get_filename_for_inode(struct inode *under_dir, struct inode *i);
 int clean_disk();
 int create_dot_dir(struct inode *dir);
 int create_dotdot_dir(struct inode *parent, struct inode *dir);
@@ -64,18 +64,20 @@ int get_inodes(struct inode *under_dir, struct inode **inodes);
 int overwrite_bloc(struct bloc *new_bloc, unsigned int id);
 int overwrite_inode(struct inode *new_inode, unsigned int id);
 int print_disk();
-int remove_inode_from_directory(struct inode *dir, unsigned int id);
+struct bloc remove_inode_from_directory(struct inode *dir, unsigned int id);
 int update_bloc(struct bloc *new_bloc);
 int update_inode(struct inode *new_inode);
 int write_bloc(struct bloc *b);
 int write_inode(struct inode *i);
-struct bloc add_inode_to_inode(struct inode *dir, struct inode *i);
+struct bloc add_inode_to_inode(struct inode *dir, struct inode *i, char *name);
 struct bloc get_bloc_by_id(unsigned int bloc_id);
 struct inode create_disk();
 struct inode create_root();
 struct inode get_inode_by_filename(struct inode *under_dir, char *filename);
 struct inode get_inode_by_id(unsigned int inode_id);
 unsigned int get_filecount(struct inode *dir);
+char *get_dirname_by_id(unsigned int id);
+char *get_dirname(struct inode *dir);
 void disk_free(unsigned int *blocs_available, unsigned int *inodes_available, size_t *bytes_available);
 
 char **list_files(struct inode *dir, int *filecount);
@@ -95,7 +97,7 @@ int remove_file(struct inode *under_dir, char *filename, enum filetype ft);
 
 int remove_int(int **int_array, unsigned int *len, int i);
 void ch_dir(unsigned int inodeid);
-char * get_filename_for_inodeID(unsigned int id);
+char * get_filename_for_inodeID(struct inode *under_dir, unsigned int id);
 unsigned int get_pwd_id();
 void update_path(unsigned int inodeid);
 #endif

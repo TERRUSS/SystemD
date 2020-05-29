@@ -4,7 +4,7 @@
  * @authors H.HENROTTE, M.VINCENT, D.DANG, P.REPAIN, O.BENABEN
  * @date 9 17 Mai 2020
  * @brief SystemD main
- * 
+ *
  * Boucle principale :
  * 	Prompt et traitement de la commande
  *
@@ -28,8 +28,8 @@ int DEBUG = 0;
 int main(int argc, char const *argv[]) {
 
 	//--------
-	
-	struct stat buffer;   
+
+	struct stat buffer;
 	if (stat (DISK, &buffer) == 0)
 		g_working_directory = get_inode_by_id(ROOT_ID);
 	else
@@ -37,7 +37,7 @@ int main(int argc, char const *argv[]) {
 	ch_dir(ROOT_ID);
 
 	if(DEBUG)
-		printf("FS created : root @ %s", get_filename_for_inode(&g_working_directory));
+		printf("FS created : root @ %s", get_dirname(&g_working_directory));
 	//---------
 
 	handleArgs(argc, argv);
@@ -88,11 +88,11 @@ int main(int argc, char const *argv[]) {
  * @param argv char*[]: tableau des paramètres
  */
 void handleArgs(int argc, char const *options[]) {
-	if(argc==1) 
+	if(argc==1)
 		return;
 	else {
 		for(int i=1 ; i < argc ; i++) {
-				printf("\noptions[%d]: %s",i,options[i]); 
+				printf("\noptions[%d]: %s",i,options[i]);
 				printf("\n");
 
 			if ( strcmp(options[i], "--debug") == 0 ) {
@@ -101,5 +101,5 @@ void handleArgs(int argc, char const *options[]) {
 			}
 		}
 	}
-	return; 
+	return;
 }
