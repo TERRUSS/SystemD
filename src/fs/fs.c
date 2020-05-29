@@ -732,15 +732,8 @@ int create_dot_dir(struct inode *dir) {
 	struct bloc b, to_update;
 	struct inode dot_dir;
 
-	b = get_bloc_by_id(dir->bloc_ids[0]);
-	dot_dir = *dir;
-	dot_dir.id = rand();
-	b = new_bloc(b.content);
-	dot_dir.bloc_ids[0] = b.id;
-	write_bloc(&b);
-	to_update = add_inode_to_inode(dir, &dot_dir, ".");
+	to_update = add_inode_to_inode(dir, dir, ".");
 	update_bloc(&to_update);
-	write_inode(&dot_dir);
 
 	return EXIT_SUCCESS;
 }
@@ -749,15 +742,8 @@ int create_dotdot_dir(struct inode *parent, struct inode *dir) {
 	struct bloc b, to_update;
 	struct inode dotdot_dir;
 
-	b = get_bloc_by_id(parent->bloc_ids[0]);
-	dotdot_dir = *parent;
-	dotdot_dir.id = rand();
-	b = new_bloc(b.content);
-	dotdot_dir.bloc_ids[0] = b.id;
-	write_bloc(&b);
-	to_update = add_inode_to_inode(dir, &dotdot_dir, "..");
+	to_update = add_inode_to_inode(dir, parent, "..");
 	update_bloc(&to_update);
-	write_inode(&dotdot_dir);
 
 	return EXIT_SUCCESS;
 }
