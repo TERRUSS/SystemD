@@ -26,7 +26,7 @@ int main(int argc, char const *argv[]) {
 	printf("Writing \"%s\" in %s\n", arg[0], arg[1]);
 
 	f = iopen(&cur_dir, arg[1], O_WRONLY);
-	iwrite(&f, arg[0], strlen(arg[0]));
+	iwrite(&f, arg[0], strlen(arg[0])+1);
 
 	return 0;
 }
