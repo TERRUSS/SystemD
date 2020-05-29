@@ -1116,3 +1116,14 @@ unsigned int get_pwd_id(){
 
 	return cur;
 }
+
+void update_path(unsigned int inodeid){
+	key_t key = ftok("systemd",65); 
+    int shmid = shmget(key,1024,0666|IPC_CREAT);   
+    char *shared = (char*) shmat(shmid,(void*)0,0); 
+  
+    sprintf(shared, "%u", inodeid);
+      
+    shmdt(shared); 
+    shmctl(shmid,IPC_RMID,NULL);
+}

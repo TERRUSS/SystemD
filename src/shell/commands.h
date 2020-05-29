@@ -5,6 +5,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include "../fs/fs.h"
 
 #include "../utils/globals.h"
 #include "../utils/utils.h"

@@ -13,6 +13,8 @@
 #include "../utils/str_utils.h"
 #include "./inode.h"
 #include "./bloc.h"
+#include <sys/ipc.h> 
+#include <sys/shm.h> 
 
 #define PRINT_LINE printf("LINE %d\n", __LINE__)
 #define NO_FILE_ERROR_MESSAGE "File's NULL"
@@ -94,4 +96,5 @@ int remove_int(int **int_array, unsigned int *len, int i);
 void ch_dir(unsigned int inodeid);
 char * get_filename_for_inodeID(unsigned int id);
 unsigned int get_pwd_id();
+void update_path(unsigned int inodeid);
 #endif

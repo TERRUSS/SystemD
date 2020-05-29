@@ -4,7 +4,7 @@
 int execute(int argc, char ** argv) {
 	
 	if(strcmp(argv[0], "exit") == 0){
-		return 254;
+		return 666;
 	}
 
 	pid_t pid = -1;
@@ -19,6 +19,10 @@ int execute(int argc, char ** argv) {
 	if (DEBUG)
 		printf("Executing : %s\n", path);
 
+
+	key_t key = ftok("systemd",65);
+	int shmid = shmget(key,1024,0666|IPC_CREAT);
+	char *shared = (char*) shmat(shmid,(void*)0,0); 
 
 	pid = fork();
 
@@ -40,13 +44,22 @@ int execute(int argc, char ** argv) {
 		do {
 			waitpid(pid, &status, WUNTRACED);
 		} while (!WIFEXITED(status) && !WIFSIGNALED(status));
+
+		unsigned int wd = 0;
+		sscanf(shared, "%u", &wd);
+		if (wd > 0 && wd != g_working_directory.id){
+			if (DEBUG)
+				printf("changing dir to @%d", wd);
+			ch_dir(wd);
+		}
 	}
 
+	shmdt(shared);
 	free(path);
 
 	if (DEBUG)
 		printf(" » %d\n", status);
-	return status;
+	return status/255;
 }
 
 
