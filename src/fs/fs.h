@@ -10,6 +10,7 @@
 #include <sys/types.h>
 #include <time.h>
 #include <unistd.h>
+#include "utils.h"
 #include "../utils/str_utils.h"
 #include "./inode.h"
 #include "./bloc.h"

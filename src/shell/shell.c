@@ -80,7 +80,6 @@ char ** parseInput( char * line, int * argc ) {
 				}
 
 				argv[*argc][cc] = ptr[0] ? ptr[0] : ' ';
-				printf("%c\n", ptr[0] ? ptr[0] : ' ');
 				cc++;
 				if (!ptr[0])
 					ptr = strtok(NULL, " ");

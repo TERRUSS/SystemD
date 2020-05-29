@@ -58,7 +58,7 @@ int execute(int argc, char ** argv) {
 	free(path);
 
 	if (DEBUG)
-		printf(" » %d\n", status);
+		printf(" » %d\n", status/255);
 	return status/255;
 }
 

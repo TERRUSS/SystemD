@@ -6,5 +6,5 @@ int main(int argc, char const *argv[]) {
 
 	clean_disk();
 	
-	return 0;
+	return 666;
 }

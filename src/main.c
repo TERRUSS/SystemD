@@ -70,7 +70,7 @@ int main(int argc, char const *argv[]) {
 		g_working_directory = get_inode_by_id(get_pwd_id());
 		if (DEBUG)
 			printf("[SD] current directory @%u (%s)\n", g_working_directory.id, getenv("SYSD_CURDIR"));
-	} while ( cmd_status != 666 );
+	} while ( cmd_status != 154 );
 
 	return 0;
 }

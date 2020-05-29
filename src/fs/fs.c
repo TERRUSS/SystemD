@@ -177,7 +177,7 @@ void disk_free(unsigned int *blocs_available, unsigned int *inodes_available, si
 				*inodes_available = *inodes_available + 1;
 		} else if (flag == BLOC_FLAG) {
 			fread(&b, sizeof(struct bloc), 1, f);
-			if (i.id == DELETED)
+			if (b.id == DELETED)
 				*blocs_available = *blocs_available + 1;
 		} else {
 			perror("Houston there's a problem with the <disk>");

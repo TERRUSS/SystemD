@@ -25,11 +25,19 @@ int main(int argc, char const *argv[]) {
 
 	f = iopen(&cur_dir, arg[0], O_RDWR);
 
-	char * buf;
-	buf = malloc(sizeof(char) * (get_total_strlen(&f.inode) + 1));
+	if (f.inode.type != DIRECTORY){
+		char * buf;
+		buf = malloc(sizeof(char) * (get_total_strlen(&f.inode) + 1));
 
-	iread(&f, buf, get_total_strlen(&f.inode));
-	printf("%s\n", buf);
+		iread(&f, buf, get_total_strlen(&f.inode));
+		printf("%s\n", buf);
+	}
+	else{
+		printf("cat : %s is not a file", arg[0]);
+		return -1;
+	}
+	
+	
 
 	return 0;
 }

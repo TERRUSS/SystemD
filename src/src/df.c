@@ -8,7 +8,7 @@ int main(int argc, char const *argv[]) {
 	size_t bytes;
 
 	initFS();
-
+	
 	disk_free(&blocs, &inodes, &bytes);
 	printf("blocs available %lu\n", blocs);
 	printf("inodes available %lu\n", inodes);
