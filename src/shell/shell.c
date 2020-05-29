@@ -1,4 +1,5 @@
 #include "shell.h"
+#include <errno.h>
 
 char ** prompt( int * argc, int cmd_status, struct inode * pwd ) {
 	char * input = 0;
@@ -42,17 +43,65 @@ char ** parseInput( char * line, int * argc ) {
 	char *ptr = strtok(line, " ");
 	char ** argv = 0;
 	*argc = 0;
+	char match;
 
-	while(ptr != NULL) {
+	while(ptr != NULL) { // TODO : refactor 
 
 		//handle "strings of multiple words"
-
+		match = 0;
+		switch (ptr[0]){
+			case '"':
+				if(DEBUG)
+					printf("[SD SHELL PARSE] string detected %s\n", ptr);
+				match = '"';
+				break;
+			case '\'':
+				if(DEBUG)
+					printf("[SD SHELL PARSE] string detected\n");
+				match = '\'';
+				break;
+			
+			default:
+				break;
+		}
+		
 		argv = realloc(argv, (*argc+1) * sizeof(char *));
-		argv[*argc] = malloc(sizeof(char) * strlen(ptr));
-		strcpy(argv[*argc], ptr);
+		
+		if (match) {
+			ptr = &ptr[1];
+			int cc = 0;
+			argv[*argc] = malloc(sizeof(char));
+			argv[*argc][0] = 0;
+			do {
+				argv[*argc] = realloc(argv[*argc], sizeof(char) * (cc+1));
+				if(argv[*argc] == NULL){
+					fprintf(stderr,"[SD SHELL PARSE] Reallocation failed : %s\n", strerror(errno));
+					exit(-1);
+				}
+
+				argv[*argc][cc] = ptr[0] ? ptr[0] : ' ';
+				printf("%c\n", ptr[0] ? ptr[0] : ' ');
+				cc++;
+				if (!ptr[0])
+					ptr = strtok(NULL, " ");
+				else
+					ptr = &ptr[1];
+
+			} while (ptr[0] != match);
+			argv[*argc][cc] = 0;
+
+			if(DEBUG)
+				printf("[SD SHELL PARSE] end of string : %s\n", argv[*argc]);
+
+		}
+		else{
+			argv[*argc] = malloc(sizeof(char) * strlen(ptr));
+			strcpy(argv[*argc], ptr);
+		}
 
 		*argc+=1;
 		ptr = strtok(NULL, " ");
+		
 	}
 
 	//argv must end on NULL ptr
