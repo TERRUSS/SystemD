@@ -366,27 +366,21 @@ int print_disk() {
 		/*
 		 * We determine if it's a bloc or an inode by the flag
 		 */
-		printf("1\n");
 		size = fread(&flag, sizeof(const int), 1, f);
-		printf("2 %lu\n", size);
 
 		if (size == 0) continue;
-		printf("3\n");
 
 		if (flag == BLOC_FLAG) {
 			fread(&b, sizeof(struct bloc), 1, f);
 			print_bloc(&b);
-		printf("4\n");
 
 		} else if (flag == INODE_FLAG) {
 			fread(&i, sizeof(struct inode), 1, f);
 			print_inode(&i);
-		printf("5\n");
 
 		} else {
 			printf("?\n");
 		}
-		printf("6\n");
 
 	} while (size != 0);
 
@@ -1115,3 +1109,10 @@ char * get_filename_for_inodeID(unsigned int id) {
 	return fn;
 }
 
+unsigned int get_pwd_id(){
+	//void * cur = malloc(sizeof(unsigned int));
+	unsigned int cur;
+	sscanf(getenv("SYSD_CURDIR"), "%u", &cur);
+
+	return cur;
+}

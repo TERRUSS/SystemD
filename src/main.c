@@ -63,6 +63,8 @@ int main(int argc, char const *argv[]) {
 			cmd_status = execute(sd_argc, sd_argv);
 
 		free(sd_argv);
+
+		g_working_directory = get_inode_by_id(get_pwd_id());
 	} while ( cmd_status != 254 );
 
 	return 0;

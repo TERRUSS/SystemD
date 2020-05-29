@@ -93,4 +93,5 @@ int remove_file(struct inode *under_dir, char *filename, enum filetype ft);
 int remove_int(int **int_array, unsigned int *len, int i);
 void ch_dir(unsigned int inodeid);
 char * get_filename_for_inodeID(unsigned int id);
+unsigned int get_pwd_id();
 #endif

@@ -11,4 +11,3 @@
 
 int execute(int argc, char ** argv);
 char * getexecpath (char * path, char * root, char * name);
-char ** getEnv();

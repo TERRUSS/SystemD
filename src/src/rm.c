@@ -11,15 +11,6 @@ char ** handleArgs(int argc, char const *argv[]) {
 	}
 }
 
-unsigned int  get_pwd_id(){
-	//void * cur = malloc(sizeof(unsigned int));
-	unsigned int cur;
-	char tmp[100];
-	sscanf(getenv("SYSD_CURDIR"), "%u %*s", &cur, tmp);
-
-	return cur;
-}
-
 int main(int argc, char const *argv[]) {
 
 	initFS();
