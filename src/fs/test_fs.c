@@ -579,8 +579,8 @@ int test_mode() {
 
 	/* o_creat and iread (expect failure) and iwrite (expect success) */
 	f = iopen(&g_working_directory, "FILENAME", O_RDWR);
-	if (iread(&f, buf, 10) != EXIT_FAILURE &&
-			iwrite(&f, "encorecnoreencore", 10) != EXIT_FAILURE) {
+	if (iread(&f, buf, 10) != EXIT_SUCCESS &&
+			iwrite(&f, "encorecnoreencore", 10) != EXIT_SUCCESS) {
 
 		fprintf(stderr, "test_mode() failed\n");
 		PRINT_LINE;

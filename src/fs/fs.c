@@ -839,7 +839,7 @@ int iread(struct file *f, char *buf, size_t n) {
 	int pos;
 	struct inode i;
 
-	if ( ( (f->flags & O_RDONLY) & (f->flags & O_RDWR) ) ) {
+	if ( ( (f->flags & O_RDONLY) == 0 && (f->flags & O_RDWR) == 0) ) {
 		fprintf(stderr, "Access denied, wrong mode %d\n", __LINE__);
 		return EXIT_FAILURE;
 	}
@@ -901,9 +901,9 @@ char **list_files(struct inode *dir, int *filecount) {
 
 	for (z = 0; z < *filecount; z++) {
 		i = get_inode_by_id(inode_ids[z]);
-		filename = get_filename_for_inode(&i);		
+		filename = get_filename_for_inode(&i);
 		strncpy(files[z], filename, FILENAME_COUNT);
-		
+
 		free(filename);
 	}
 
@@ -1117,12 +1117,12 @@ unsigned int get_pwd_id(){
 }
 
 void update_path(unsigned int inodeid){
-	key_t key = ftok("systemd",65); 
-    int shmid = shmget(key,1024,0666|IPC_CREAT);   
-    char *shared = (char*) shmat(shmid,(void*)0,0); 
-  
+	key_t key = ftok("systemd",65);
+    int shmid = shmget(key,1024,0666|IPC_CREAT);
+    char *shared = (char*) shmat(shmid,(void*)0,0);
+
     sprintf(shared, "%u", inodeid);
-      
-    shmdt(shared); 
+
+    shmdt(shared);
     shmctl(shmid,IPC_RMID,NULL);
 }
