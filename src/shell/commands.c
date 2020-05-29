@@ -65,10 +65,15 @@ int execute(int argc, char ** argv) {
 
 
 char * getexecpath (char * path, char * root, char * name) {
-	path = malloc(sizeof(char) * (strlen(root)+strlen(name)));
+	int n = strlen(root)+strlen(name);
+	path = malloc(sizeof(char) * n);
 
-	strcat(path, root);
-	strcat(&path[strlen(root)], name);
+	//strcat(path, root);
+	//strcat(&path[strlen(root)], name);
+
+	memcpy(path, root, strlen(root));
+	memcpy(&path[strlen(root)], name, strlen(name));
+	path[n] = '\0'; //for an unknown reason it is needed if the command argc > 2...
 
 	return path;
 }
