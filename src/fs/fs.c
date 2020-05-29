@@ -772,13 +772,34 @@ int create_dotdot_dir(struct inode *parent, struct inode *dir) {
  * on success: returns the inode found
  */
 struct inode get_inode_by_filename(struct inode *under_dir, char *filename) {
-	struct inode i, *inodes;
-	int len, z;
-	int done;
-	char *fn;
+	struct inode i;
+	struct bloc b;
+	int linkcount;
+	int found;
+	unsigned int inode_id;
+	char name[FILENAME_COUNT];
+	int offset;
 
-	done = 0;
+	found = 0;
 	i = empty_inode();
+	b = get_bloc_by_id(under_dir->bloc_ids[0]);
+	linkcount = ocr(b.content, ',');
+	offset = 0;
+
+	while (!found) {
+
+		sscanf(b.content + sizeof(char)*offset, "%u", &inode_id);
+		offset += get_index(b.content + offset, ':') + 1;
+		sscanf(b.content + sizeof(char)*offset, "%s", name);
+		offset += get_index(b.content + offset, ',') + 1;
+
+		if (strcmp(name, filename) == 0) {
+			i = get_inode_by_id(inode_id);
+			found = 1;
+		}
+	}
+
+	/*
 	len = get_inodes(under_dir, &inodes);
 	z = 0;
 
@@ -793,6 +814,7 @@ struct inode get_inode_by_filename(struct inode *under_dir, char *filename) {
 	}
 
 	free(inodes);
+	*/
 
 	return i;
 }
