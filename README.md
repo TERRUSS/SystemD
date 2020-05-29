@@ -4,7 +4,22 @@ A basic File Manager System implemented in C, accessible throught a cusom shell 
 
 ## Compile and execute
 
+```
 make && ./systemd
+```
+
+## Examples
+```
+touch file
+mkdir dir
+cd dir
+cd ..
+rmdir dir
+rm file
+pwd
+df
+ls
+```
 
 ## Abstract
 
@@ -36,5 +51,4 @@ make && ./systemd
 ### TODO
 
 - open / close with permissions (two flags left: O\_TRUNC and O\_APPEND)
-- use primitives in the shell
 
