@@ -1,0 +1,9 @@
+
+NAME
+	wait - wait for a number of seconds
+
+SYNOPSIS
+	write (int) number of seconds to wait
+
+AUTHOR
+	Written by The SystemD Devlopement Team

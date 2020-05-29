@@ -1,0 +1,22 @@
+
+NAME
+	ls - list directory contents
+
+SYNOPSIS
+	ls [OPTION]... [FILE]...
+
+DESCRIPTION
+	List information about the FILEs (the current directory by default).
+	Sort entries alphabetically.
+
+	Mandatory arguments to long options are mandatory for short options
+	too.
+
+OPTIONS
+	-a, --all
+		do not ignore entries starting with .
+	-l
+		use a long listing format
+
+AUTHOR
+	Written by The SystemD Devlopement Team

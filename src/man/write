@@ -1,0 +1,9 @@
+
+NAME
+	write - write a string in a file located in the current directory
+
+SYNOPSIS
+	write (char *)string (char*)filename
+
+AUTHOR
+	Written by The SystemD Devlopement Team

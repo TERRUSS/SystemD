@@ -1,0 +1,9 @@
+
+NAME
+	man - print detailed informations on a command
+
+SYNOPSIS
+	man command
+
+AUTHOR
+	Written by The SystemD Devlopement Team

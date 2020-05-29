@@ -1,0 +1,9 @@
+
+NAME
+	clean - delete the filesystem. require restart
+
+SYNOPSIS
+	clean
+
+AUTHOR
+	Written by The SystemD Devlopement Team

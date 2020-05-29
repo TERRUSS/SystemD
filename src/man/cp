@@ -1,0 +1,9 @@
+
+NAME
+	cp - copy a file / directory
+
+SYNOPSIS
+	cp <file> <copy>
+
+AUTHOR
+	Written by The SystemD Devlopement Team

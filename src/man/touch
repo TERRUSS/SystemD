@@ -1,0 +1,9 @@
+
+NAME
+	touch - create (a) file(s) in the working directory
+
+SYNOPSIS
+	touch filename1 [filename2 ... filenamen]
+
+AUTHOR
+	Written by The SystemD Devlopement Team

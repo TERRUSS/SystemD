@@ -1,0 +1,9 @@
+
+NAME
+	mkdir - create (a) directory(ies) in the working directory
+
+SYNOPSIS
+	mkdir dirname1 [dirname2 ... dirnamen]
+
+AUTHOR
+	Written by The SystemD Devlopement Team

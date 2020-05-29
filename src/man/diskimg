@@ -1,0 +1,9 @@
+
+NAME
+	diskimg - print detailed informations on the current filesystem state
+
+SYNOPSIS
+	diskimg
+
+AUTHOR
+	Written by The SystemD Devlopement Team

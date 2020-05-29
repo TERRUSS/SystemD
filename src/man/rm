@@ -1,0 +1,9 @@
+
+NAME
+	rm - remove a file by it's name in the current directory
+
+SYNOPSIS
+	rm filename1 [filename2 ... filenamen]
+
+AUTHOR
+	Written by The SystemD Devlopement Team

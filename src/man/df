@@ -1,0 +1,9 @@
+
+NAME
+	df - print informations on the current filesystem state
+
+SYNOPSIS
+	df
+
+AUTHOR
+	Written by The SystemD Devlopement Team
