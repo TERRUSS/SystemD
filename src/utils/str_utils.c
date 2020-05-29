@@ -151,23 +151,9 @@ int strjoin(char *str, int *int_array, int len, char sep) {
 		strcat(str + offset, tmp);
 		offset += strlen(tmp);
 		str[offset] = sep;
+		/* Add after loop */
 		str[offset + 1] = '\0';
-		/*
-		printf("offset %d\n", offset);
-		printf("tmp %s\n", tmp);
-		printf("%d> %s\n", z, str);
-		*/
 	}
-	/*
-
-	i = 0;
-	while (str[i] != '\0') {
-		printf("c:%c\n", str[i]);
-		i++;
-	}
-
-	str[offset] = '\0';
-	*/
 
 	return EXIT_SUCCESS;
 }

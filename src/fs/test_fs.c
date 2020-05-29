@@ -622,7 +622,6 @@ int main() {
 	test_remove_empty_directory();
 	*/
 	test_strjoin();
-	PRINT_LINE;
 	test_disk_free();
 	test_remove_file();
 	test_iwrite();
