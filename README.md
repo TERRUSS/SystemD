@@ -2,9 +2,9 @@
 
 A basic File Manager System implemented in C, accessible throught a cusom shell interpreter. [School Project]
 
-<center>
-<img src="assets/screenshot.png" alt="Screenshot">
-</center>
+<p align="center">
+   <img src="assets/screenshot.png" alt="Screenshot">
+</p>
 
 ## Compile and execute
 
