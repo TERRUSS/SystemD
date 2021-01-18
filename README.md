@@ -3,7 +3,7 @@
 A basic File Manager System implemented in C, accessible throught a cusom shell interpreter. [School Project]
 
 <center>
-![screenshot](./assets/screenshot.png)
+<img src="assets/screenshot.png" alt="Screenshot">
 </center>
 
 ## Compile and execute
